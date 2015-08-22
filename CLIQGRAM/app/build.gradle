@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "cliq.com.cliqgram"
+        minSdkVersion 21
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:support-v13:21.+'
+    compile 'com.android.support:palette-v7:+'
+    compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'com.android.support:design:22.2.0'
+
+    compile 'com.parse.bolts:bolts-android:1.2.1'
+    compile 'com.parse:parse-android:1.10.1'
+
+    // helper toolset
+    compile 'com.google.guava:guava:18.0'
+    // greenrobot eventbus framework
+    compile 'de.greenrobot:eventbus:3.0.0-beta1'
+    // spring framework for RESTFUL
+//    compile 'org.springframework.android:spring-android-rest-template:2.0.0.M1'
+    // facebook animation library
+    compile 'com.facebook.rebound:rebound:0.3.8'
+    // View "injection" library for Android
+    compile 'com.jakewharton:butterknife:6.1.0'
+}
+
+/* Uncomment if you enable ProGuard and you want to automatically upload symbols on build.
+parse {
+  applicationId "YOUR_APPLICATION_ID"
+  masterKey "YOUR_MASTER_KEY"
+
+  // Make symbol upload automatic. Otherwise, use e.g. ../gradlew parseUploadSymbolsDebug;
+  uploadSymbols true
+}
+*/
