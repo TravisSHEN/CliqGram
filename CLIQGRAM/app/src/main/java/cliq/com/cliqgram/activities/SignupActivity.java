@@ -1,7 +1,7 @@
 package cliq.com.cliqgram.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,9 +9,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.SignupService;
 
-public class SignupActivity extends Activity {
+public class SignupActivity extends AppCompatActivity {
 
     EditText emailText, usernameText, passwordText;
     Button submitBtn;
@@ -26,6 +27,9 @@ public class SignupActivity extends Activity {
 
         // register submit button with listener
         submitBtn.setOnClickListener(submitButtonListener);
+
+        // setup toolbar
+        ToolbarModel.setupToolbar(this);
 
     }
 

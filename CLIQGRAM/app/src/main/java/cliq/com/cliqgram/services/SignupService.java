@@ -24,6 +24,7 @@ public class SignupService {
         user.setEmail(email);
 
         user.signUpInBackground(new SignUpCallback() {
+
             public void done(ParseException e) {
                 if (e == null) {
                     // Hooray! Let them use the app now.

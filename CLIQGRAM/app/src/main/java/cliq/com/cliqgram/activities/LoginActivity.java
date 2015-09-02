@@ -1,8 +1,8 @@
 package cliq.com.cliqgram.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,9 +15,10 @@ import android.widget.Toast;
 import com.parse.ParseAnalytics;
 
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.LoginService;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
 
     EditText usernameText, passwordText;
     Button loginBtn;
@@ -30,10 +31,12 @@ public class LoginActivity extends Activity {
 
         this.initializeViews();
 
+        // bind two buttons with onClickListener
         loginBtn.setOnClickListener(this.onClickListener);
-
         signupBtn.setOnClickListener(this.onClickListener);
 
+        // setup action bar by using toolbar
+        ToolbarModel.setupToolbar(this);
 
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
     }
@@ -95,4 +98,5 @@ public class LoginActivity extends Activity {
         signupBtn = (TextView) findViewById(R.id.btn_signup);
 
     }
+
 }
