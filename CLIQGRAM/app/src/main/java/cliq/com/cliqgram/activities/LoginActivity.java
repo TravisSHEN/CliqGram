@@ -13,14 +13,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.ParseAnalytics;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
-import cliq.com.cliqgram.events.LoginSuccessfulEvent;
+import cliq.com.cliqgram.events.LoginSuccessEvent;
 import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.LoginService;
 import de.greenrobot.event.EventBus;
@@ -28,20 +29,28 @@ import de.greenrobot.event.Subscribe;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText usernameText, passwordText;
-    private Button loginBtn;
-    private TextView signupBtn;
     private ProgressDialog progressDialog;
+
+    // inject views by ButterKnife
+    @InjectView(R.id.text_username)
+    EditText usernameText;
+    @InjectView(R.id.text_password)
+    EditText passwordText;
+    @InjectView(R.id.btn_login)
+    Button loginBtn;
+    @InjectView(R.id.btn_signup)
+    TextView signupBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // inject views
+        ButterKnife.inject(this);
+
         // register this activity to eventbus
         EventBus.getDefault().register(this);
-
-        this.initializeViews();
 
         // bind two buttons with onClickListener
         loginBtn.setOnClickListener(this.onClickListener);
@@ -92,9 +101,11 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
 
                 // dismiss progress dialog when received response from login service
-                progressDialog.dismiss();
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
 
-                if (baseEvent instanceof LoginSuccessfulEvent) {
+                if (baseEvent instanceof LoginSuccessEvent) {
                     // open main activity
                     Intent intent = new Intent(LoginActivity.this,
                             MainActivity.class);
@@ -102,16 +113,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 } else if (baseEvent instanceof LoginFailEvent) {
                     // display failure message
-                    Snackbar.make(loginBtn, "Login failed - "
-                            + baseEvent.getMessage(), Snackbar.LENGTH_LONG)
+                    Snackbar.make(loginBtn, baseEvent.getMessage(), Snackbar.LENGTH_LONG)
                             .show();
                 }
             }
         }, 3000);
 
-
     }
-
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -122,9 +130,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     String username = usernameText.getText().toString();
                     String password = passwordText.getText().toString();
-
-                    Toast.makeText(LoginActivity.this, "Trying to login...", Toast
-                            .LENGTH_SHORT).show();
 
                     LoginService.authenticate(username, password);
 
@@ -137,20 +142,10 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 default:
-                    Log.d("Login Activity", "Button cannot be found.");
+                    Log.e("Login Activity", "Button cannot be found.");
             }
         }
     };
-
-    private void initializeViews() {
-
-        usernameText = (EditText) findViewById(R.id.text_username);
-        passwordText = (EditText) findViewById(R.id.text_password);
-
-        loginBtn = (Button) findViewById(R.id.btn_login);
-        signupBtn = (TextView) findViewById(R.id.btn_signup);
-
-    }
 
     private void showProgressDialog(String message) {
 

@@ -1,32 +1,58 @@
 package cliq.com.cliqgram.activities;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.events.BaseEvent;
+import cliq.com.cliqgram.events.SignupFailEvent;
+import cliq.com.cliqgram.events.SignupSuccessEvent;
 import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.SignupService;
+import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
 
 public class SignupActivity extends AppCompatActivity {
 
-    EditText emailText, usernameText, passwordText;
+    private ProgressDialog progressDialog;
+
+    // inject views by ButterKnife
+    @InjectView(R.id.text_signup_email)
+    EditText emailText;
+    @InjectView(R.id.text_signup_username)
+    EditText usernameText;
+    @InjectView(R.id.text_signup_password)
+    EditText passwordText;
+    @InjectView(R.id.btn_signup_submit)
     Button submitBtn;
+    @InjectView(R.id.btn_signup_login)
+    TextView loginBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        // initialize veiws first
-        this.initializeViews();
+        // inject views
+        ButterKnife.inject(this);
+
+        // register this activity to eventbus
+        EventBus.getDefault().register(this);
 
         // register submit button with listener
-        submitBtn.setOnClickListener(submitButtonListener);
+        submitBtn.setOnClickListener(onClickListener);
+        loginBtn.setOnClickListener(onClickListener);
 
         // setup toolbar
         ToolbarModel.setupToolbar(this);
@@ -55,26 +81,80 @@ public class SignupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private View.OnClickListener submitButtonListener = new View.OnClickListener() {
+
+    /**
+     * Subscribe to login event in cluding LoginFailEvent and
+     * LoginSuccessfulEvent
+     *
+     * @param baseEvent
+     */
+    @Subscribe
+    public void onEvent(final BaseEvent baseEvent) {
+
+        // Delay to perform further operations
+        // to get better animation for progress bar
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                // dismiss progress dialog when received response from login service
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
+
+                if (baseEvent instanceof SignupSuccessEvent) {
+                    // back to log in activity
+                    SignupActivity.this.finish();
+
+                } else if (baseEvent instanceof SignupFailEvent) {
+                    // display failure message
+                    Snackbar.make(submitBtn, baseEvent.getMessage(), Snackbar.LENGTH_LONG)
+                            .show();
+                }
+            }
+        }, 3000);
+
+    }
+
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
-            // assign values to attributes of instance of model
-            String email = emailText.getText().toString();
-            String username = usernameText.getText().toString();
-            String password = passwordText.getText().toString();
+            switch (view.getId()) {
+                case R.id.btn_signup_submit:
 
-            SignupService.signup(SignupActivity.this, username, password, email);
+                    // assign values to attributes of instance of model
+                    String email = emailText.getText().toString();
+                    String username = usernameText.getText().toString();
+                    String password = passwordText.getText().toString();
+
+                    SignupService.signup(username, password, email);
+
+                    showProgressDialog("Registering...");
+
+                    break;
+                case R.id.btn_signup_login:
+
+                    // back to login activity directly
+                    SignupActivity.this.finish();
+                    break;
+                default:
+                    break;
+            }
+
         }
+
     };
 
-    private void initializeViews() {
+    private void showProgressDialog(String message) {
 
-        emailText = (EditText) findViewById(R.id.text_signup_email);
-        usernameText = (EditText) findViewById(R.id.text_signup_username);
-        passwordText = (EditText) findViewById(R.id.text_signup_password);
-
-        submitBtn = (Button) findViewById(R.id.btn_signup_submit);
-
+        progressDialog = new ProgressDialog(SignupActivity.this);
+        progressDialog.setMessage(message);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgress(0);
+        progressDialog.show();
     }
 }
+

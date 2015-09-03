@@ -5,7 +5,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import cliq.com.cliqgram.events.LoginFailEvent;
-import cliq.com.cliqgram.events.LoginSuccessfulEvent;
+import cliq.com.cliqgram.events.LoginSuccessEvent;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -21,11 +21,12 @@ public class LoginService {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
 
-                    eventBus.post(new LoginSuccessfulEvent());
+                    eventBus.post(new LoginSuccessEvent());
 
                 } else {
 
-                    eventBus.post(new LoginFailEvent(e.getLocalizedMessage()));
+                    eventBus.post(new LoginFailEvent("Login failed - "
+                            + e.getLocalizedMessage()));
 
                 }
             }

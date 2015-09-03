@@ -1,22 +1,22 @@
 package cliq.com.cliqgram.services;
 
-import android.content.Context;
-import android.content.Intent;
-import android.widget.Toast;
-
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-import cliq.com.cliqgram.activities.LoginActivity;
+import cliq.com.cliqgram.events.SignupFailEvent;
+import cliq.com.cliqgram.events.SignupSuccessEvent;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by litaoshen on 2/09/2015.
  */
 public class SignupService {
 
-    public static void signup(final Context ctx, String username, String
+    public static void signup(String username, String
             password, String email) {
+
+        final EventBus eventBus = EventBus.getDefault();
 
         ParseUser user = new ParseUser();
         user.setUsername(username);
@@ -34,14 +34,12 @@ public class SignupService {
 
             public void done(ParseException e) {
                 if (e == null) {
-                    // Hooray! Let them use the app now.
-                    Intent intent = new Intent(ctx, LoginActivity.class);
-                    ctx.startActivity(intent);
+
+                    eventBus.post(new SignupSuccessEvent());
                 } else {
 
-                    // display failure message
-                    Toast.makeText(ctx, "Sign up failed - " + e
-                            .getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    eventBus.post(new SignupFailEvent("Sign up failed - " + e
+                            .getMessage()));
                 }
             }
         });
