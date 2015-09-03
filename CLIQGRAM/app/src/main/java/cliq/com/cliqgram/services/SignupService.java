@@ -23,6 +23,13 @@ public class SignupService {
         user.setPassword(password);
         user.setEmail(email);
 
+        // Log out current user to prevent session invalid when
+        // user being manually deleted on cloud.
+        if (ParseUser.getCurrentUser() != null) {
+            // do stuff with the user
+            ParseUser.logOut();
+        }
+
         user.signUpInBackground(new SignUpCallback() {
 
             public void done(ParseException e) {

@@ -1,7 +1,10 @@
 package cliq.com.cliqgram.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -15,19 +18,28 @@ import android.widget.Toast;
 import com.parse.ParseAnalytics;
 
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.events.BaseEvent;
+import cliq.com.cliqgram.events.LoginFailEvent;
+import cliq.com.cliqgram.events.LoginSuccessfulEvent;
 import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.LoginService;
+import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText usernameText, passwordText;
-    Button loginBtn;
-    TextView signupBtn;
+    private EditText usernameText, passwordText;
+    private Button loginBtn;
+    private TextView signupBtn;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // register this activity to eventbus
+        EventBus.getDefault().register(this);
 
         this.initializeViews();
 
@@ -63,6 +75,44 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Subscribe to login event in cluding LoginFailEvent and
+     * LoginSuccessfulEvent
+     *
+     * @param baseEvent
+     */
+    @Subscribe
+    public void onEvent(final BaseEvent baseEvent) {
+
+        // Delay to perform further operations
+        // to get better animation for progress bar
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                // dismiss progress dialog when received response from login service
+                progressDialog.dismiss();
+
+                if (baseEvent instanceof LoginSuccessfulEvent) {
+                    // open main activity
+                    Intent intent = new Intent(LoginActivity.this,
+                            MainActivity.class);
+                    LoginActivity.this.startActivity(intent);
+
+                } else if (baseEvent instanceof LoginFailEvent) {
+                    // display failure message
+                    Snackbar.make(loginBtn, "Login failed - "
+                            + baseEvent.getMessage(), Snackbar.LENGTH_LONG)
+                            .show();
+                }
+            }
+        }, 3000);
+
+
+    }
+
+
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -76,7 +126,10 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Trying to login...", Toast
                             .LENGTH_SHORT).show();
 
-                    LoginService.authenticate(LoginActivity.this, username, password);
+                    LoginService.authenticate(username, password);
+
+                    showProgressDialog("Loging in...");
+
                     break;
                 case R.id.btn_signup:
                     Intent intent = new Intent(LoginActivity.this,
@@ -97,6 +150,17 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn = (Button) findViewById(R.id.btn_login);
         signupBtn = (TextView) findViewById(R.id.btn_signup);
 
+    }
+
+    private void showProgressDialog(String message) {
+
+        progressDialog = new ProgressDialog
+                (LoginActivity.this);
+        progressDialog.setMessage(message);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgress(0);
+        progressDialog.show();
     }
 
 }

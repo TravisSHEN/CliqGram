@@ -1,41 +1,32 @@
 package cliq.com.cliqgram.services;
 
-import android.content.Context;
-import android.content.Intent;
-import android.widget.Toast;
-
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import cliq.com.cliqgram.activities.MainActivity;
+import cliq.com.cliqgram.events.LoginFailEvent;
+import cliq.com.cliqgram.events.LoginSuccessfulEvent;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by litaoshen on 2/09/2015.
  */
 public class LoginService {
 
-    public static void authenticate(final Context ctx, String username, String password) {
+    public static void authenticate(String username, String password) {
 
-        // open main activity
-        Intent intent = new Intent(ctx, MainActivity.class);
-        ctx.startActivity(intent);
+        final EventBus eventBus = EventBus.getDefault();
 
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
-                    // Hooray! The user is logged in.
-                    Toast.makeText(ctx, "Login successfully - " + e
-                            .getLocalizedMessage(), Toast.LENGTH_LONG).show();
 
-                    // open main activity
-                    Intent intent = new Intent(ctx, MainActivity.class);
-                    ctx.startActivity(intent);
+                    eventBus.post(new LoginSuccessfulEvent());
+
                 } else {
 
-                    // display failure message
-                    Toast.makeText(ctx, "Login failed - " + e
-                            .getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    eventBus.post(new LoginFailEvent(e.getLocalizedMessage()));
+
                 }
             }
         });

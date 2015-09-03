@@ -39,18 +39,16 @@
                 android:orientation="horizontal">
 
 
-                <android.support.design.widget.TextInputLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="10dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat">
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp">
 
                     <EditText
                         android:id="@+id/text_signup_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
                         android:enabled="true"
                         android:focusable="true"
                         android:hint="Email"
@@ -66,18 +64,16 @@
                 android:orientation="horizontal">
 
 
-                <android.support.design.widget.TextInputLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="10dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat">
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp">
 
                     <EditText
                         android:id="@+id/text_signup_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
                         android:enabled="true"
                         android:focusable="true"
                         android:hint="Username"
@@ -92,18 +88,16 @@
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
-                <android.support.design.widget.TextInputLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="10dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat">
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp">
 
                     <EditText
                         android:id="@+id/text_signup_password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
                         android:ems="10"
                         android:hint="Password"
                         android:inputType="textPassword"

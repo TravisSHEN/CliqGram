@@ -28,9 +28,7 @@ public class StarterApplication extends Application {
         // Add your initialization code here
         Parse.initialize(this, "chzaksNDCMU3xDsuty6ml11hlDkEyBqOTaSlWG0I", "9ZQ2NlS94zSHhmTYT5noOCUhXko3bFFD8h4P8bN4");
 
-//        ParseObject testObject = new ParseObject("TestObject");
-//        testObject.put("foo", "bar");
-//        testObject.saveInBackground();
+        ParseUser.enableRevocableSessionInBackground();
 
         ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
