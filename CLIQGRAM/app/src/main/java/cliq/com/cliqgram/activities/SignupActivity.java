@@ -1,6 +1,6 @@
 package cliq.com.cliqgram.activities;
 
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -12,12 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
+import cliq.com.cliqgram.helper.NetworkConnection;
+import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.SignupService;
 import de.greenrobot.event.EventBus;
@@ -25,18 +28,16 @@ import de.greenrobot.event.Subscribe;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private ProgressDialog progressDialog;
-
     // inject views by ButterKnife
-    @InjectView(R.id.text_signup_email)
+    @Bind(R.id.text_signup_email)
     EditText emailText;
-    @InjectView(R.id.text_signup_username)
+    @Bind(R.id.text_signup_username)
     EditText usernameText;
-    @InjectView(R.id.text_signup_password)
+    @Bind(R.id.text_signup_password)
     EditText passwordText;
-    @InjectView(R.id.btn_signup_submit)
+    @Bind(R.id.btn_signup_submit)
     Button submitBtn;
-    @InjectView(R.id.btn_signup_login)
+    @Bind(R.id.btn_signup_login)
     TextView loginBtn;
 
     @Override
@@ -45,14 +46,14 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
         // inject views
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         // register this activity to eventbus
         EventBus.getDefault().register(this);
 
         // register submit button with listener
-        submitBtn.setOnClickListener(onClickListener);
-        loginBtn.setOnClickListener(onClickListener);
+//        submitBtn.setOnClickListener(onClickListener);
+//        loginBtn.setOnClickListener(onClickListener);
 
         // setup toolbar
         ToolbarModel.setupToolbar(this);
@@ -98,13 +99,19 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                // dismiss progress dialog when received response from login service
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                }
+                // dismiss progress dialog when received response from signup
+                // service
+                ProgressSpinner.getInstance().dismissSpinner();
 
                 if (baseEvent instanceof SignupSuccessEvent) {
-                    // back to log in activity
+                    // Back to log in activity
+                    // with new registered username and password
+                    Intent intent = new Intent();
+                    intent.putExtra("username",
+                            ((SignupSuccessEvent) baseEvent).getUsername());
+                    intent.putExtra("password",
+                            ((SignupSuccessEvent) baseEvent).getPassword());
+                    setResult(RESULT_OK, intent);
                     SignupActivity.this.finish();
 
                 } else if (baseEvent instanceof SignupFailEvent) {
@@ -117,44 +124,41 @@ public class SignupActivity extends AppCompatActivity {
 
     }
 
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
+    @OnClick({R.id.btn_signup_submit, R.id.btn_signup_login})
+    public void onClick(View view) {
 
-            switch (view.getId()) {
-                case R.id.btn_signup_submit:
+        switch (view.getId()) {
+            case R.id.btn_signup_submit:
 
-                    // assign values to attributes of instance of model
-                    String email = emailText.getText().toString();
-                    String username = usernameText.getText().toString();
-                    String password = passwordText.getText().toString();
+                // sign up
+                signup();
+                break;
+            case R.id.btn_signup_login:
 
-                    SignupService.signup(username, password, email);
-
-                    showProgressDialog("Registering...");
-
-                    break;
-                case R.id.btn_signup_login:
-
-                    // back to login activity directly
-                    SignupActivity.this.finish();
-                    break;
-                default:
-                    break;
-            }
-
+                // back to login activity directly
+                SignupActivity.this.finish();
+                break;
+            default:
+                break;
         }
 
-    };
-
-    private void showProgressDialog(String message) {
-
-        progressDialog = new ProgressDialog(SignupActivity.this);
-        progressDialog.setMessage(message);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setProgress(0);
-        progressDialog.show();
     }
+
+
+    private void signup() {
+
+        if (NetworkConnection.isNetworkConnected(this)) {
+            // assign values to attributes of instance of model
+            String email = emailText.getText().toString();
+            String username = usernameText.getText().toString();
+            String password = passwordText.getText().toString();
+
+            ProgressSpinner.getInstance().showSpinner(this, "Registering...");
+            SignupService.signup(username, password, email);
+        } else {
+            NetworkConnection.showAlert(this, loginBtn);
+        }
+    }
+
 }
 

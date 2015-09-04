@@ -1,6 +1,5 @@
 package cliq.com.cliqgram.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,12 +15,15 @@ import android.widget.TextView;
 
 import com.parse.ParseAnalytics;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
+import cliq.com.cliqgram.helper.NetworkConnection;
+import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.LoginService;
 import de.greenrobot.event.EventBus;
@@ -29,16 +31,17 @@ import de.greenrobot.event.Subscribe;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private ProgressDialog progressDialog;
+    // Request signup activity
+    private static int REQUEST_SIGNUP = 0;
 
     // inject views by ButterKnife
-    @InjectView(R.id.text_username)
+    @Bind(R.id.text_username)
     EditText usernameText;
-    @InjectView(R.id.text_password)
+    @Bind(R.id.text_password)
     EditText passwordText;
-    @InjectView(R.id.btn_login)
+    @Bind(R.id.btn_login)
     Button loginBtn;
-    @InjectView(R.id.btn_signup)
+    @Bind(R.id.btn_signup)
     TextView signupBtn;
 
     @Override
@@ -47,14 +50,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // inject views
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         // register this activity to eventbus
         EventBus.getDefault().register(this);
 
-        // bind two buttons with onClickListener
-        loginBtn.setOnClickListener(this.onClickListener);
-        signupBtn.setOnClickListener(this.onClickListener);
+//        // bind two buttons with onClickListener
+//        loginBtn.setOnClickListener(this.onClickListener);
+//        signupBtn.setOnClickListener(this.onClickListener);
 
         // setup action bar by using toolbar
         ToolbarModel.setupToolbar(this);
@@ -84,6 +87,19 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SIGNUP) {
+            if (resultCode == RESULT_OK) {
+                // if sign up successfully,
+                // log in user automatically.
+                String username = data.getStringExtra("username");
+                String password = data.getStringExtra("password");
+                login(username, password);
+            }
+        }
+    }
+
     /**
      * Subscribe to login event in cluding LoginFailEvent and
      * LoginSuccessfulEvent
@@ -101,9 +117,7 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
 
                 // dismiss progress dialog when received response from login service
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                }
+                ProgressSpinner.getInstance().dismissSpinner();
 
                 if (baseEvent instanceof LoginSuccessEvent) {
                     // open main activity
@@ -121,41 +135,39 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
 
-            switch (v.getId()) {
-                case R.id.btn_login:
+    @OnClick({R.id.btn_login, R.id.btn_signup})
+    public void onClick(View v) {
 
-                    String username = usernameText.getText().toString();
-                    String password = passwordText.getText().toString();
+        switch (v.getId()) {
+            case R.id.btn_login:
+                String username = usernameText.getText().toString();
+                String password = passwordText.getText().toString();
 
-                    LoginService.authenticate(username, password);
+                login(username, password);
 
-                    showProgressDialog("Loging in...");
-
-                    break;
-                case R.id.btn_signup:
-                    Intent intent = new Intent(LoginActivity.this,
-                            SignupActivity.class);
-                    startActivity(intent);
-                    break;
-                default:
-                    Log.e("Login Activity", "Button cannot be found.");
-            }
+                break;
+            case R.id.btn_signup:
+                Intent intent = new Intent(LoginActivity.this,
+                        SignupActivity.class);
+                startActivityForResult(intent, REQUEST_SIGNUP);
+                break;
+            default:
+                Log.e("Login Activity", "Button cannot be found.");
         }
-    };
+    }
 
-    private void showProgressDialog(String message) {
 
-        progressDialog = new ProgressDialog
-                (LoginActivity.this);
-        progressDialog.setMessage(message);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setProgress(0);
-        progressDialog.show();
+    private void login(String username, String password) {
+
+        if (NetworkConnection.isNetworkConnected(this)) {
+
+//            showProgressDialog("Loging in...");
+            ProgressSpinner.getInstance().showSpinner(this, "Loging in...");
+            LoginService.authenticate(username, password);
+        } else {
+            NetworkConnection.showAlert(this, loginBtn);
+        }
     }
 
 }

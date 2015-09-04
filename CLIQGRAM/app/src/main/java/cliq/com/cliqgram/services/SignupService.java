@@ -13,7 +13,7 @@ import de.greenrobot.event.EventBus;
  */
 public class SignupService {
 
-    public static void signup(String username, String
+    public static void signup(final String username, final String
             password, String email) {
 
         final EventBus eventBus = EventBus.getDefault();
@@ -35,11 +35,12 @@ public class SignupService {
             public void done(ParseException e) {
                 if (e == null) {
 
-                    eventBus.post(new SignupSuccessEvent());
+                    eventBus.post(new SignupSuccessEvent("Sign up " +
+                            "successfully", username, password));
                 } else {
 
-                    eventBus.post(new SignupFailEvent("Sign up failed - " + e
-                            .getMessage()));
+                    eventBus.post(new SignupFailEvent("Sign up failed - " +
+                            e.getMessage()));
                 }
             }
         });

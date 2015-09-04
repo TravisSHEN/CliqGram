@@ -14,6 +14,7 @@ public class ToolbarModel {
         Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        activity.getSupportActionBar().setHomeButtonEnabled(true);
 //        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

@@ -8,4 +8,8 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+
+    <!-- navigation item -->
+    <color name="navigation_item">#B6B6B6</color>
+    <color name="navigation_item_checked">#009688</color>
 </resources>
