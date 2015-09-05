@@ -2,14 +2,14 @@ package cliq.com.cliqgram.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.parse.ParseUser;
 
@@ -24,11 +24,19 @@ import cliq.com.cliqgram.model.ToolbarModel;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String NAVIGATION_ITEM_ID = "navigationItemID";
+
     @Bind(R.id.mDrawer)
     DrawerLayout mDrawerLayout;
 
     @Bind(R.id.navigation_view)
     NavigationView navigationView;
+
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    private ActionBarDrawerToggle mDrawerToggle;
+    private int mNavSelectedItemID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // set click listener to navigation view
         navigationView.setNavigationItemSelectedListener(this);
+
+        // initialize showing fragment
+        this.showInitialSelectedFragment(savedInstanceState);
+
+        // set up the hamburger icon to open and close the drawer
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R
+                .string.drawer_open,
+                R.string.drawer_close);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -85,11 +103,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // store current selected navigation item state
+        outState.putInt(NAVIGATION_ITEM_ID, mNavSelectedItemID);
+    }
+
+    @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
 
         // close drawer when select one item
         mDrawerLayout.closeDrawers();
+
+        this.showFragment(menuItem);
+
+        return true;
+    }
+
+
+    private void showFragment(MenuItem menuItem) {
+
         menuItem.setChecked(true);
+        // set current selected navigation item id
+        mNavSelectedItemID = menuItem.getItemId();
 
         // open corresponding fragment
         Fragment fragment = null;
@@ -101,34 +137,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragment = new UserFeedFragment();
                 title = getString(R.string.navigation_item_home);
 
-                Toast.makeText(this, "Home selected", Toast.LENGTH_SHORT).show();
+                Snackbar.make(toolbar, "Home selected", Snackbar
+                        .LENGTH_SHORT)
+                        .show();
                 break;
             case R.id.navigation_item_profile:
 
                 fragment = new ProfileFragment();
                 title = getString(R.string.navigation_item_profile);
+
+                Snackbar.make(toolbar, "Profile selected", Snackbar
+                        .LENGTH_SHORT)
+                        .show();
                 break;
             case R.id.navigation_item_activity:
 
                 fragment = new ActivityFragment();
                 title = getString(R.string.navigation_item_activity);
+
+                Snackbar.make(toolbar, "Activity selected", Snackbar
+                        .LENGTH_SHORT)
+                        .show();
                 break;
             case R.id.navigation_item_setting:
 
                 fragment = new SettingFragment();
                 title = getString(R.string.navigation_item_setting);
+
+                Snackbar.make(toolbar, "Setting selected", Snackbar.LENGTH_SHORT)
+                        .show();
+                break;
+
+            default:
                 break;
         }
 
         if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            fragmentTransaction.commit();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_body, fragment)
+                    .commit();
 
             // set the toolbar title
             getSupportActionBar().setTitle(title);
         }
-        return false;
+    }
+
+    private void showInitialSelectedFragment(Bundle savedInstanceState) {
+
+        // if there is no pre-selected item,
+        // show home fragment
+        if (savedInstanceState == null) {
+            mNavSelectedItemID = R.id.navigation_item_home;
+        } else {
+            mNavSelectedItemID = savedInstanceState.getInt(NAVIGATION_ITEM_ID);
+        }
+        MenuItem menuItem = navigationView.getMenu().findItem(mNavSelectedItemID);
+        this.showFragment(menuItem);
     }
 }

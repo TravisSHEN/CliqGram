@@ -55,10 +55,6 @@ public class LoginActivity extends AppCompatActivity {
         // register this activity to eventbus
         EventBus.getDefault().register(this);
 
-//        // bind two buttons with onClickListener
-//        loginBtn.setOnClickListener(this.onClickListener);
-//        signupBtn.setOnClickListener(this.onClickListener);
-
         // setup action bar by using toolbar
         ToolbarModel.setupToolbar(this);
 

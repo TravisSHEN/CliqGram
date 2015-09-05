@@ -51,9 +51,6 @@ public class SignupActivity extends AppCompatActivity {
         // register this activity to eventbus
         EventBus.getDefault().register(this);
 
-        // register submit button with listener
-//        submitBtn.setOnClickListener(onClickListener);
-//        loginBtn.setOnClickListener(onClickListener);
 
         // setup toolbar
         ToolbarModel.setupToolbar(this);
