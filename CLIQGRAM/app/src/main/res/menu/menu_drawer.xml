@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_item_home"
+            android:checked="true"
+            android:icon="@drawable/abc_ic_menu_paste_mtrl_am_alpha"
+            android:title="@string/navigation_item_home"/>
+        <item
+            android:id="@+id/navigation_item_profile"
+            android:icon="@drawable/abc_ic_menu_paste_mtrl_am_alpha"
+            android:title="@string/navigation_item_profile"/>
+        <item
+            android:id="@+id/navigation_item_activity"
+            android:icon="@drawable/abc_ic_menu_paste_mtrl_am_alpha"
+            android:title="@string/navigation_item_activity"/>
+        <item
+            android:id="@+id/navigation_item_setting"
+            android:icon="@drawable/abc_ic_menu_paste_mtrl_am_alpha"
+            android:title="@string/navigation_item_setting"/>
+        <!--<item-->
+        <!--android:id="@+id/navigation_subheader"-->
+        <!--android:title="@string/navigation_subheader">-->
+        <!--<menu>-->
+        <!--<item-->
+        <!--android:id="@+id/navigation_sub_item_1"-->
+        <!--android:icon="@drawable/ic_android"-->
+        <!--android:title="@string/navigation_sub_item_1"/>-->
+        <!--<item-->
+        <!--android:id="@+id/navigation_sub_item_2"-->
+        <!--android:icon="@drawable/ic_android"-->
+        <!--android:title="@string/navigation_sub_item_2"/>-->
+        <!--</menu>-->
+        <!--</item>-->
+    </group>
+
+</menu>
