@@ -36,11 +36,11 @@ public class ActivityFragment extends Fragment {
      * @return A new instance of fragment ActivityFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ActivityFragment newInstance(String param1, String param2) {
+    public static ActivityFragment newInstance() {
         ActivityFragment fragment = new ActivityFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }

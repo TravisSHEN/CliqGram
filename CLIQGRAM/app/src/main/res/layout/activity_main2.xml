@@ -22,21 +22,21 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/scroll_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <!--<android.support.v4.widget.NestedScrollView-->
+        <!--android:id="@+id/scroll_content"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_below="@id/toolbar"-->
+        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
             <!-- contains fragments -->
             <FrameLayout
                 android:id="@+id/container_body"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"/>
 
-        </android.support.v4.widget.NestedScrollView>
+        <!--</android.support.v4.widget.NestedScrollView>-->
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_float_action"

@@ -14,8 +14,12 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseUser;
 
+import de.greenrobot.event.EventBus;
+
 
 public class StarterApplication extends Application {
+
+    public static EventBus BUS = EventBus.getDefault();
 
     @Override
     public void onCreate() {

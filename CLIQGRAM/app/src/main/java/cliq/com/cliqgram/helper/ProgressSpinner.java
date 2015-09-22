@@ -11,6 +11,9 @@ import android.widget.Toast;
 public class ProgressSpinner {
 
     private static ProgressSpinner instance;
+
+    private static int TIMEOUT = 60000;
+
     private ProgressDialog progressDialog;
 
     public static ProgressSpinner getInstance() {
@@ -29,7 +32,7 @@ public class ProgressSpinner {
         progressDialog.setIndeterminate(true);
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
-        instance.setTimeout(context, 60000);
+        instance.setTimeout(context, TIMEOUT);
         progressDialog.show();
 
     }

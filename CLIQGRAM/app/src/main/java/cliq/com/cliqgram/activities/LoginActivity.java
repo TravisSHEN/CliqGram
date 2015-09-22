@@ -19,6 +19,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.StarterApplication;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
@@ -26,7 +27,6 @@ import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.LoginService;
-import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
 
 public class LoginActivity extends AppCompatActivity {
@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         // register this activity to eventbus
-        EventBus.getDefault().register(this);
+        StarterApplication.BUS.register(this);
 
         // setup action bar by using toolbar
         ToolbarModel.setupToolbar(this);

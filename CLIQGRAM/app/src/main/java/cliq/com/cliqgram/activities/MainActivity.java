@@ -1,6 +1,7 @@
 package cliq.com.cliqgram.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -10,16 +11,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.fragments.ActivityFragment;
+import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
-import cliq.com.cliqgram.fragments.UserFeedFragment;
 import cliq.com.cliqgram.model.ToolbarModel;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
+    @Bind(R.id.btn_float_action)
+    FloatingActionButton float_button;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavSelectedItemID;
@@ -112,16 +119,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
 
-        // close drawer when select one item
-        mDrawerLayout.closeDrawers();
-
         this.showFragment(menuItem);
 
         return true;
     }
 
 
-    private void showFragment(MenuItem menuItem) {
+    //    @OnItemSelected( R.id.navigation_view )
+    void showFragment(MenuItem menuItem) {
+
+        // close drawer when select one item
+        mDrawerLayout.closeDrawers();
 
         menuItem.setChecked(true);
         // set current selected navigation item id
@@ -134,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()) {
             case R.id.navigation_item_home:
 
-                fragment = new UserFeedFragment();
+                fragment = FeedFragment.newInstance();
                 title = getString(R.string.navigation_item_home);
 
                 Snackbar.make(toolbar, "Home selected", Snackbar
@@ -195,5 +203,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         MenuItem menuItem = navigationView.getMenu().findItem(mNavSelectedItemID);
         this.showFragment(menuItem);
+    }
+
+    @OnLongClick(R.id.btn_float_action)
+    boolean onLongClick() {
+        Toast.makeText(this, "Long click", Toast.LENGTH_SHORT)
+                .show();
+        return true;
+    }
+
+    @OnClick(R.id.btn_float_action)
+    void onClick() {
+        Toast.makeText(this, "Short click", Toast.LENGTH_SHORT)
+                .show();
     }
 }
