@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_height="match_parent"
+              android:layout_width="match_parent"
+              android:orientation="horizontal">
+    <cliq.com.cliqgram.views.AutoFitTextureView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/textureView_preview" android:layout_gravity="center_vertical" android:layout_weight="1"/>
+    <Button
+            android:id="@+id/button_capture"
+            android:text="@string/button_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            />
+
+</LinearLayout>
