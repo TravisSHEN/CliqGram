@@ -7,10 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
+import java.util.Calendar;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
@@ -93,7 +95,7 @@ public class FeedAdapter extends RecyclerView
         feedViewHolder.feed_btn_comments.setTag(position);
         feedViewHolder.feed_photo.setTag(feedViewHolder);
 
-        this.bindClickListener(feedViewHolder, this.onClickListener);
+        this.bindClickListener(feedViewHolder, this.onClickListener, this.onTouchListener);
     }
 
     @Override
@@ -150,6 +152,16 @@ public class FeedAdapter extends RecyclerView
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
 
+    private void updateLikes(View view) {
+        FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
+        Feed feed = feedList.get(feedViewHolder.getAdapterPosition());
+        boolean isIncrement = feed.incrementLikes();
+        if (isIncrement) {
+            updateHeartButton(feedViewHolder);
+            updateLikesCounter(feedViewHolder, true);
+        }
+    }
+
 
     /**
      *
@@ -162,14 +174,7 @@ public class FeedAdapter extends RecyclerView
             switch (id) {
                 case R.id.feed_btn_like:
 //                    Log.d("Button Like", "Button like clicked");
-                    FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
-                    Feed feed = feedList.get(feedViewHolder
-                            .getAdapterPosition());
-                    boolean isIncrement = feed.incrementLikes();
-                    if (isIncrement) {
-                        updateHeartButton(feedViewHolder);
-                        updateLikesCounter(feedViewHolder, true);
-                    }
+                    updateLikes(view);
                     break;
                 case R.id.feed_btn_comments:
 
@@ -190,17 +195,53 @@ public class FeedAdapter extends RecyclerView
         }
     };
 
+    View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+
+        boolean firstTouch = false;
+        long time = 0;
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            switch (v.getId()) {
+                case R.id.feed_photo:
+                    if(event.getAction() == event.ACTION_DOWN){
+                        Calendar calendar = Calendar.getInstance();
+                        if(firstTouch &&
+                                (calendar.getTimeInMillis() - time) <= 300) {
+                            //do stuff here for double tap
+//                            Log.e("** DOUBLE TAP**"," second tap ");
+                            firstTouch = false;
+
+                            updateLikes(v);
+
+                        } else {
+                            firstTouch = true;
+                            time = calendar.getTimeInMillis();
+//                            Log.e("** SINGLE  TAP**"," First Tap time  "+time);
+                            return false;
+                        }
+                    }
+                    break;
+                default:
+                    Log.d("TouchListener", "No view found");
+            }
+
+            return true;
+        }
+    };
+
     /**
      * @param feedViewHolder
      * @param onClickListener
      */
     private void bindClickListener(FeedViewHolder feedViewHolder, View
-            .OnClickListener onClickListener) {
+            .OnClickListener onClickListener, View.OnTouchListener onTouchListener) {
 
         feedViewHolder.feed_btn_like.setOnClickListener(onClickListener);
         feedViewHolder.feed_btn_more.setOnClickListener(onClickListener);
         feedViewHolder.feed_btn_comments.setOnClickListener(onClickListener);
-        feedViewHolder.feed_photo.setOnClickListener(onClickListener);
+        feedViewHolder.feed_photo.setOnTouchListener(onTouchListener);
 
     }
+
 }
