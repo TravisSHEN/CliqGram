@@ -25,7 +25,7 @@ import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
 import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
-import cliq.com.cliqgram.model.ToolbarModel;
+import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.services.LoginService;
 import de.greenrobot.event.Subscribe;
 

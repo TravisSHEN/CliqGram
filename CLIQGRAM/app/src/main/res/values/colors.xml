@@ -12,4 +12,5 @@
     <!-- navigation item -->
     <color name="navigation_item">#B6B6B6</color>
     <color name="navigation_item_checked">#BBDEFB</color>
+
 </resources>

@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FeedAdapter;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Feed;
+import cliq.com.cliqgram.model.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -100,17 +103,23 @@ public class FeedFragment extends Fragment {
         feedView.setLayoutManager(llm);
         feedView.setHasFixedSize(true);
 
-        feedAdapter = new FeedAdapter(feedList, this.getActivity());
+        feedAdapter = new FeedAdapter(this.getActivity(), feedList );
         feedView.setAdapter(feedAdapter);
     }
 
     private void initializeData() {
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
+
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        User user1 = User.userFactory(currentUser.getUsername(),
+                currentUser.getEmail(), R.drawable.ic_heart_red);
+
+        User user2 = User.userFactory("abc",
+                "abc@abc.com", R.drawable.ic_heart_red);
+
+        feedList.add(Feed.feedFactory(R.drawable.lavery, user1));
+        feedList.add(Feed.feedFactory(R.drawable.lavery, user2));
+        feedList.add(Feed.feedFactory(R.drawable.lavery, user1));
         feedAdapter.notifyDataSetChanged();
     }
 

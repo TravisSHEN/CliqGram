@@ -20,11 +20,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.StarterApplication;
+import cliq.com.cliqgram.events.FABClickEvent;
+import cliq.com.cliqgram.events.FABLongClickEvent;
 import cliq.com.cliqgram.fragments.ActivityFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
-import cliq.com.cliqgram.model.ToolbarModel;
+import cliq.com.cliqgram.helper.ToolbarModel;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -207,6 +210,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @OnLongClick(R.id.btn_float_action)
     boolean onLongClick() {
+
+        StarterApplication.BUS.post(new FABLongClickEvent());
         Toast.makeText(this, "Long click", Toast.LENGTH_SHORT)
                 .show();
         return true;
@@ -214,6 +219,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @OnClick(R.id.btn_float_action)
     void onClick() {
+
+        StarterApplication.BUS.post(new FABClickEvent());
         Toast.makeText(this, "Short click", Toast.LENGTH_SHORT)
                 .show();
     }
