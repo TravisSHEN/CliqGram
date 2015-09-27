@@ -1,6 +1,7 @@
 package cliq.com.cliqgram.activities;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -163,26 +164,26 @@ public class CameraActivity extends ActionBarActivity implements TextureView.Sur
 
     private void configTextureViewOutput(int viewWidth, int viewHeight) {
 
-        if (mTextureView == null && mPreviewSize == null) {
+        if (null == mTextureView || null == mPreviewSize) {
             return;
         }
-
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
-
         Matrix matrix = new Matrix();
         RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
-        RectF bufferRect = new RectF(0, 0, mPreviewSize.getWidth(), mPreviewSize.getHeight());
+        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
         float centerX = viewRect.centerX();
         float centerY = viewRect.centerY();
-
-        bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
-        matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
-        float scale = Math.min(
-                (float) viewHeight / mPreviewSize.getHeight(),
-                (float) viewWidth / mPreviewSize.getWidth());
-        matrix.postScale(scale, scale, centerX, centerY);
-//        matrix.postRotate(90, centerX, centerY);
-
+        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
+            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+            float scale = Math.max(
+                    (float) viewHeight / mPreviewSize.getHeight(),
+                    (float) viewWidth / mPreviewSize.getWidth());
+            matrix.postScale(scale, scale, centerX, centerY);
+            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+        } else if (Surface.ROTATION_180 == rotation) {
+            matrix.postRotate(180, centerX, centerY);
+        }
         mTextureView.setTransform(matrix);
 
     }
@@ -194,7 +195,7 @@ public class CameraActivity extends ActionBarActivity implements TextureView.Sur
                 CameraCharacteristics characteristics = manager.getCameraCharacteristics(id);
 
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if (facing == null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
                     continue;
                 }
 
@@ -207,9 +208,19 @@ public class CameraActivity extends ActionBarActivity implements TextureView.Sur
 
                 mPreviewSize = chooseOptimalSize(configurationMap.getOutputSizes(SurfaceTexture.class), width, height, largest);
 
-                mTextureView.setRatio(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    mTextureView.setAspectRatio(
+                            mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                } else {
+                    mTextureView.setAspectRatio(
+                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
+                }
+
 
                 mCameraId = id;
+
+                System.out.println();
             }
         } catch (CameraAccessException e) {
             finish();
@@ -222,7 +233,8 @@ public class CameraActivity extends ActionBarActivity implements TextureView.Sur
         int w = aspectRatio.getWidth();
         int h = aspectRatio.getHeight();
         for (Size option : outputSizes) {
-            if (option.getWidth() == option.getHeight() * w / h && option.getWidth() >= width && option.getHeight() >= height) {
+            if (option.getHeight() == option.getWidth() * h / w &&
+                    option.getWidth() >= width && option.getHeight() >= height) {
                 bigEnough.add(option);
             }
         }
