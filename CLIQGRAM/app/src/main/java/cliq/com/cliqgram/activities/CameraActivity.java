@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-public class CameraActivity extends ActionBarActivity implements TextureView.SurfaceTextureListener {
+public class CameraActivity extends ActionBarActivity {
 
     private final Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
@@ -39,11 +39,33 @@ public class CameraActivity extends ActionBarActivity implements TextureView.Sur
     private CaptureRequest mPreviewRequest;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mCaptureSession;
+    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+            = new TextureView.SurfaceTextureListener() {
+
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+            openCamera(width, height);
+        }
+
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+            configTextureViewOutput(width, height);
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+            return true;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+        }
+
+    };
     private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
         // TODO
     };
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
-        //TODO
         @Override
         public void onOpened(CameraDevice camera) {
             mCameraOpenCloseLock.release();
@@ -133,8 +155,46 @@ public class CameraActivity extends ActionBarActivity implements TextureView.Sur
         if (mTextureView.isAvailable()) {
             openCamera(mTextureView.getWidth(), mTextureView.getHeight());
         } else {
-            mTextureView.setSurfaceTextureListener(this);
+            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        closeCamera();
+        stopBackgroundThread();
+        super.onPause();
+
+    }
+
+    private void stopBackgroundThread() {
+        mBackgroundThread.quitSafely();
+        try {
+            mBackgroundThread.join();
+            mBackgroundThread = null;
+            mBackgroundHandler = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void closeCamera() {
+        try {
+            mCameraOpenCloseLock.acquire();
+            if (mCaptureSession != null) {
+                mCaptureSession.close();
+                mCaptureSession = null;
+            }
+            if (mCameraDevice != null) {
+                mCameraDevice.close();
+                mCameraDevice = null;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            mCameraOpenCloseLock.release();
+        }
+
     }
 
     private void startBackgroundThread() {
@@ -267,27 +327,6 @@ public class CameraActivity extends ActionBarActivity implements TextureView.Sur
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        //TODO
-        openCamera(width, height);
-    }
-
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        return false;
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
     }
 
     static class CompareSizesByArea implements Comparator<Size> {
