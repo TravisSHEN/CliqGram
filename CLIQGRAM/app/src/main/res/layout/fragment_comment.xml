@@ -2,15 +2,52 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:layout_below="@+id/toolbar"
              android:paddingTop="@dimen/abc_action_bar_default_height_material"
              tools:context="cliq.com.cliqgram.fragments.CommentFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/comment_recycler_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minHeight="200dp"
-        android:visibility="visible">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/comment_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="100dp"
+            android:visibility="visible"
+            android:layout_above="@+id/llAddComment">
+        </android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:id="@+id/llAddComment"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_gravity="bottom"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true">
+
+            <EditText
+                android:id="@+id/comment_edit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#555555"
+                android:textSize="14sp"/>
+
+            <Button
+                android:id="@+id/comment_send"
+                android:layout_width="72dp"
+                android:layout_height="56dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="8dp"
+                android:background="@color/primary"
+                android:elevation="4dp"
+                android:text="Send"/>
+
+        </LinearLayout>
+    </RelativeLayout>
 </FrameLayout>

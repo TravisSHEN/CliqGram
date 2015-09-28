@@ -30,7 +30,7 @@ public class AutoFitTextureView extends TextureView {
      * @param width The width ratio.
      * @param height The height ratio.
      */
-    public void setRatio(int width, int height) {
+    public void setAspectRatio(int width, int height) {
         if (width < 0 || height < 0) {
             throw new IllegalArgumentException("Parameters cannot be negative");
         }

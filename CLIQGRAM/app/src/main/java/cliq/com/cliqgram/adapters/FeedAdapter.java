@@ -17,6 +17,7 @@ import java.util.List;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.StarterApplication;
+import cliq.com.cliqgram.Utils.Util;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.model.Feed;
 import cliq.com.cliqgram.viewHolders.FeedViewHolder;
@@ -42,37 +43,12 @@ public class FeedAdapter extends RecyclerView
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
-
-    @Override
     public FeedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(context).inflate(R.layout
                 .feed_card_view, parent, false);
         FeedViewHolder feedViewHolder = new FeedViewHolder(context, view);
         return feedViewHolder;
-    }
-
-    private void runEnterAnimation(View view, int position) {
-        if (position >= ANIMATED_ITEMS_COUNT - 1) {
-            return;
-        }
-
-        if (position > lastAnimatedPosition) {
-            lastAnimatedPosition = position;
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            ((Activity) context).getWindowManager()
-                    .getDefaultDisplay().getMetrics(displayMetrics);
-            view.setTranslationY(displayMetrics.heightPixels);
-//            view.setTranslationY(200);
-            view.animate()
-                    .translationY(0)
-                    .setInterpolator(new DecelerateInterpolator(3.f))
-                    .setDuration(700)
-                    .start();
-        }
     }
 
     @Override
@@ -114,9 +90,9 @@ public class FeedAdapter extends RecyclerView
 
         Feed feed = feedList.get(position);
 
-        Bitmap bm_avatar = feedViewHolder.decodeResource(feed.getUser()
-                .getAvatar_id());
-        Bitmap resized_avatar = feedViewHolder.resizeBitmap(bm_avatar, 72, 72);
+        Bitmap bm_avatar = Util.decodeResource(context,
+                feed.getUser().getAvatar_id());
+        Bitmap resized_avatar = Util.resizeBitmap(bm_avatar, 72, 72);
 
         feedViewHolder.feed_avatar.setImageBitmap(resized_avatar);
         feedViewHolder.feed_user_name.setText(feed.getUser().getUsername());
@@ -148,8 +124,9 @@ public class FeedAdapter extends RecyclerView
 
     private void updateHeartButton(FeedViewHolder feedViewHolder) {
 
-        Bitmap bm_btn_like = feedViewHolder.decodeResource(R.drawable.ic_heart_red);
-        Bitmap resized_like = feedViewHolder.resizeBitmap(bm_btn_like,
+        Bitmap bm_btn_like = Util.decodeResource(context,
+                R.drawable.ic_heart_red);
+        Bitmap resized_like = Util.resizeBitmap(bm_btn_like,
                 FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
@@ -241,5 +218,26 @@ public class FeedAdapter extends RecyclerView
         feedViewHolder.feed_photo.setOnTouchListener(onTouchListener);
 
     }
+
+    private void runEnterAnimation(View view, int position) {
+        if (position >= ANIMATED_ITEMS_COUNT - 1) {
+            return;
+        }
+
+        if (position > lastAnimatedPosition) {
+            lastAnimatedPosition = position;
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            ((Activity) context).getWindowManager()
+                    .getDefaultDisplay().getMetrics(displayMetrics);
+            view.setTranslationY(displayMetrics.heightPixels);
+//            view.setTranslationY(200);
+            view.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
+        }
+    }
+
 
 }

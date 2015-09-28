@@ -112,11 +112,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
-        // disable going back to the MainActivity
-        moveTaskToBack(true);
+        if (getFragmentManager().getBackStackEntryCount() > 0 ){
+            getFragmentManager().popBackStack();
+        } else {
+            // disable moving back
+            moveTaskToBack(true);
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -195,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container_body, fragment)
+                    .addToBackStack(null)
                     .commit();
 
             // set the toolbar title
@@ -247,9 +252,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (fragment != null) {
 
+            float_button.setVisibility(View.INVISIBLE);
+
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container_body, fragment)
+                    .addToBackStack(null)
                     .commit();
 
             // set the toolbar title

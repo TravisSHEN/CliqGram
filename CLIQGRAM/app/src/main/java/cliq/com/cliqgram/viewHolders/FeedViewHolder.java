@@ -2,8 +2,6 @@ package cliq.com.cliqgram.viewHolders;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.annotation.DrawableRes;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,6 +13,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.Utils.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -61,28 +60,22 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 
     void initializeButtons() {
 
-        Bitmap bm_btn_like = decodeResource(R.drawable.ic_heart_outline_grey);
-        Bitmap resized_like = resizeBitmap(bm_btn_like, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        Bitmap bm_btn_like = Util.decodeResource(context, R.drawable
+                .ic_heart_outline_grey);
+        Bitmap resized_like = Util.resizeBitmap(bm_btn_like, FeedViewHolder
+                .BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_btn_like.setImageBitmap(resized_like);
-        Bitmap bm_btn_comments = decodeResource(R.drawable.ic_comment_outline_grey);
-        Bitmap resized_comments = resizeBitmap(bm_btn_comments, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        Bitmap bm_btn_comments = Util.decodeResource(context, R.drawable.ic_comment_outline_grey);
+        Bitmap resized_comments = Util.resizeBitmap(bm_btn_comments, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_btn_comments.setImageBitmap(resized_comments);
-        Bitmap bm_btn_more = decodeResource(R.drawable.ic_more_grey);
-        Bitmap resized_more = resizeBitmap(bm_btn_more, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        Bitmap bm_btn_more = Util.decodeResource(context, R.drawable.ic_more_grey);
+        Bitmap resized_more = Util.resizeBitmap(bm_btn_more, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_btn_more.setImageBitmap(resized_more);
 
-        Bitmap bm_ic_likes = decodeResource(R.drawable.ic_heart_small_blue);
-        Bitmap resized_ic_likes = resizeBitmap(bm_ic_likes, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        Bitmap bm_ic_likes = Util.decodeResource(context, R.drawable
+                .ic_heart_small_blue);
+        Bitmap resized_ic_likes = Util.resizeBitmap(bm_ic_likes, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_ic_likes_count.setImageBitmap(resized_ic_likes);
-    }
-
-    public Bitmap resizeBitmap(Bitmap bitmap, int newWidth, int newHeight) {
-        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-    }
-
-    public Bitmap decodeResource(@DrawableRes int res) {
-        return BitmapFactory.decodeResource(context.getResources(),
-                res);
     }
 
 }

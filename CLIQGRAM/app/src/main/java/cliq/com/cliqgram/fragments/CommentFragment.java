@@ -1,15 +1,29 @@
 package cliq.com.cliqgram.fragments;
 
-import android.app.Activity;
-import android.net.Uri;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.adapters.CommentAdapter;
+import cliq.com.cliqgram.model.Comment;
+import cliq.com.cliqgram.model.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +43,17 @@ public class CommentFragment extends android.support.v4.app.Fragment {
     private String mParam1;
     private String mParam2;
 
+    @Bind(R.id.comment_recycler_view)
+    RecyclerView commentView;
+
+    @Bind(R.id.comment_edit)
+    EditText commentEdit;
+    @Bind(R.id.comment_send)
+    Button commentSend;
+
+    private CommentAdapter commentAdapter;
+
+    private List<Comment> commentList;
 //    private OnFragmentInteractionListener mListener;
 
     /**
@@ -60,57 +85,81 @@ public class CommentFragment extends android.support.v4.app.Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        commentList = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // Inflate the layout for this fragment
        View root_view = inflater.inflate(R.layout.fragment_comment,
                container, false);
 
+        // bind this fragment
         ButterKnife.bind(this, root_view);
-        // Inflate the layout for this fragment
+
+        this.initializeCommentView();
+        this.initializeData();
+
         return root_view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
+    private void initializeCommentView() {
+        LinearLayoutManager llm = new LinearLayoutManager(this.getActivity(),
+                LinearLayoutManager.VERTICAL, false);
+        commentView.setLayoutManager(llm);
+        commentView.setHasFixedSize(true);
 
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
+        commentAdapter = new CommentAdapter(this.getActivity()
+                , commentList);
+        commentView.setAdapter(commentAdapter);
+    }
 
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
+    private void initializeData(){
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        public void onFragmentInteraction(Uri uri);
-//    }
+        ParseUser currentUser = ParseUser.getCurrentUser();
 
+        User user1 = User.userFactory(currentUser.getUsername(),
+                currentUser.getEmail(), R.drawable.ic_heart_red);
+
+        User user2 = User.userFactory("abc",
+                "abc@abc.com", R.drawable.ic_heart_red);
+
+        Comment c1 = Comment.createComment(user1, "Good angle");
+        Comment c2 = Comment.createComment( user2, "Good to hear this");
+
+        commentList.add(c1);
+        commentList.add(c2);
+
+        commentAdapter.notifyDataSetChanged();
+    }
+
+    @OnClick(R.id.comment_send)
+    public void onSendClick(View view){
+
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        User user = User.userFactory(currentUser.getUsername(),
+                currentUser.getEmail(), R.drawable.ic_heart_red);
+        String content = commentEdit.getText().toString();
+
+        if( validateComment(content) ) {
+            commentEdit.setText("");
+
+            Comment comment = Comment.createComment(user, content);
+            commentList.add(comment);
+
+            commentAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private boolean validateComment(String content) {
+        if (TextUtils.isEmpty(content)) {
+            return false;
+        }
+
+        return true;
+    }
 }

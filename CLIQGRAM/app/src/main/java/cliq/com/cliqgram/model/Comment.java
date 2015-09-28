@@ -5,10 +5,27 @@ package cliq.com.cliqgram.model;
  */
 public class Comment {
 
-    String content;
+    private User user;
+    private String content;
 
-    public Comment(String content) {
+    public static Comment createComment(User user, String content){
+
+        Comment comment = new Comment(user, content);
+
+        return comment;
+    }
+
+    public Comment(User user, String content) {
+        this.user = user;
         this.content = content;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getContent() {
