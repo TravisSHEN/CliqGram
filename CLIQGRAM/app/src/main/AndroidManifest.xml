@@ -51,7 +51,7 @@
         <activity
                 android:name=".activities.CameraActivity"
                 android:label="@string/title_activity_camera"
-                >
+                android:screenOrientation="locked">
         </activity>
     </application>
 

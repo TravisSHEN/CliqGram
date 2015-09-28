@@ -29,8 +29,10 @@ public class CameraActivity extends ActionBarActivity {
     private final Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
     private static final String TAG = "CameraActivity";
+
     @Bind(R.id.textureView_preview)
     AutoFitTextureView mTextureView;
+
     private String mCameraId;
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
