@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.StarterApplication;
+import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.model.Feed;
 import cliq.com.cliqgram.viewHolders.FeedViewHolder;
 
@@ -178,13 +180,10 @@ public class FeedAdapter extends RecyclerView
                     break;
                 case R.id.feed_btn_comments:
 
+                    StarterApplication.BUS.post(new OpenCommentEvent());
                     break;
 
                 case R.id.feed_btn_more:
-
-                    break;
-
-                case R.id.feed_photo:
 
                     break;
 
@@ -208,7 +207,6 @@ public class FeedAdapter extends RecyclerView
                         Calendar calendar = Calendar.getInstance();
                         if(firstTouch &&
                                 (calendar.getTimeInMillis() - time) <= 300) {
-                            //do stuff here for double tap
 //                            Log.e("** DOUBLE TAP**"," second tap ");
                             firstTouch = false;
 

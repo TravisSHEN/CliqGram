@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
@@ -21,13 +23,15 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.StarterApplication;
-import cliq.com.cliqgram.events.FABClickEvent;
 import cliq.com.cliqgram.events.FABLongClickEvent;
+import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.fragments.ActivityFragment;
+import cliq.com.cliqgram.fragments.CommentFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
 import cliq.com.cliqgram.helper.ToolbarModel;
+import de.greenrobot.event.Subscribe;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -55,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // inject views
         ButterKnife.bind(this);
+
+        // Register this activity to EventBus
+        StarterApplication.BUS.register(this);
 
         // setup toolbar
         ToolbarModel.setupToolbar(this);
@@ -209,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @OnLongClick(R.id.btn_float_action)
-    boolean onLongClick() {
+    boolean onLongClick(View view) {
 
         StarterApplication.BUS.post(new FABLongClickEvent());
         Toast.makeText(this, "Long click", Toast.LENGTH_SHORT)
@@ -218,10 +225,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @OnClick(R.id.btn_float_action)
-    void onClick() {
+    void onClick(View view) {
 
-        StarterApplication.BUS.post(new FABClickEvent());
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
+//        StarterApplication.BUS.post(new FABClickEvent());
         Toast.makeText(this, "Short click", Toast.LENGTH_SHORT)
                 .show();
+    }
+
+    @Subscribe
+    public void onOpenCommentFragment(final OpenCommentEvent
+                                                  openFragmentEvent) {
+
+        CommentFragment fragment = CommentFragment.newInstance();
+        String title = getString(R.string.navigation_item_comment);
+
+        Snackbar.make(toolbar, "Comment opened", Snackbar
+                .LENGTH_SHORT)
+                .show();
+
+        if (fragment != null) {
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_body, fragment)
+                    .commit();
+
+            // set the toolbar title
+            getSupportActionBar().setTitle(title);
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by litaoshen on 22/09/2015.
  */
-public class Feed {
+public class Feed implements Comparable<Feed> {
 
     int id;
 
@@ -110,6 +110,10 @@ public class Feed {
         this.user = user;
     }
 
+    public void setDate(Date date){
+       this.date = date;
+    }
+
     public Date getDate() {
         return date;
     }
@@ -139,5 +143,10 @@ public class Feed {
                         comments.get(0).getContent()) +
                 ", date=" + date.toString() +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Feed another) {
+        return -1 * this.getDate().compareTo(another.getDate());
     }
 }
