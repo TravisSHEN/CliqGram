@@ -1,5 +1,10 @@
 package cliq.com.cliqgram.activities;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -11,9 +16,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -24,7 +37,10 @@ import cliq.com.cliqgram.fragments.ActivityFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
+import cliq.com.cliqgram.helper.Utils;
+import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.ToolbarModel;
+import cliq.com.cliqgram.services.PostService;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -44,7 +60,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavSelectedItemID;
-
+    Button post;
+    private static int PICKED_IMG = 1;
+    private static int RESULT_LOAD_IMG = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,8 +86,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.string.drawer_close);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+        post = (Button) findViewById(R.id.bPost);
+        post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                // Start the Intent
+                startActivityForResult(galleryIntent, PICKED_IMG);*/
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"),
+                        PICKED_IMG);
+            }
+        });
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICKED_IMG && resultCode == RESULT_OK
+                && null != data) {
+            Uri selectedImage = data.getData();
+            //String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Date now = new Date();
+            String date = Utils.dateFormat.format(now);
+            //byte[] imageData = convertImageToByte(selectedImage);
+            byte[] imageData = null;
+            try {
+                imageData = getBytes(selectedImage);
+            }catch(IOException e){
+
+            }
+            Post post = new Post(imageData, "my new photo", "Melbourne",
+                    ParseUser.getCurrentUser(), null, date, null);
+            PostService.post(post);
+        }
+    }
+    private byte[] convertImageToByte(Uri uri){
+        byte[] data = null;
+        try {
+            ContentResolver cr = getBaseContext().getContentResolver();
+            InputStream inputStream = cr.openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            data = baos.toByteArray();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+    public byte[] getBytes(Uri uri) throws IOException {
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+
+        // this is storage overwritten on each iteration with bytes
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        // we need to know how may bytes were read to write them to the byteBuffer
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+
+        // and then we can return your byte array.
+        return byteBuffer.toByteArray();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

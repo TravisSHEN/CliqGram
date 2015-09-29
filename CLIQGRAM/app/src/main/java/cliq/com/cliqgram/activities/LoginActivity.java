@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import cliq.com.cliqgram.server.AppStarter;
 
 import com.parse.ParseAnalytics;
 
@@ -19,7 +20,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.StarterApplication;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         // register this activity to eventbus
-        StarterApplication.BUS.register(this);
+        AppStarter.eventBus.register(this);
 
         // setup action bar by using toolbar
         ToolbarModel.setupToolbar(this);
@@ -158,8 +158,8 @@ public class LoginActivity extends AppCompatActivity {
 
         if (NetworkConnection.isNetworkConnected(this)) {
 
-//            showProgressDialog("Loging in...");
-            ProgressSpinner.getInstance().showSpinner(this, "Loging in...");
+//            showProgressDialog("Logging in...");
+            ProgressSpinner.getInstance().showSpinner(this, "Logging in...");
             LoginService.authenticate(username, password);
         } else {
             NetworkConnection.showAlert(this, loginBtn);
