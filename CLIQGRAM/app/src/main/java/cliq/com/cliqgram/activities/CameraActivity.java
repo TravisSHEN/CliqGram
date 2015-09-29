@@ -181,6 +181,12 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        this.finish();
+        super.onBackPressed();
+    }
+
     private void stopBackgroundThread() {
         mBackgroundThread.quitSafely();
         try {

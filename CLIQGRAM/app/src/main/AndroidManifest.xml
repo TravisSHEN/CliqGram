@@ -43,6 +43,10 @@
             android:label="@string/title_activity_camera"
             android:screenOrientation="landscape">
         </activity>
+        <activity
+            android:name=".activities.CommentActivity"
+            android:label="@string/title_activity_comment">
+        </activity>
     </application>
 
 </manifest>

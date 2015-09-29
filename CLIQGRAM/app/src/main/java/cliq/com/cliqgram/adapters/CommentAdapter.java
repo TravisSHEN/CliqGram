@@ -1,11 +1,15 @@
 package cliq.com.cliqgram.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 
 import java.util.List;
 
@@ -19,6 +23,9 @@ import cliq.com.cliqgram.viewHolders.CommentViewHolder;
  */
 public class CommentAdapter extends RecyclerView
         .Adapter<CommentViewHolder>{
+
+    private static final int ANIMATED_ITEMS_COUNT = 2;
+    private int lastAnimatedPosition = -1;
 
     private Context context;
     private List<Comment> commentList;
@@ -34,11 +41,14 @@ public class CommentAdapter extends RecyclerView
         View view = LayoutInflater.from(context).inflate(R.layout.comments_item,
                 parent, false);
         CommentViewHolder commentViewHolder = new CommentViewHolder(context, view);
+        Log.e("CommentFragment", "opened");
         return commentViewHolder;
     }
 
     @Override
     public void onBindViewHolder(CommentViewHolder holder, int position) {
+
+        runEnterAnimation(holder.itemView, position);
 
         Comment comment = commentList.get(position);
 
@@ -54,5 +64,25 @@ public class CommentAdapter extends RecyclerView
     @Override
     public int getItemCount() {
         return commentList.size();
+    }
+
+    private void runEnterAnimation(View view, int position) {
+        if (position >= ANIMATED_ITEMS_COUNT - 1) {
+            return;
+        }
+
+        if (position > lastAnimatedPosition) {
+            lastAnimatedPosition = position;
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            ((Activity) context).getWindowManager()
+                    .getDefaultDisplay().getMetrics(displayMetrics);
+            view.setTranslationY(displayMetrics.heightPixels);
+//            view.setTranslationY(200);
+            view.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
+        }
     }
 }

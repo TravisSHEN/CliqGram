@@ -58,7 +58,7 @@ public class FeedAdapter extends RecyclerView
 
         Feed feed = feedList.get(position);
 
-        Log.e("FeedAdapter", feed.toString());
+//        Log.e("FeedAdapter", feed.toString());
 
         feedViewHolder.feed_photo.setImageResource(feed.getPhotoId());
 //        feedViewHolder.feed_comments.setText(feed.getComments().get(0)
