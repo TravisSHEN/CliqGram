@@ -47,10 +47,15 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
     private static final String TAG = "CameraActivity";
     private final Semaphore mCameraOpenCloseLock = new Semaphore(1);
     private boolean flashOn = true;
+    private boolean gridOn = false;
     @Bind(R.id.textureView_preview)
     AutoFitTextureView mTextureView;
     @Bind(R.id.button_capture)
     Button buttonCapture;
+    @Bind(R.id.button_flash)
+    Button buttonFlash;
+    @Bind(R.id.button_grid)
+    Button buttonGrid;
     private File mFile;
     private State mState = State.PREVIEW;
     private String mCameraId;
@@ -314,6 +319,8 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
 
         mFile = new File(getExternalFilesDir(null), "pic.jpg");
         buttonCapture.setOnClickListener(this);
+        buttonFlash.setOnClickListener(this);
+        buttonGrid.setOnClickListener(this);
 
     }
 
@@ -511,6 +518,17 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
             case R.id.button_capture:
                 takePicture();
                 break;
+            case R.id.button_flash:
+                if (flashOn) {
+                    flashOn = false;
+                    buttonFlash.setText(R.string.button_flash_off);
+                } else {
+                    flashOn = true;
+                    buttonFlash.setText(R.string.button_flash_on);
+                }
+                break;
+            case R.id.button_grid:
+
         }
 
     }
