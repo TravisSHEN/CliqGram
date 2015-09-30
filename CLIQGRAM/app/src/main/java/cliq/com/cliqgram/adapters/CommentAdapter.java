@@ -14,7 +14,7 @@ import android.view.animation.DecelerateInterpolator;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.Utils.Util;
+import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.viewHolders.CommentViewHolder;
 

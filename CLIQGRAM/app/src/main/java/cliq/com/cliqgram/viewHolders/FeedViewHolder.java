@@ -13,7 +13,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.Utils.Util;
+import cliq.com.cliqgram.utils.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**

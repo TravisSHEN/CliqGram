@@ -1,4 +1,4 @@
-package cliq.com.cliqgram.Utils;
+package cliq.com.cliqgram.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -33,6 +34,12 @@ public class CommentActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent();
+//        intent.putExtra("username",
+//                ((SignupSuccessEvent) baseEvent).getUsername());
+//        intent.putExtra("password",
+//                ((SignupSuccessEvent) baseEvent).getPassword());
+        setResult(RESULT_OK, intent);
         this.finish();
     }
 }

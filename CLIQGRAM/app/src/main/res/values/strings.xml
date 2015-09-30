@@ -34,6 +34,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_comment">Comment</string>
+    <string name="navigation_item_search">Search</string>
 
     <!-- Plurals for feed_likes_count -->
     <plurals name="feed_likes_count">

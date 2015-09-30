@@ -11,25 +11,26 @@ import java.util.List;
 import cliq.com.cliqgram.fragments.ActivityFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
+import cliq.com.cliqgram.fragments.SearchFragment;
 
 /**
  * Created by litaoshen on 29/09/2015.
  */
-public class ViewPageAdapter extends FragmentStatePagerAdapter {
+public class MainViewPageAdapter extends FragmentStatePagerAdapter {
 
     Context context;
-//    List<Fragment> fragmentList;
     List<TabItem> tabItemList;
 
-    public ViewPageAdapter(Context context, FragmentManager fm) {
+    public MainViewPageAdapter(Context context, FragmentManager fm) {
         super(fm);
+        this.context = context;
         tabItemList = new ArrayList<>();
         initializeFragments();
     }
 
     private void initializeFragments() {
         tabItemList.add(new TabItem(FeedFragment.newInstance(), "Feed"));
-        tabItemList.add(new TabItem(FeedFragment.newInstance(), "Search"));
+        tabItemList.add(new TabItem(SearchFragment.newInstance(), "Search"));
         tabItemList.add(new TabItem(FeedFragment.newInstance(), "Camera"));
         tabItemList.add(new TabItem(ActivityFragment.newInstance(), "Activity"));
         tabItemList.add(new TabItem(ProfileFragment.newInstance(), "Profile"));

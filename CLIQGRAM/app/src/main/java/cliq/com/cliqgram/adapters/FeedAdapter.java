@@ -17,7 +17,7 @@ import java.util.List;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.StarterApplication;
-import cliq.com.cliqgram.Utils.Util;
+import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.model.Feed;
 import cliq.com.cliqgram.viewHolders.FeedViewHolder;

@@ -26,12 +26,13 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.StarterApplication;
-import cliq.com.cliqgram.Utils.Util;
-import cliq.com.cliqgram.adapters.ViewPageAdapter;
+import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.adapters.MainViewPageAdapter;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.fragments.ActivityFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
+import cliq.com.cliqgram.fragments.SearchFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import de.greenrobot.event.Subscribe;
@@ -39,6 +40,8 @@ import de.greenrobot.event.Subscribe;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String NAVIGATION_ITEM_ID = "navigationItemID";
+
+    private static final int REQUEST_COMMENT = 0;
 
     public static final int TAB_FEED = 0;
     public static final int TAB_SEARCH = 1;
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // setup toolbar
         ToolbarModel.setupToolbar(this);
 
+        // TODO: uncomment these if don't need tab bar on bottom
          // set click listener to navigation view
 //        navigationView.setNavigationItemSelectedListener(this);
 
@@ -163,8 +167,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     void initializeTabLayout(){
-        ViewPageAdapter viewPageAdapter = new ViewPageAdapter(this, fm);
-        viewPager.setAdapter(viewPageAdapter);
+        MainViewPageAdapter mainViewPageAdapter = new MainViewPageAdapter(this, fm);
+        viewPager.setAdapter(mainViewPageAdapter);
         tabLayout.setupWithViewPager(viewPager);
         float scale_factor = 0.7f;
         tabLayout.getTabAt(TAB_FEED).setIcon(Util.resizeDrawable(this,
@@ -175,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tabLayout.getTabAt(TAB_CAMERA).setCustomView(float_button);
         tabLayout.getTabAt(TAB_ACTIVITY).setIcon(Util.resizeDrawable(this,R
                 .drawable.icon_star, scale_factor));
-        tabLayout.getTabAt(TAB_PROFILE).setIcon(Util.resizeDrawable(this,R
+        tabLayout.getTabAt(TAB_PROFILE).setIcon(Util.resizeDrawable(this, R
                 .drawable.icon_user, scale_factor));
     }
 
@@ -200,6 +204,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 title = getString(R.string.navigation_item_home);
 
                 Snackbar.make(toolbar, "Home selected", Snackbar
+                        .LENGTH_SHORT)
+                        .show();
+                break;
+            case R.id.navigation_item_search:
+                fragment = SearchFragment.newInstance();
+                title = getString(R.string.navigation_item_search);
+
+                Snackbar.make(toolbar, "Search selected", Snackbar
                         .LENGTH_SHORT)
                         .show();
                 break;
@@ -281,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onOpenCommentFragment(final OpenCommentEvent
                                               openFragmentEvent) {
 
+        // TODO: uncomment these if don't need tab bar on bottom
 //        CommentFragment fragment = CommentFragment.newInstance();
 //        String title = getString(R.string.navigation_item_comment);
 ////
@@ -302,6 +315,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            getSupportActionBar().setTitle(title);
 //        }
         Intent intent = new Intent(this, CommentActivity.class);
-        this.startActivity(intent);
+        this.startActivityForResult(intent, REQUEST_COMMENT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_COMMENT) {
+            if (resultCode == RESULT_OK) {
+                // TODO: show new comment if necessary
+            }
+        }
     }
 }
