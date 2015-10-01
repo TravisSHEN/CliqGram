@@ -2,7 +2,7 @@ package cliq.com.cliqgram.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,8 +14,8 @@ import android.view.animation.DecelerateInterpolator;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.model.Comment;
+import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.viewHolders.CommentViewHolder;
 
 /**
@@ -52,12 +52,11 @@ public class CommentAdapter extends RecyclerView
 
         Comment comment = commentList.get(position);
 
-        Bitmap bm_avatar = Util.decodeResource(context,
-                comment.getUser().getAvatar_id());
-        Bitmap resized_avatar = Util.resizeBitmap(bm_avatar, 72, 72);
+        BitmapDrawable bm_avatar = Util.resizeBitmapDrawable(context, comment
+                .getOwner().getAvatarInBitmapDrawable(context), 0.8f);
 
-        holder.comment_user_avatar.setImageBitmap(resized_avatar);
-        holder.comment_user_name.setText(comment.getUser().getUsername());
+        holder.comment_user_avatar.setImageDrawable(bm_avatar);
+        holder.comment_user_name.setText(comment.getOwner().getUsername());
         holder.comment_text.setText(comment.getContent());
     }
 

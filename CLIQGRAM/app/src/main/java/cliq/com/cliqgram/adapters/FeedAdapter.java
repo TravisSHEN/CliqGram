@@ -3,6 +3,7 @@ package cliq.com.cliqgram.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -16,10 +17,10 @@ import java.util.Calendar;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.StarterApplication;
-import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.events.OpenCommentEvent;
-import cliq.com.cliqgram.model.Feed;
+import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.viewHolders.FeedViewHolder;
 
 /**
@@ -33,10 +34,10 @@ public class FeedAdapter extends RecyclerView
 
 
     private Context context;
-    private List<Feed> feedList;
+    private List<Post> feedList;
 
 
-    public FeedAdapter(Context context, List<Feed> feedList) {
+    public FeedAdapter(Context context, List<Post> feedList) {
 
         this.feedList = feedList;
         this.context = context;
@@ -56,11 +57,12 @@ public class FeedAdapter extends RecyclerView
 
         runEnterAnimation(feedViewHolder.itemView, position);
 
-        Feed feed = feedList.get(position);
+        Post post = feedList.get(position);
 
 //        Log.e("FeedAdapter", feed.toString());
 
-        feedViewHolder.feed_photo.setImageResource(feed.getPhotoId());
+        feedViewHolder.feed_photo.setImageBitmap(post.getPhotoInBitmap(context));
+//        feedViewHolder.feed_photo.setImageDrawable(post.getPhotoInBitmapDrawable(context));
 //        feedViewHolder.feed_comments.setText(feed.getComments().get(0)
 //                .getContent());
 
@@ -88,15 +90,14 @@ public class FeedAdapter extends RecyclerView
 
         int position = feedViewHolder.getAdapterPosition();
 
-        Feed feed = feedList.get(position);
+        Post post = feedList.get(position);
 
-        Bitmap bm_avatar = Util.decodeResource(context,
-                feed.getUser().getAvatar_id());
-        Bitmap resized_avatar = Util.resizeBitmap(bm_avatar, 72, 72);
+        BitmapDrawable bm_avatar = Util.resizeBitmapDrawable(context,
+                post.getOwner().getAvatarInBitmapDrawable(context), 0.7f);
 
-        feedViewHolder.feed_avatar.setImageBitmap(resized_avatar);
-        feedViewHolder.feed_user_name.setText(feed.getUser().getUsername());
-        feedViewHolder.feed_time.setText(feed.getDateString("d.MMM HH:mm"));
+        feedViewHolder.feed_avatar.setImageDrawable(bm_avatar);
+        feedViewHolder.feed_user_name.setText(post.getOwner().getUsername());
+        feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
 
     }
 
@@ -107,9 +108,9 @@ public class FeedAdapter extends RecyclerView
     private void updateLikesCounter(FeedViewHolder feedViewHolder, boolean animated) {
 
         int position = feedViewHolder.getAdapterPosition();
-        Feed feed = feedList.get(position);
+        Post post = feedList.get(position);
 
-        int currentLikesCount = feed.getLikes_count();
+        int currentLikesCount = post.getLikes_count();
         String likesCountText = context.getResources().getQuantityString(
                 R.plurals.feed_likes_count, currentLikesCount, currentLikesCount
         );
@@ -133,8 +134,8 @@ public class FeedAdapter extends RecyclerView
 
     private void updateLikes(View view) {
         FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
-        Feed feed = feedList.get(feedViewHolder.getAdapterPosition());
-        boolean isIncrement = feed.incrementLikes();
+        Post post = feedList.get(feedViewHolder.getAdapterPosition());
+        boolean isIncrement = post.incrementLikes();
         if (isIncrement) {
             updateHeartButton(feedViewHolder);
             updateLikesCounter(feedViewHolder, true);
@@ -157,7 +158,7 @@ public class FeedAdapter extends RecyclerView
                     break;
                 case R.id.feed_btn_comments:
 
-                    StarterApplication.BUS.post(new OpenCommentEvent());
+                    AppStarter.eventBus.post(new OpenCommentEvent((Post) view.getTag()));
                     break;
 
                 case R.id.feed_btn_more:
@@ -215,6 +216,9 @@ public class FeedAdapter extends RecyclerView
         feedViewHolder.feed_btn_like.setOnClickListener(onClickListener);
         feedViewHolder.feed_btn_more.setOnClickListener(onClickListener);
         feedViewHolder.feed_btn_comments.setOnClickListener(onClickListener);
+
+        feedViewHolder.feed_btn_comments.setTag(feedList.get(feedViewHolder.getAdapterPosition() ));
+
         feedViewHolder.feed_photo.setOnTouchListener(onTouchListener);
 
     }

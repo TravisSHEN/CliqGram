@@ -11,12 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.StarterApplication;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
@@ -25,6 +25,7 @@ import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.services.SignupService;
 import de.greenrobot.event.Subscribe;
+import cliq.com.cliqgram.server.AppStarter;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -49,7 +50,7 @@ public class SignupActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         // register this activity to eventbus
-        StarterApplication.BUS.register(this);
+        AppStarter.eventBus.register(this);
 
 
         // setup toolbar
@@ -113,6 +114,9 @@ public class SignupActivity extends AppCompatActivity {
 
                 } else if (baseEvent instanceof SignupFailEvent) {
                     // display failure message
+                    Toast.makeText(SignupActivity.this, baseEvent.getMessage(),
+                            Toast
+                            .LENGTH_LONG).show();
                     Snackbar.make(submitBtn, baseEvent.getMessage(), Snackbar.LENGTH_LONG)
                             .show();
                 }

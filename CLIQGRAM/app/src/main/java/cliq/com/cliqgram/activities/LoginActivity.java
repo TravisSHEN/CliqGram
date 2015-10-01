@@ -19,14 +19,15 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.StarterApplication;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
 import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.helper.ToolbarModel;
+import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LoginService;
+import cliq.com.cliqgram.services.UserService;
 import de.greenrobot.event.Subscribe;
 
 public class LoginActivity extends AppCompatActivity {
@@ -53,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         // register this activity to eventbus
-        StarterApplication.BUS.register(this);
+        AppStarter.eventBus.register(this);
 
         // setup action bar by using toolbar
         ToolbarModel.setupToolbar(this);
@@ -116,6 +117,9 @@ public class LoginActivity extends AppCompatActivity {
                 ProgressSpinner.getInstance().dismissSpinner();
 
                 if (baseEvent instanceof LoginSuccessEvent) {
+
+                    // set current user
+                    UserService.setCurrentUser();
                     // open main activity
                     Intent intent = new Intent(LoginActivity.this,
                             MainActivity.class);
@@ -158,8 +162,8 @@ public class LoginActivity extends AppCompatActivity {
 
         if (NetworkConnection.isNetworkConnected(this)) {
 
-//            showProgressDialog("Loging in...");
-            ProgressSpinner.getInstance().showSpinner(this, "Loging in...");
+//            showProgressDialog("Logging in...");
+            ProgressSpinner.getInstance().showSpinner(this, "Logging in...");
             LoginService.authenticate(username, password);
         } else {
             NetworkConnection.showAlert(this, loginBtn);

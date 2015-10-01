@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.activities;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -13,6 +14,7 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -38,6 +40,7 @@ import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CameraActivity extends AppCompatActivity {
 
     private final Semaphore mCameraOpenCloseLock = new Semaphore(1);
@@ -106,6 +109,7 @@ public class CameraActivity extends AppCompatActivity {
         }
     };
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void createCameraPreviewSession() {
         SurfaceTexture texture = mTextureView.getSurfaceTexture();
         texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());

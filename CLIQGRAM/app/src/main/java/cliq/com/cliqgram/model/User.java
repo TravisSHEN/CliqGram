@@ -1,23 +1,79 @@
 package cliq.com.cliqgram.model;
 
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import cliq.com.cliqgram.utils.Util;
+
 /**
  * Created by litaoshen on 2/09/2015.
  */
-public class User {
+public class User implements Parcelable {
+
+    String userId;
 
     String username, email;
-    int avatar_id;
+    byte[] avatarData;
 
-    public static User userFactory(String username, String email, int avatar_id) {
-        User user = new User(username, email, avatar_id);
+    List<Activity> activities;
+    List<User> followingList;
+    List<User> followerList;
+
+    public static User userFactory() {
+        User user = new User();
 
         return user;
     }
 
-    public User(String username,  String email, int avatar_id) {
+    public static User userFactory(String username, String email){
+        byte[] avatarData = new byte[0];
+        User user = new User(username, email, avatarData);
+
+        return user;
+    }
+
+    public static User userFactory(String username, String email, byte[] avatarData) {
+        User user = new User(username, email, avatarData);
+
+        return user;
+    }
+
+    public User() {
+        this.username = "";
+        this.email = "";
+        this.avatarData = new byte[0];
+
+        this.activities = new ArrayList<>();
+        this.followingList = new ArrayList<>();
+        this.followerList = new ArrayList<>();
+    }
+
+    public User(String username, String email, byte[] avatarData) {
         this.username = username;
         this.email = email;
-        this.avatar_id = avatar_id;
+        this.avatarData = avatarData;
+    }
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public BitmapDrawable getAvatarInBitmapDrawable(Context context){
+        return Util.convertByteToBitmapDrawable(context, avatarData);
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -36,11 +92,71 @@ public class User {
         this.email = email;
     }
 
-    public int getAvatar_id() {
-        return avatar_id;
+    public byte[] getAvatarData() {
+        return avatarData;
     }
 
-    public void setAvatar_id(int avatar_id) {
-        this.avatar_id = avatar_id;
+    public void setAvatarData(byte[] avatarData) {
+        this.avatarData = avatarData;
     }
+    public List<Activity> getActivities() {
+        return activities;
+    }
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
+
+    public List<User> getFollowingList() {
+        return followingList;
+    }
+
+    public void setFollowingList(List<User> followingList) {
+        this.followingList = followingList;
+    }
+
+    public List<User> getFollowerList() {
+        return followerList;
+    }
+
+    public void setFollowerList(List<User> followerList) {
+        this.followerList = followerList;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.username);
+        dest.writeString(this.email);
+        dest.writeByteArray(this.avatarData);
+        dest.writeList(this.activities);
+        dest.writeList(this.followingList);
+        dest.writeList(this.followerList);
+    }
+
+    private User(Parcel in) {
+        this.username = in.readString();
+        this.email = in.readString();
+        this.avatarData = in.createByteArray();
+        this.activities = new ArrayList<Activity>();
+        in.readList(this.activities, Activity.class.getClassLoader());
+        this.followingList = new ArrayList<User>();
+        in.readList(this.followingList, User.class.getClassLoader());
+        this.followerList = new ArrayList<User>();
+        in.readList(this.followerList, User.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

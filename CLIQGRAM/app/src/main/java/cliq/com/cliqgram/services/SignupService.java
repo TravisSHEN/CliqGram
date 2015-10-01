@@ -4,9 +4,9 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-import cliq.com.cliqgram.StarterApplication;
 import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
+import cliq.com.cliqgram.server.AppStarter;
 
 /**
  * Created by litaoshen on 2/09/2015.
@@ -14,12 +14,15 @@ import cliq.com.cliqgram.events.SignupSuccessEvent;
 public class SignupService {
 
     public static void signup(final String username, final String
-            password, String email) {
+            password, final String email) {
 
         ParseUser user = new ParseUser();
         user.setUsername(username);
         user.setPassword(password);
         user.setEmail(email);
+
+        byte[] avatarData = new byte[0];
+        user.put("avatar", avatarData);
 
         // Log out current user to prevent session invalid when
         // user being manually deleted on cloud.
@@ -32,12 +35,10 @@ public class SignupService {
 
             public void done(ParseException e) {
                 if (e == null) {
-
-                    StarterApplication.BUS.post(new SignupSuccessEvent("Sign up " +
-                            "successfully", username, password));
+                    AppStarter.eventBus.post(new SignupSuccessEvent("Sign up was successful!",
+                            username, password));
                 } else {
-
-                    StarterApplication.BUS.post(new SignupFailEvent("Sign up failed - " +
+                    AppStarter.eventBus.post(new SignupFailEvent("Sign up failed - " +
                             e.getMessage()));
                 }
             }

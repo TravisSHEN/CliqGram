@@ -2,7 +2,6 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,9 +20,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FeedAdapter;
-import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Feed;
+import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.utils.Util;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,7 +42,7 @@ public class FeedFragment extends Fragment {
 
     private FeedAdapter feedAdapter;
 
-    private List<Feed> feedList;
+    private List<Post> feedList;
 
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
@@ -117,25 +117,28 @@ public class FeedFragment extends Fragment {
         ParseUser currentUser = ParseUser.getCurrentUser();
 
         User user1 = User.userFactory(currentUser.getUsername(),
-                currentUser.getEmail(), R.drawable.ic_heart_red);
+                currentUser.getEmail());
 
         User user2 = User.userFactory("abc",
-                "abc@abc.com", R.drawable.ic_heart_red);
+                "abc@abc.com");
 
-        feedList.add(Feed.feedFactory(R.drawable.lavery, user1));
-        feedList.add(Feed.feedFactory(R.drawable.lavery, user2));
-        feedList.add(Feed.feedFactory(R.drawable.lavery, user1));
+        feedList.add(Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+                .lavery, 1f), user1, "good"));
+        feedList.add(Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+                .lavery, 1f), user2, "yes"));
+        feedList.add(Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+                .lavery, 1f), user1, "no"));
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(calendar.getTime());
         calendar.add(Calendar.DATE, 1);
 
-        feedList.get(2).setDate(calendar.getTime());
+        feedList.get(2).setCreatedAt(calendar.getTime());
 
         Collections.sort(feedList);
 
-        for(Feed feed: feedList){
-            Log.d("Feed", feed.toString());
+        for(Post post: feedList){
+            Log.d("Feed", post.toString());
         }
         feedAdapter.notifyDataSetChanged();
     }

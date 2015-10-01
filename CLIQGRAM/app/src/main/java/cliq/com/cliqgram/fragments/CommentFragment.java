@@ -23,6 +23,7 @@ import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.CommentAdapter;
 import cliq.com.cliqgram.model.Comment;
+import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 
 /**
@@ -36,12 +37,10 @@ import cliq.com.cliqgram.model.User;
 public class CommentFragment extends android.support.v4.app.Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_POST = "post";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String postId;
 
     @Bind(R.id.comment_recycler_view)
     RecyclerView commentView;
@@ -60,15 +59,14 @@ public class CommentFragment extends android.support.v4.app.Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param postId String.
      * @return A new instance of fragment CommentFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CommentFragment newInstance() {
+    public static CommentFragment newInstance(String postId) {
         CommentFragment fragment = new CommentFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_POST, postId);
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -82,8 +80,7 @@ public class CommentFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            postId = getArguments().getString(ARG_POST);
         }
 
 
@@ -120,16 +117,20 @@ public class CommentFragment extends android.support.v4.app.Fragment {
 
     private void initializeData(){
 
+        Post post = null;
+
+        // TODO: find post by id via post service
+
         ParseUser currentUser = ParseUser.getCurrentUser();
 
         User user1 = User.userFactory(currentUser.getUsername(),
-                currentUser.getEmail(), R.drawable.ic_heart_red);
+                currentUser.getEmail());
 
         User user2 = User.userFactory("abc",
-                "abc@abc.com", R.drawable.ic_heart_red);
+                "abc@abc.com");
 
-        Comment c1 = Comment.createComment(user1, "Good angle");
-        Comment c2 = Comment.createComment( user2, "Good to hear this");
+        Comment c1 = Comment.createComment(user1, post, "Good angle");
+        Comment c2 = Comment.createComment( user2, post, "Good to hear this");
 
         commentList.add(c1);
         commentList.add(c2);
@@ -143,13 +144,13 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         ParseUser currentUser = ParseUser.getCurrentUser();
 
         User user = User.userFactory(currentUser.getUsername(),
-                currentUser.getEmail(), R.drawable.ic_heart_red);
+                currentUser.getEmail());
         String content = commentEdit.getText().toString();
 
         if( validateComment(content) ) {
             commentEdit.setText("");
 
-            Comment comment = Comment.createComment(user, content);
+            Comment comment = Comment.createComment(user, post, content);
             commentList.add(comment);
 
             commentAdapter.notifyDataSetChanged();

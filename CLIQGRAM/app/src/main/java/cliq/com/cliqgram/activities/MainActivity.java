@@ -1,6 +1,7 @@
 package cliq.com.cliqgram.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,17 +17,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
+
+import java.io.IOException;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.StarterApplication;
-import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.adapters.MainViewPageAdapter;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.fragments.ActivityFragment;
@@ -35,6 +38,12 @@ import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SearchFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
 import cliq.com.cliqgram.helper.ToolbarModel;
+import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.PostService;
+import cliq.com.cliqgram.services.UserService;
+import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -71,7 +80,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavSelectedItemID;
-
+    Button post;
+    private static int PICKED_IMG = 1;
+    private static int RESULT_LOAD_IMG = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
 
         // Register this activity to EventBus
-        StarterApplication.BUS.register(this);
+        AppStarter.eventBus.register(this);
 
         // setup toolbar
         ToolbarModel.setupToolbar(this);
@@ -102,7 +113,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // TODO: initialize tab layout
         initializeTabLayout();
+
+        // TODO: select photo from gallery
+//        post = (Button) findViewById(R.id.bPost);
+//        post.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                /*Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+//                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                // Start the Intent
+//                startActivityForResult(galleryIntent, PICKED_IMG);*/
+//                Intent intent = new Intent();
+//                intent.setType("image/*");
+//                intent.setAction(Intent.ACTION_GET_CONTENT);
+//                startActivityForResult(Intent.createChooser(intent, "Select Picture"),
+//                        PICKED_IMG);
+//            }
+//        });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICKED_IMG && resultCode == RESULT_OK
+                && null != data) {
+            Uri selectedImage = data.getData();
+            //String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Date now = new Date();
+            Date date = Util.getCurrentDate();
+            //byte[] imageData = convertImageToByte(selectedImage);
+            byte[] imageData = null;
+            try {
+                imageData = Util.getBytesFromUri(this, selectedImage);
+            }catch(IOException e){
+
+            }
+
+            // TODO: pass current user to here to create a new Post
+            User user = UserService.getCurrentUser();
+            Post post = new Post(imageData, "my new photo",
+                    user, null, date, null);
+            PostService.post(post);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -314,16 +368,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            // set the toolbar title
 //            getSupportActionBar().setTitle(title);
 //        }
+        String postId = openFragmentEvent.getPost().getPostId();
         Intent intent = new Intent(this, CommentActivity.class);
+        intent.putExtra(CommentActivity.ARG_POST, postId);
         this.startActivityForResult(intent, REQUEST_COMMENT);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_COMMENT) {
-            if (resultCode == RESULT_OK) {
-                // TODO: show new comment if necessary
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (requestCode == REQUEST_COMMENT) {
+//            if (resultCode == RESULT_OK) {
+//                 TODO: show new comment if necessary
+//            }
+//        }
+//    }
+
 }
