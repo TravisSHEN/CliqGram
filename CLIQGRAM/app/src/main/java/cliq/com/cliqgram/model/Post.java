@@ -36,7 +36,7 @@ public class Post implements Comparable<Post>,Parcelable {
             description){
 
         Post post = new Post();
-        post.setPostId("");
+        //post.setPostId("");
         post.setOwner(owner);
         post.setPhotoData(photoData);
         post.setDescription(description);

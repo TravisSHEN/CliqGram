@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.activities;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -119,15 +120,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                // Start the Intent
-                startActivityForResult(galleryIntent, PICKED_IMG);
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"),
-                        PICKED_IMG);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICKED_IMG);
+
             }
         });
     }
@@ -135,19 +132,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICKED_IMG && resultCode == RESULT_OK
-                && null != data) {
+        if (requestCode == PICKED_IMG && resultCode == RESULT_OK  && data != null) {
+            ContentResolver contentResolver = getBaseContext().getContentResolver();
             Uri selectedImage = data.getData();
-            //String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Date date = Util.getCurrentDate();
-            //byte[] imageData = convertImageToByte(selectedImage);
-            byte[] imageData = null;
-            try {
-                imageData = Util.getBytesFromUri(this, selectedImage);
-            }catch(IOException e){
-
-            }
-
+            byte[] imageData = Util.convertImageToByte(selectedImage, contentResolver);
             // TODO: pass current user to here to create a new Post
             User user = UserService.getCurrentUser();
             Post post = Post.createPost(imageData, user, "New photo");

@@ -12,6 +12,8 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
+
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostFailEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
@@ -25,22 +27,13 @@ import cliq.com.cliqgram.server.AppStarter;
  */
 public class PostService {
 
-    public static final String TABLENAME = "Post";
+    public static final String TABLE_NAME = "Post";
 
     public static void post(@NonNull Post post) {
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
-
-        if( post.getOwner() != null && ! post.getOwner().getUsername().equals(
-                currentUser.getUsername())){
-            return;
-        }
-
-        ParseObject postObject = new ParseObject(TABLENAME);
-        //ParseFile photo = new ParseFile("image.jpg", post.getPhotoData());
+        ParseObject postObject = new ParseObject(TABLE_NAME);
         String imgLabel = "img_" + post.getOwner().getUsername() + String.valueOf(post
-                .getCreatedAt().getTime()) +
-                ".jpg";
+                .getCreatedAt().getTime()) + ".jpg";
         ParseFile photo = new ParseFile(imgLabel, post.getPhotoData());
         photo.saveInBackground();
 
@@ -52,25 +45,20 @@ public class PostService {
         // creates one-to-one relationship
         // associate to current user
         postObject.put("user", ParseUser.getCurrentUser());
-        postObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e == null ){
-                    Log.e("Post Service", "post successful");
-                } else {
+        postObject.saveInBackground();
 
-                    Log.e("Post Service", e.getMessage());
-                }
-            }
-        });
+        ArrayList<ParseObject> relation = (ArrayList)ParseUser.getCurrentUser().get("posts");
+        if(relation == null){
+            relation = new ArrayList<>();
+        }
+        relation.add(postObject);
 
-        ParseUser.getCurrentUser().put("posts", postObject);
+        ParseUser.getCurrentUser().put("posts", relation);
         ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    AppStarter.eventBus.post(new PostSuccessEvent("post was " +
-                            "successful!"));
+                    AppStarter.eventBus.post(new PostSuccessEvent("post was successful!"));
                 } else {
                     AppStarter.eventBus.post(new PostFailEvent("post failed -" +
                             " " + e.getMessage()));
@@ -86,9 +74,9 @@ public class PostService {
      */
     public static void getPost(@NonNull final String id) {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLENAME);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
 
-        Log.d("POST SERVICE", TABLENAME);
+        Log.d("POST SERVICE", TABLE_NAME);
         Log.d("POST SERVICE", id);
         query.getInBackground(id, new GetCallback<ParseObject>() {
             @Override

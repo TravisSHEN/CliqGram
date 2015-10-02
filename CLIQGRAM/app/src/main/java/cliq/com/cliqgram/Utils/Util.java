@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -88,7 +90,7 @@ public class Util {
      * @return
      * @throws IOException
      */
-    public static byte[] getBytesFromUri(Context context, Uri uri) throws
+    /*public static byte[] getBytesFromUri(Context context, Uri uri) throws
             IOException {
         InputStream inputStream = context.getContentResolver().openInputStream
                 (uri);
@@ -106,6 +108,20 @@ public class Util {
 
         // and then we can return your byte array.
         return byteBuffer.toByteArray();
+    }
+    */
+    public static byte[] convertImageToByte(Uri uri, ContentResolver cr){
+        byte[] data = null;
+        try {
+            InputStream inputStream = cr.openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            data = baos.toByteArray();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 
     /**

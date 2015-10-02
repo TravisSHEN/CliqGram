@@ -135,7 +135,7 @@ public class FeedFragment extends Fragment {
 
         Collections.sort(feedList);
 
-        PostService.post(feedList.get(0));
+        //PostService.post(feedList.get(0));
 
 //        for(Post post: feedList){
 //            PostService.post(post);
