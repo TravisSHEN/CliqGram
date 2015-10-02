@@ -35,8 +35,8 @@ public class PostService {
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
-        if( post.getOwner() != null && ! post.getOwner().getUsername().equals(
-                currentUser.getUsername())){
+        if (post.getOwner() != null && !post.getOwner().getUsername().equals(
+                currentUser.getUsername())) {
             return;
         }
 
@@ -49,7 +49,7 @@ public class PostService {
 
         postObject.put("photo", photo);
         postObject.put("description", post.getDescription());
-        if( post.getLocation() != null ) {
+        if (post.getLocation() != null) {
             postObject.put("location", post.getLocation());
         }
         // creates one-to-one relationship
@@ -68,7 +68,7 @@ public class PostService {
         });
 
         ArrayList<ParseObject> relation = (ArrayList) currentUser.getList("posts");
-        if( relation == null ){
+        if (relation == null) {
             relation = new ArrayList<>();
         }
         relation.add(postObject);
@@ -121,70 +121,70 @@ public class PostService {
         });
     }
 
-    public static void getPost(@NonNull List<User> userList){
+    public static void getPosts(@NonNull List<User> userList) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
-        List<String> usernameList = getUserNameList(userList);
+        List<String> userIdList = getUserIdList(userList);
 
-        query.whereContainsAll("user", usernameList);
+        query.whereContainsAll("user", userIdList);
 
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     List<Post> postList = new ArrayList<>();
-                    postList.addAll( convertParseObjectToPost(objects) );
+                    postList.addAll(getPostsFromParseObjects(objects));
 
-                    AppStarter.eventBus.post( new GetPostEvent(postList) );
+                    AppStarter.eventBus.post(new GetPostEvent(postList));
                 } else {
 
-                    AppStarter.eventBus.post( new GetPostEvent(null, false) );
+                    AppStarter.eventBus.post(new GetPostEvent(null, false));
                 }
             }
         });
 
     }
 
-    public static boolean inUserList(List<User> userList, ParseUser user){
-        boolean in = false;
-        for( User u : userList){
-            if( u.getUsername().equals( user.getUsername() ) ){
-                in = true;
-            }
+
+    public static List<String> getUserIdList(List<User> userList) {
+        List<String> userIdList = new ArrayList<>();
+        for (User user : userList) {
+            userIdList.add(user.getUserId());
         }
 
-        return in;
+        return userIdList;
     }
 
-    public static List<String> getUserNameList(List<User> userList){
-        List<String> usernameList = new ArrayList<>();
-        for( User user : userList ){
-           usernameList.add( user.getUsername() );
-        }
-
-        return usernameList;
-    }
-
-    public static List<Post> convertParseObjectToPost(List<ParseObject> parseObjects){
+    public static List<Post> getPostsFromParseObjects(List<ParseObject>
+                                                             parseObjectList) {
 
         List<Post> postList = new ArrayList<>();
-        for(ParseObject parseObject : parseObjects){
-            Post post = Post.createPost();
-
-            post.setPostId( parseObject.getObjectId() );
-            post.setOwner(UserService.getUserFromParseUser((ParseUser) parseObject.get
-                    ("user")));
-            post.setPhotoData(parseObject.getBytes("photo"));
-            post.setDescription(parseObject.getString("description"));
-            post.setLocation(parseObject.getParseGeoPoint("location"));
-            post.setCreatedAt(parseObject.getDate("createdAt"));
-            post.setCommentList(parseObject.<Comment>getList("comments"));
-            post.setLikeList(parseObject.<Like>getList("likes"));
-
+        for (ParseObject parseObject : parseObjectList) {
+            Post post = convertParseObjectToPost(parseObject);
             postList.add(post);
         }
 
         return postList;
+    }
+
+    public static Post convertParseObjectToPost(ParseObject parseObject) {
+
+        Post post = Post.createPost();
+
+        post.setPostId(parseObject.getObjectId());
+        post.setOwner(UserService.getUserFromParseUser((ParseUser) parseObject.get
+                ("user")));
+        post.setPhotoData(parseObject.getBytes("photo"));
+        post.setDescription(parseObject.getString("description"));
+        post.setLocation(parseObject.getParseGeoPoint("location"));
+        post.setCreatedAt(parseObject.getDate("createdAt"));
+
+        // TODO: need to convert ParseObject to Comment & Like Object
+        post.setCommentList(parseObject.<Comment>getList("comments"));
+        post.setLikeList(parseObject.<Like>getList("likes"));
+
+
+        return post;
     }
 
 }

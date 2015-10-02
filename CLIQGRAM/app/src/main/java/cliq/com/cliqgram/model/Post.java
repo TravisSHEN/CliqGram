@@ -25,9 +25,9 @@ public class Post implements Comparable<Post>{
     private User owner;
     private byte[] photoData;
     private String description;
+    private Date createdAt;
     private ParseGeoPoint location;
     private List<Comment> commentList;
-    private Date createdAt;
     private List<Like> likeList;
 
     public static Post createPost(){
