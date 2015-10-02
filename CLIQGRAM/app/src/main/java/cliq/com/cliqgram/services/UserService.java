@@ -37,6 +37,7 @@ public class UserService {
         userService.getUser().setFollowerList((List<User>) parseUser.get("followers"));
         userService.getUser().setFollowingList((List<User>) parseUser.get("followings"));
 
+
     }
 
     public User getUser() {
@@ -48,22 +49,9 @@ public class UserService {
     }
 
 
-    public static User getUserFromParseUser(ParseUser parseUser){
-        User user = User.userFactory();
-
-        user.setUserId(parseUser.getObjectId());
-        user.setUsername(parseUser.getUsername());
-        user.setEmail(parseUser.getEmail());
-        user.setAvatarData((byte[]) parseUser.get("avatar"));
-        user.setActivities((List<Activity>) parseUser.get("activities"));
-        user.setFollowerList((List<User>) parseUser.get("followers"));
-        user.setFollowingList((List<User>) parseUser.get("followings"));
-
-        return user;
-    }
-
     /**
      * follow other users
+     *
      * @param username
      */
     public void follow(String username) {

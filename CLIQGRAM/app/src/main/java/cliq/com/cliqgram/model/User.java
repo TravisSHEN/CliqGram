@@ -15,9 +15,7 @@ import cliq.com.cliqgram.utils.Util;
  */
 public class User implements Parcelable {
 
-    String userId;
-
-    String username, email;
+    String userId, username, email;
     byte[] avatarData;
 
     List<Activity> activities;
@@ -159,4 +157,5 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
 }

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +19,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FeedAdapter;
-import cliq.com.cliqgram.model.Feed;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.utils.Util;
 
 /**
@@ -52,8 +51,6 @@ public class FeedFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment UserFeed.
      */
     // TODO: Rename and change types and number of parameters
@@ -116,7 +113,8 @@ public class FeedFragment extends Fragment {
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
-        User user1 = User.userFactory(currentUser.getUsername(),
+        User user1 = User.userFactory(currentUser
+                        .getUsername(),
                 currentUser.getEmail());
 
         User user2 = User.userFactory("abc",
@@ -137,9 +135,12 @@ public class FeedFragment extends Fragment {
 
         Collections.sort(feedList);
 
-        for(Post post: feedList){
-            Log.d("Feed", post.toString());
-        }
+        PostService.post(feedList.get(0));
+
+//        for(Post post: feedList){
+//            PostService.post(post);
+//            Log.d("Feed", post.toString());
+//        }
         feedAdapter.notifyDataSetChanged();
     }
 

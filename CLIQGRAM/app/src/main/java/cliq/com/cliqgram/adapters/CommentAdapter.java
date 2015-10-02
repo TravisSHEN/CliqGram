@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,7 @@ public class CommentAdapter extends RecyclerView
         View view = LayoutInflater.from(context).inflate(R.layout.comments_item,
                 parent, false);
         CommentViewHolder commentViewHolder = new CommentViewHolder(context, view);
-        Log.e("CommentFragment", "opened");
+//        Log.e("CommentFragment", "opened");
         return commentViewHolder;
     }
 

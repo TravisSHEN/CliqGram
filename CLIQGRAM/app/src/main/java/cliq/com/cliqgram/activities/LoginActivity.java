@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                             .show();
                 }
             }
-        }, 3000);
+        }, 2000);
 
     }
 

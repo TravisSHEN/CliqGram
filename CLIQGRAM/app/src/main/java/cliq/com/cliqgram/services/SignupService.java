@@ -21,9 +21,6 @@ public class SignupService {
         user.setPassword(password);
         user.setEmail(email);
 
-        byte[] avatarData = new byte[0];
-        user.put("avatar", avatarData);
-
         // Log out current user to prevent session invalid when
         // user being manually deleted on cloud.
         if (ParseUser.getCurrentUser() != null) {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import cliq.com.cliqgram.events.CommentFailEvent;
 import cliq.com.cliqgram.events.CommentSuccessEvent;
 import cliq.com.cliqgram.model.Comment;
+import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
 
@@ -19,13 +20,13 @@ import cliq.com.cliqgram.server.AppStarter;
  */
 public class CommentService {
 
-    public static void comment(final ParseObject postObject, Comment comment){
+    public static void comment(Post post, Comment comment){
 
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Post");
-        query.getInBackground(postObject.getObjectId(), new GetCallback<ParseObject>() {
+        query.getInBackground(post.getPostId(), new GetCallback<ParseObject>() {
             @Override
-            public void done(ParseObject object, ParseException e) {
+            public void done(ParseObject postObject, ParseException e) {
                 if(e == null){
                     User currentUser = UserService.getCurrentUser();
                     Comment comment = new Comment("content", currentUser);
@@ -36,7 +37,7 @@ public class CommentService {
                     parseObject.saveInBackground();
                     ArrayList<ParseObject> relation = (ArrayList)postObject.get("comments");
                     if(relation == null){
-                        relation = new ArrayList<ParseObject>();
+                        relation = new ArrayList<>();
                     }
                     relation.add(parseObject);
                     postObject.put("comments", relation);

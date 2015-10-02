@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,10 +50,10 @@ public class Util {
     public static BitmapDrawable resizeBitmapDrawable(Context context,
                                                       BitmapDrawable bitmapDrawable,
                                                       float scaleFactor){
-        Bitmap bm = bitmapDrawable.getBitmap();
-        if( bm == null ){
+        if(bitmapDrawable == null ){
             return null;
         }
+        Bitmap bm = bitmapDrawable.getBitmap();
         int sizeX = Math.round(bm.getWidth() * scaleFactor);
         int sizeY = Math.round(bm.getHeight() * scaleFactor);
 
@@ -118,7 +117,7 @@ public class Util {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-        Log.e("Util-Bitmap Size", String.valueOf(bitmap.getByteCount()));
+//        Log.e("Util-Bitmap Size", String.valueOf(bitmap.getByteCount()));
         byte[] bytes = stream.toByteArray();
 
         return bytes;
@@ -131,6 +130,10 @@ public class Util {
      */
     public static BitmapDrawable convertByteToBitmapDrawable(Context context, byte[]
             imgData){
+
+        if(imgData == null || imgData.length == 0 ){
+           return null;
+        }
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(imgData, 0,
                 imgData.length);

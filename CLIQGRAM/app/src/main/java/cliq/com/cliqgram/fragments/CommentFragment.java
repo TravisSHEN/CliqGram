@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 
@@ -22,25 +22,28 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.CommentAdapter;
+import cliq.com.cliqgram.events.GetPostEvent;
+import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.PostService;
+import cliq.com.cliqgram.services.UserService;
+import de.greenrobot.event.Subscribe;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CommentFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link CommentFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class CommentFragment extends android.support.v4.app.Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POST = "post";
 
-    // TODO: Rename and change types of parameters
     private String postId;
+
+    private Post post;
 
     @Bind(R.id.comment_recycler_view)
     RecyclerView commentView;
@@ -81,8 +84,11 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             postId = getArguments().getString(ARG_POST);
+
         }
 
+        // register with EventBus
+        AppStarter.eventBus.register(this);
 
         commentList = new ArrayList<>();
     }
@@ -120,10 +126,15 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         Post post = null;
 
         // TODO: find post by id via post service
+//        PostService.getPost( postId );
+        PostService.getPost("X8f2UlSJIc");
+        ProgressSpinner.getInstance().showSpinner(this.getActivity(),
+                "Loading...");
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
-        User user1 = User.userFactory(currentUser.getUsername(),
+        User user1 = User.userFactory(currentUser
+                        .getUsername(),
                 currentUser.getEmail());
 
         User user2 = User.userFactory("abc",
@@ -138,19 +149,33 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         commentAdapter.notifyDataSetChanged();
     }
 
+    @Subscribe
+    public void onGetPostEvent(GetPostEvent event){
+
+        if(event.isSuccess()){
+           this.post = event.getPost();
+            this.commentList = post.getCommentList();
+            // notify adapter to load data
+            commentAdapter.notifyDataSetChanged();
+
+            Toast.makeText(getActivity(), post.getPostId(), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getActivity(), "No data found.", Toast
+                    .LENGTH_SHORT).show();
+        }
+        ProgressSpinner.getInstance().dismissSpinner();
+    }
+
     @OnClick(R.id.comment_send)
     public void onSendClick(View view){
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
-
-        User user = User.userFactory(currentUser.getUsername(),
-                currentUser.getEmail());
         String content = commentEdit.getText().toString();
 
         if( validateComment(content) ) {
             commentEdit.setText("");
 
-            Comment comment = Comment.createComment(user, post, content);
+            Comment comment = Comment.createComment(UserService.getCurrentUser(), post,
+                    content);
             commentList.add(comment);
 
             commentAdapter.notifyDataSetChanged();

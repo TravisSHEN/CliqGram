@@ -115,21 +115,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initializeTabLayout();
 
         // TODO: select photo from gallery
-//        post = (Button) findViewById(R.id.bPost);
-//        post.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                /*Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-//                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                // Start the Intent
-//                startActivityForResult(galleryIntent, PICKED_IMG);*/
-//                Intent intent = new Intent();
-//                intent.setType("image/*");
-//                intent.setAction(Intent.ACTION_GET_CONTENT);
-//                startActivityForResult(Intent.createChooser(intent, "Select Picture"),
-//                        PICKED_IMG);
-//            }
-//        });
+        post = (Button) findViewById(R.id.bPost);
+        post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                // Start the Intent
+                startActivityForResult(galleryIntent, PICKED_IMG);
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"),
+                        PICKED_IMG);
+            }
+        });
     }
 
     @Override
@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 && null != data) {
             Uri selectedImage = data.getData();
             //String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Date now = new Date();
             Date date = Util.getCurrentDate();
             //byte[] imageData = convertImageToByte(selectedImage);
             byte[] imageData = null;
@@ -151,8 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             // TODO: pass current user to here to create a new Post
             User user = UserService.getCurrentUser();
-            Post post = new Post(imageData, "my new photo",
-                    user, null, date, null);
+            Post post = Post.createPost(imageData, user, "New photo");
             PostService.post(post);
         }
     }
