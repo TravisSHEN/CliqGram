@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cliq.com.cliqgram.model.Activity;
+import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 
 /**
@@ -40,12 +41,20 @@ public class UserService {
 
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
+    public static User getUserFromParseUser(ParseUser parseUser) {
+        User user = User.userFactory();
+
+        user.setUserId(parseUser.getObjectId());
+        user.setUsername(parseUser.getUsername());
+        user.setEmail(parseUser.getEmail());
+        user.setAvatarData((byte[]) parseUser.get("avatar"));
+        user.setActivities((List<Activity>) parseUser.get("activities"));
+        user.setPostList((List<Post>) parseUser.get("posts"));
+        user.setFollowerList((List<User>) parseUser.get("followers"));
+        user.setFollowingList((List<User>) parseUser.get("followings"));
+
+        return user;
     }
 
 
@@ -54,7 +63,7 @@ public class UserService {
      *
      * @param username
      */
-    public void follow(String username) {
+    public static void follow(String username) {
         final ParseUser currentUser = ParseUser.getCurrentUser();
 
         ParseQuery<ParseUser> query = ParseUser.getQuery();
@@ -90,4 +99,13 @@ public class UserService {
             }
         });
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 }

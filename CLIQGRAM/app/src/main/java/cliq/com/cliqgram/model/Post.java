@@ -4,9 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
-import android.os.Parcel;
-import android.os.Parcelable;
 
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
@@ -21,16 +20,20 @@ import cliq.com.cliqgram.utils.Util;
 /**
  * Created by ilkan on 27/09/2015.
  */
-public class Post implements Comparable<Post>,Parcelable {
+public class Post implements Comparable<Post>{
 
     private String postId;
     private User owner;
     private byte[] photoData;
     private String description;
-    private Location location;
+    private ParseGeoPoint location;
     private List<Comment> commentList;
     private Date createdAt;
     private List<Like> likeList;
+
+    public static Post createPost(){
+        return new Post();
+    }
 
     public static Post createPost(byte[] photoData, User owner, String
             description){
@@ -42,7 +45,8 @@ public class Post implements Comparable<Post>,Parcelable {
         post.setDescription(description);
 
         Location current_location = AppStarter.gpsTracker.getLocation();
-        post.setLocation(current_location);
+        post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
+                current_location.getLongitude()));
 
         post.setCommentList(new ArrayList<Comment>());
         post.setCreatedAt(Util.getCurrentDate());
@@ -61,7 +65,8 @@ public class Post implements Comparable<Post>,Parcelable {
         post.setDescription(description);
 
         Location current_location = AppStarter.gpsTracker.getLocation();
-        post.setLocation(current_location);
+        post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
+                current_location.getLongitude()));
 
         post.setCommentList(new ArrayList<Comment>());
         post.setCreatedAt(Util.getCurrentDate());
@@ -85,7 +90,9 @@ public class Post implements Comparable<Post>,Parcelable {
         this.createdAt = createdAt;
         this.likeList = likeList;
 
-        this.location = AppStarter.gpsTracker.getLocation();
+        Location temp_location = AppStarter.gpsTracker.getLocation();
+        this.location.setLongitude( temp_location.getLongitude() );
+        this.location.setLatitude(temp_location.getLatitude());
     }
 
 
@@ -172,11 +179,11 @@ public class Post implements Comparable<Post>,Parcelable {
         this.description = description;
     }
 
-    public Location getLocation() {
+    public ParseGeoPoint getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(ParseGeoPoint location) {
         this.location = location;
     }
 
@@ -221,45 +228,4 @@ public class Post implements Comparable<Post>,Parcelable {
         this.owner = owner;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.postId);
-        dest.writeParcelable(this.owner, flags);
-        dest.writeByteArray(this.photoData);
-        dest.writeString(this.description);
-        dest.writeParcelable(this.location, 0);
-        dest.writeList(this.commentList);
-        dest.writeLong(createdAt != null ? createdAt.getTime() : -1);
-        dest.writeList(this.likeList);
-    }
-
-    private Post(Parcel in) {
-        this.postId = in.readString();
-        this.owner = in.readParcelable(User.class.getClassLoader());
-        this.photoData = in.createByteArray();
-        this.description = in.readString();
-        this.location = in.readParcelable(Location.class.getClassLoader());
-        this.commentList = new ArrayList<Comment>();
-        in.readList(this.commentList, Comment.class.getClassLoader());
-        long tmpCreatedAt = in.readLong();
-        this.createdAt = tmpCreatedAt == -1 ? null : new Date(tmpCreatedAt);
-        this.likeList = new ArrayList<Like>();
-        in.readList(this.likeList, Like.class.getClassLoader());
-    }
-
-    public static final Parcelable.Creator<Post> CREATOR = new Parcelable.Creator<Post>() {
-        public Post createFromParcel(Parcel source) {
-            return new Post(source);
-        }
-
-        public Post[] newArray(int size) {
-            return new Post[size];
-        }
-    };
 }

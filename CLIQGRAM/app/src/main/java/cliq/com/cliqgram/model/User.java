@@ -18,6 +18,7 @@ public class User implements Parcelable {
     String userId, username, email;
     byte[] avatarData;
 
+    List<Post> postList;
     List<Activity> activities;
     List<User> followingList;
     List<User> followerList;
@@ -120,6 +121,13 @@ public class User implements Parcelable {
         this.followerList = followerList;
     }
 
+    public List<Post> getPostList() {
+        return postList;
+    }
+
+    public void setPostList(List<Post> postList) {
+        this.postList = postList;
+    }
 
     @Override
     public int describeContents() {
@@ -132,6 +140,7 @@ public class User implements Parcelable {
         dest.writeString(this.email);
         dest.writeByteArray(this.avatarData);
         dest.writeList(this.activities);
+        dest.writeList(this.postList);
         dest.writeList(this.followingList);
         dest.writeList(this.followerList);
     }
@@ -143,6 +152,8 @@ public class User implements Parcelable {
         this.activities = new ArrayList<Activity>();
         in.readList(this.activities, Activity.class.getClassLoader());
         this.followingList = new ArrayList<User>();
+        in.readList(this.postList, Post.class.getClassLoader());
+        this.postList = new ArrayList<Post>();
         in.readList(this.followingList, User.class.getClassLoader());
         this.followerList = new ArrayList<User>();
         in.readList(this.followerList, User.class.getClassLoader());
