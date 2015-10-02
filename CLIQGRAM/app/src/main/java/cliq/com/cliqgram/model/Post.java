@@ -6,7 +6,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 
 import com.parse.ParseGeoPoint;
-import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,14 +38,16 @@ public class Post implements Comparable<Post>{
             description){
 
         Post post = new Post();
-        post.setPostId("");
+        //post.setPostId("");
         post.setOwner(owner);
         post.setPhotoData(photoData);
         post.setDescription(description);
 
         Location current_location = AppStarter.gpsTracker.getLocation();
-        post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
-                current_location.getLongitude()));
+        if( current_location != null ) {
+            post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
+                    current_location.getLongitude()));
+        }
 
         post.setCommentList(new ArrayList<Comment>());
         post.setCreatedAt(Util.getCurrentDate());
@@ -65,8 +66,10 @@ public class Post implements Comparable<Post>{
         post.setDescription(description);
 
         Location current_location = AppStarter.gpsTracker.getLocation();
-        post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
-                current_location.getLongitude()));
+        if( current_location != null ) {
+            post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
+                    current_location.getLongitude()));
+        }
 
         post.setCommentList(new ArrayList<Comment>());
         post.setCreatedAt(Util.getCurrentDate());
@@ -103,8 +106,8 @@ public class Post implements Comparable<Post>{
      */
     public boolean incrementLikes() {
 
-        ParseUser parseUser = ParseUser.getCurrentUser();
-        String username = parseUser.getUsername();
+        User user = UserService.getCurrentUser();
+        String username = user.getUsername();
 
         for (Like like : likeList) {
             if (like.getUser() != null && username.equals(like.getUser()

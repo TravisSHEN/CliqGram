@@ -21,7 +21,6 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FeedAdapter;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.utils.Util;
 
 /**
@@ -135,7 +134,7 @@ public class FeedFragment extends Fragment {
 
         Collections.sort(feedList);
 
-        PostService.post(feedList.get(0));
+        //PostService.post(feedList.get(0));
 
 //        for(Post post: feedList){
 //            PostService.post(post);

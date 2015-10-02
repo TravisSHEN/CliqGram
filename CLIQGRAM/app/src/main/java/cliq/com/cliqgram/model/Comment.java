@@ -1,14 +1,11 @@
 package cliq.com.cliqgram.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.Date;
 
 /**
  * Created by litaoshen on 22/09/2015.
  */
-public class Comment implements Parcelable {
+public class Comment {
 
     private String commentId;
     private String content;
@@ -75,38 +72,4 @@ public class Comment implements Parcelable {
     public void setPost(Post post) {
         this.post = post;
     }
-
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.commentId);
-        dest.writeString(this.content);
-        dest.writeLong(createdAt != null ? createdAt.getTime() : -1);
-        dest.writeParcelable(this.owner, 0);
-        dest.writeParcelable(this.post, 0);
-    }
-
-    private Comment(Parcel in) {
-        this.commentId = in.readString();
-        this.content = in.readString();
-        long tmpCreatedAt = in.readLong();
-        this.createdAt = tmpCreatedAt == -1 ? null : new Date(tmpCreatedAt);
-        this.owner = in.readParcelable(User.class.getClassLoader());
-        this.post = in.readParcelable(Post.class.getClassLoader());
-    }
-
-    public static final Parcelable.Creator<Comment> CREATOR = new Parcelable.Creator<Comment>() {
-        public Comment createFromParcel(Parcel source) {
-            return new Comment(source);
-        }
-
-        public Comment[] newArray(int size) {
-            return new Comment[size];
-        }
-    };
 }
