@@ -111,10 +111,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        // TODO: initialize tab layout
+        // initialize tab bar layout
         initializeTabLayout();
 
         // TODO: select photo from gallery
+
         post = (Button) findViewById(R.id.bPost);
         post.setOnClickListener(new View.OnClickListener() {
             @Override

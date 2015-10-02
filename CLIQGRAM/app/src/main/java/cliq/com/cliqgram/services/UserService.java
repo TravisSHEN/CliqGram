@@ -1,11 +1,9 @@
 package cliq.com.cliqgram.services;
 
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cliq.com.cliqgram.model.Activity;
@@ -33,12 +31,29 @@ public class UserService {
         userService.getUser().setUserId(parseUser.getObjectId());
         userService.getUser().setUsername(parseUser.getUsername());
         userService.getUser().setEmail(parseUser.getEmail());
-        userService.getUser().setAvatarData((byte[]) parseUser.get("avatar"));
-        userService.getUser().setActivities((List<Activity>) parseUser.get("activities"));
-        userService.getUser().setFollowerList((List<User>) parseUser.get("followers"));
-        userService.getUser().setFollowingList((List<User>) parseUser.get("followings"));
+        userService.getUser().setAvatarData(parseUser.getBytes("avatar"));
+//        userService.getUser().setActivities((List<Activity>) parseUser.get("activities"));
+        //userService.getUser().setFollowerList((List<User>) parseUser.get("followers"));
+        //userService.getUser().setFollowingList((List<User>) parseUser.get("followings"));
+    }
 
 
+    public static ParseUser findParseUserByName(String userName){
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        ParseUser parseUser = null;
+        query.whereEqualTo("username", userName);
+        try {
+            List<ParseUser> userList = query.find();
+            if (userList != null && userList.size() == 1){
+                parseUser = userList.get(0);
+            }
+
+        }catch (ParseException e){
+            //TODO exception
+        }
+        finally {
+            return parseUser;
+        }
     }
 
 
@@ -58,48 +73,6 @@ public class UserService {
     }
 
 
-    /**
-     * follow other users
-     *
-     * @param username
-     */
-    public static void follow(String username) {
-        final ParseUser currentUser = ParseUser.getCurrentUser();
-
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo("username", username);
-
-
-        query.findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> objects, ParseException e) {
-
-                if (e == null) {
-                    ParseUser user = objects.get(0);
-
-                    // current user is one of followers of user
-                    ArrayList<ParseUser> followers = (ArrayList<ParseUser>) user.get("followers");
-                    if (followers == null) {
-                        followers = new ArrayList<>();
-                    }
-                    followers.add(currentUser);
-                    user.saveInBackground();
-
-
-                    // current user start following user
-                    ArrayList<ParseUser> following = (ArrayList<ParseUser>) currentUser.get("followings");
-                    if (following == null) {
-                        following = new ArrayList<>();
-                    }
-                    following.add(user);
-                    currentUser.saveInBackground();
-                } else {
-
-                }
-            }
-        });
-    }
-
     public User getUser() {
         return user;
     }
@@ -107,5 +80,4 @@ public class UserService {
     public void setUser(User user) {
         this.user = user;
     }
-
 }

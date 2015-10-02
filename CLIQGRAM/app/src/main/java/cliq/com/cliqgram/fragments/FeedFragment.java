@@ -134,6 +134,24 @@ public class FeedFragment extends Fragment {
 
         Collections.sort(feedList);
 
+//        //this is for testing follow operation
+//        UserRelationsService.follow("litaos");
+//        //this is for testing followings list
+//        List<ParseUser> followings =  UserRelationsService.getRelation
+//                ("jj",
+//                "followings");
+//        //this is for testing followers list
+//        List<ParseUser> followers =  UserRelationsService.getRelation
+//                ("litaos",
+//                "followers");
+//        for(ParseUser user : followings){
+//            Log.e("Followings", user.getUsername());
+//        }
+//
+//        for(ParseUser user : followers){
+//            Log.e("Followers", user.getUsername());
+//        }
+
         //PostService.post(feedList.get(0));
 
 //        for(Post post: feedList){
