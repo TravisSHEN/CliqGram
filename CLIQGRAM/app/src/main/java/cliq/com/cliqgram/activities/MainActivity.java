@@ -25,6 +25,7 @@ import com.parse.ParseUser;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,6 +44,7 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.PostService;
+import cliq.com.cliqgram.services.UserRelationsService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
@@ -116,6 +118,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initializeTabLayout();
 
         // TODO: select photo from gallery
+        //this is for testing follow operation
+        //UserRelationsService.follow("jjjj");
+        //this is for testing followings list
+        List<ParseUser> userList =  UserRelationsService.getRelation("jj", "followings");
+        //this is for testing followers list
+        List<ParseUser> userList2 =  UserRelationsService.getRelation("jj", "followers");
         post = (Button) findViewById(R.id.bPost);
         post.setOnClickListener(new View.OnClickListener() {
             @Override
