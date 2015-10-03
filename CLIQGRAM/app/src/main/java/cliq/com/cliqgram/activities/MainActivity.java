@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.parse.Parse;
 import com.parse.ParseUser;
 
 import java.io.IOException;
@@ -33,12 +35,16 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.MainViewPageAdapter;
+import cliq.com.cliqgram.events.BaseEvent;
+import cliq.com.cliqgram.events.FollowersSuccessEvent;
+import cliq.com.cliqgram.events.FollowingsSuccessEvent;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.fragments.ActivityFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SearchFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
+import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
@@ -121,9 +127,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //this is for testing follow operation
         //UserRelationsService.follow("jjjj");
         //this is for testing followings list
-        List<ParseUser> userList =  UserRelationsService.getRelation("jj", "followings");
+        UserRelationsService.getRelation("jj", "followings");
         //this is for testing followers list
-        List<ParseUser> userList2 =  UserRelationsService.getRelation("jj", "followers");
+        UserRelationsService.getRelation("jj", "followers");
+        //AppStarter.eventBus.post();
         post = (Button) findViewById(R.id.bPost);
         post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +142,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+    }
+
+    @Subscribe
+    public void onEvent(final BaseEvent baseEvent) {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ProgressSpinner.getInstance().dismissSpinner();
+                if(baseEvent instanceof FollowersSuccessEvent){
+                        List<ParseUser> followers = ((FollowersSuccessEvent) baseEvent).getFollowers();
+                }
+                if(baseEvent instanceof FollowingsSuccessEvent){
+                    List<ParseUser> followings = ((FollowingsSuccessEvent) baseEvent).getFollowings();
+                }
+            }
+        }, 2000);
     }
 
     @Override

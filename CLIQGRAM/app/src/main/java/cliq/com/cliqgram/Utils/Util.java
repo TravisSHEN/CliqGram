@@ -115,9 +115,9 @@ public class Util {
         try {
             InputStream inputStream = cr.openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            data = baos.toByteArray();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            data = bos.toByteArray();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

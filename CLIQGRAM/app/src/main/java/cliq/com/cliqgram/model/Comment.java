@@ -14,7 +14,12 @@ public class Comment implements Parcelable {
     private String content;
     private Date createdAt;
     private User owner;
+    private String postId;
     private Post post;
+
+    public Comment(){
+
+    }
 
     public static Comment createComment(User owner, Post post, String content) {
 
@@ -66,6 +71,14 @@ public class Comment implements Parcelable {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public Post getPost() {

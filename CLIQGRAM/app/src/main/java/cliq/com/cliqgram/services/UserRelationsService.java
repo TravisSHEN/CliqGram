@@ -1,45 +1,76 @@
 package cliq.com.cliqgram.services;
 
+import android.os.Handler;
+
 import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cliq.com.cliqgram.events.BaseEvent;
+import cliq.com.cliqgram.events.FollowersSuccessEvent;
+import cliq.com.cliqgram.events.FollowingsSuccessEvent;
+import cliq.com.cliqgram.events.UserSuccessEvent;
+import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.utils.Params;
+import de.greenrobot.event.Subscribe;
 
 /**
  * Created by ilkan on 2/10/2015.
  */
 public class UserRelationsService {
 
-    public static void follow(final String userName){
+    ParseUser otherUser;
+    String userName;
+    ParseUser currentUser;
 
-        final ParseUser currentUser = ParseUser.getCurrentUser();
-        final ParseUser otherUser = UserService.findParseUserByName(userName);
-        followGenericAction(userName, "followers", currentUser);
-        followGenericAction(currentUser.getUsername(), "followings", otherUser);
+    public void follow(String userName){
+
+        this.userName = userName;
+        this.currentUser = ParseUser.getCurrentUser();
+        UserService.findParseUserByName(userName);
+
+    }
+
+    public void unfollow(String userName){
+        //TODO should be implemented
+    }
+
+    @Subscribe
+    public void onEvent(final BaseEvent baseEvent) {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ProgressSpinner.getInstance().dismissSpinner();
+                if (baseEvent instanceof UserSuccessEvent) {
+                    otherUser = ((UserSuccessEvent) baseEvent).getParseUser();
+                    followGenericAction(userName, Params.FIELD_FOLLOWERS, currentUser);
+                    followGenericAction(currentUser.getUsername(), Params.FIELD_FOLLOWINGS, otherUser);
+                }
+            }
+        }, 2000);
     }
 
     private static void followGenericAction(final String userName, final String operationName, final ParseUser user){
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserRelations");
-        query.whereEqualTo("username", userName);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Params.TABLE_USER_RELATIONS);
+        query.whereEqualTo(Params.FIELD_USER_NAME, userName);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if(e == null){
                     ParseObject userRelations;
                     if(objects== null || objects.size() == 0){
-                        userRelations = new ParseObject("UserRelations");
-                        userRelations.put("username", userName);
+                        userRelations = new ParseObject(Params.TABLE_USER_RELATIONS);
+                        userRelations.put(Params.FIELD_USER_NAME, userName);
                     }else{
                         userRelations = objects.get(0);
                     }
@@ -61,27 +92,33 @@ public class UserRelationsService {
                         }
                     });
                 }else{
-                    //TODO event
+                    //TODO fail event
                 }
             }
         });
 
     }
 
-    public static List<ParseUser> getRelation(String userName, String relation){
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("UserRelations");
-        query.whereEqualTo("username", userName);
-        List<ParseUser> userRelations = null;
-        try {
-            List<ParseObject> parseObjects = (List<ParseObject>)query.find();
-            if(parseObjects != null && parseObjects.size() == 1){
-                userRelations = (List<ParseUser>)parseObjects.get(0).get(relation);
+    public static void getRelation(String userName, final String relation){
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Params.TABLE_USER_RELATIONS);
+        query.whereEqualTo(Params.FIELD_USER_NAME, userName);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null && objects != null && objects.size() == 1) {
+                    List<ParseUser> userRelations = (List<ParseUser>) objects.get(0).get(relation);
+                    if (relation.equals(Params.FIELD_FOLLOWINGS)) {
+                        AppStarter.eventBus.post(new FollowingsSuccessEvent(userRelations));
+                    } else {
+                        AppStarter.eventBus.post(new FollowersSuccessEvent(userRelations));
+                    }
+
+                } else {
+                    //TODO fail event
+                }
             }
-        }catch(ParseException e){
-            //TODO exception
-        }finally {
-            return userRelations;
-        }
+        });
 
     }
 
