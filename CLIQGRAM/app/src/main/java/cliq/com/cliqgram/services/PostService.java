@@ -177,7 +177,7 @@ public class PostService {
         post.setPhotoData(parseObject.getBytes("photo"));
         post.setDescription(parseObject.getString("description"));
         post.setLocation(parseObject.getParseGeoPoint("location"));
-        post.setCreatedAt(parseObject.getDate("createdAt"));
+//        post.setCreatedAt(parseObject.getDate("createdAt"));
 
         // TODO: need to convert ParseObject to Comment & Like Object
         post.setCommentList(parseObject.<Comment>getList("comments"));

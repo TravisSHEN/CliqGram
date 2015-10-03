@@ -97,7 +97,9 @@ public class FeedAdapter extends RecyclerView
 
         feedViewHolder.feed_avatar.setImageDrawable(bm_avatar);
         feedViewHolder.feed_user_name.setText(post.getOwner().getUsername());
-        feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
+        // TODO:
+//        feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
+
 
     }
 

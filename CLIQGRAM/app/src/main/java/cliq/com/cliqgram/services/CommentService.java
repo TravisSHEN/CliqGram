@@ -4,6 +4,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import cliq.com.cliqgram.events.CommentFailEvent;
 import cliq.com.cliqgram.events.CommentSuccessEvent;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
-import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
 
 /**
@@ -20,20 +20,22 @@ import cliq.com.cliqgram.server.AppStarter;
  */
 public class CommentService {
 
-    public static void comment(Post post, Comment comment){
+    public static final String TABLE_NAME = "Comment";
 
+
+    public static void comment(Post post, final Comment comment){
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Post");
         query.getInBackground(post.getPostId(), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject postObject, ParseException e) {
                 if(e == null){
-                    User currentUser = UserService.getCurrentUser();
-                    Comment comment = new Comment("content", currentUser);
+                    ParseUser currentUser = ParseUser.getCurrentUser();
 
-                    ParseObject parseObject = new ParseObject("Comment");
-                    parseObject.put("owner", comment.getOwner());
+                    ParseObject parseObject = new ParseObject(TABLE_NAME);
+                    parseObject.put("owner", currentUser);
                     parseObject.put("content", comment.getContent());
+                    parseObject.put("post", postObject);
                     parseObject.saveInBackground();
                     ArrayList<ParseObject> relation = (ArrayList)postObject.get("comments");
                     if(relation == null){

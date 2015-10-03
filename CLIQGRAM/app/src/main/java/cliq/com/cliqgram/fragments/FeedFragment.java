@@ -12,13 +12,13 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FeedAdapter;
+import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.utils.Util;
@@ -119,21 +119,35 @@ public class FeedFragment extends Fragment {
         User user2 = User.userFactory("abc",
                 "abc@abc.com");
 
-        feedList.add(Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
-                .lavery, 1f), user1, "good"));
-        feedList.add(Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
-                .lavery, 1f), user2, "yes"));
-        feedList.add(Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
-                .lavery, 1f), user1, "no"));
+        Post post1 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+                .lavery, 1f), user1, "good");
+        post1.saveInBackground();
+
+        Post post2 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+                .lavery, 1f), user2, "yes");
+        post2.saveInBackground();
+
+        Post post3 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+                .lavery, 1f), user1, "no");
+        post3.saveInBackground();
+
+        feedList.add(post1);
+        feedList.add(post2);
+        feedList.add(post3);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(calendar.getTime());
         calendar.add(Calendar.DATE, 1);
 
-        feedList.get(2).setCreatedAt(calendar.getTime());
+//        feedList.get(2).setCreatedAt(calendar.getTime());
 
-        Collections.sort(feedList);
+//        Collections.sort(feedList);
 
+        // test comment service
+        Comment comment = Comment.createComment(user1, feedList.get(0),
+                "It's Good");
+        comment.saveInBackground();
+//        CommentService.comment(feedList.get(0), "It's good");
 //        //this is for testing follow operation
 //        UserRelationsService.follow("litaos");
 //        //this is for testing followings list

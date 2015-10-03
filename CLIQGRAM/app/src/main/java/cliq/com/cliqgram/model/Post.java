@@ -5,7 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 
+import com.parse.ParseClassName;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,7 +23,8 @@ import cliq.com.cliqgram.utils.Util;
 /**
  * Created by ilkan on 27/09/2015.
  */
-public class Post implements Comparable<Post>{
+@ParseClassName("Post")
+public class Post extends ParseObject implements Comparable<Post>{
 
     private String postId;
     private User owner;
@@ -50,7 +55,7 @@ public class Post implements Comparable<Post>{
         }
 
         post.setCommentList(new ArrayList<Comment>());
-        post.setCreatedAt(Util.getCurrentDate());
+//        post.setCreatedAt(Util.getCurrentDate());
         post.setLikeList(new ArrayList<Like>());
 
         return post;
@@ -72,7 +77,7 @@ public class Post implements Comparable<Post>{
         }
 
         post.setCommentList(new ArrayList<Comment>());
-        post.setCreatedAt(Util.getCurrentDate());
+//        post.setCreatedAt(Util.getCurrentDate());
         post.setLikeList(new ArrayList<Like>());
 
         return post;
@@ -80,7 +85,7 @@ public class Post implements Comparable<Post>{
     }
 
     public Post() {
-
+        super();
     }
 
     public Post(byte[] photoData, String description, User owner,
@@ -94,7 +99,7 @@ public class Post implements Comparable<Post>{
         this.likeList = likeList;
 
         Location temp_location = AppStarter.gpsTracker.getLocation();
-        this.location.setLongitude( temp_location.getLongitude() );
+        this.location.setLongitude(temp_location.getLongitude());
         this.location.setLatitude(temp_location.getLatitude());
     }
 
@@ -159,35 +164,70 @@ public class Post implements Comparable<Post>{
 
 
     public String getPostId() {
+        postId = this.getString("postId");
         return postId;
     }
 
     public void setPostId(String postId) {
+        if( this.getObjectId() != null ) {
+            this.put("postId", this.getObjectId());
+        }
         this.postId = postId;
     }
 
+    public User getOwner() {
+        owner = UserService.getUserFromParseUser((ParseUser) this.get("user"));
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.put("user", UserService.findParseUserByName(owner.getUsername()));
+        this.owner = owner;
+    }
+
     public byte[] getPhotoData() {
+        photoData = this.getBytes("photo");
         return photoData;
     }
 
-    public void setPhotoData(byte[] photo) {
-        this.photoData = photo;
+    public void setPhotoData(byte[] photoData) {
+        String photoLabel = "img_" + Util.getCurrentDate().toString() + ".jpg";
+        ParseFile photo = new ParseFile(photoLabel, photoData);
+        photo.saveInBackground();
+        this.put("photo", photo);
+        this.photoData = photoData;
     }
 
     public String getDescription() {
+        description = this.getString("description");
         return description;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.put("description", description);
     }
 
     public ParseGeoPoint getLocation() {
+        location = this.getParseGeoPoint("location");
         return location;
     }
 
     public void setLocation(ParseGeoPoint location) {
-        this.location = location;
+        this.put("location", location);
+    }
+
+    public Date getCreatedAt() {
+        createdAt = this.getDate("createdAt");
+        return createdAt;
+    }
+
+//    public void setCreatedAt(Date createdAt) {
+//        this.put("createdAt", createdAt);
+//    }
+
+    public String getDateString(String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(this.getCreatedAt());
     }
 
     public List<Comment> getCommentList() {
@@ -196,19 +236,6 @@ public class Post implements Comparable<Post>{
 
     public void setCommentList(List<Comment> commentList) {
         this.commentList = commentList;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getDateString(String format) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        return sdf.format(createdAt);
     }
 
     public List<Like> getLikeList() {
@@ -221,14 +248,6 @@ public class Post implements Comparable<Post>{
 
     public int getLikes_count() {
         return this.likeList.size();
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
     }
 
 }
