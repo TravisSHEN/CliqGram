@@ -17,6 +17,13 @@
     <string name="button_flash_off">Flash Off</string>
     <string name="button_grid_on">Grid On</string>
     <string name="button_grid_off">Grid Off</string>
+    <string name="button_gallery">Gallery</string>
+
+    <!-- gallery-->
+    <string name="action_upload">Upload Photo</string>
+    <string name="action_open_camera">Open Camera</string>
+    <string name="action_edit">Edit Photo</string>
+    <string name="action_share">Share Via Bluetooth</string>
 
     <!--navigation menu-->
     <string name="navigation_item_home">Home</string>
@@ -36,4 +43,5 @@
     <string name="title_activity_camera">camera</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_image_display">ImageDisplayActivity</string>
 </resources>

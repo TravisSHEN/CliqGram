@@ -52,7 +52,13 @@
         <activity
                 android:name=".activities.CameraActivity"
                 android:label="@string/title_activity_camera"
-                android:screenOrientation="locked">
+                android:screenOrientation="landscape">
+        </activity>
+        <activity
+                android:name=".activities.ImageDisplayActivity"
+                android:label="@string/title_activity_image_display"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
     </application>
 

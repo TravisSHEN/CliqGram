@@ -2,11 +2,9 @@ package cliq.com.cliqgram.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.ImageFormat;
-import android.graphics.Matrix;
-import android.graphics.RectF;
-import android.graphics.SurfaceTexture;
+import android.graphics.*;
 import android.hardware.camera2.*;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
@@ -14,12 +12,15 @@ import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.v7.app.ActionBarActivity;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
-import android.view.*;
+import android.view.Surface;
+import android.view.TextureView;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 import butterknife.Bind;
@@ -35,38 +36,90 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-public class CameraActivity extends ActionBarActivity implements OnClickListener {
+public class CameraActivity extends Activity implements OnClickListener {
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
     private static final String TAG = "CameraActivity";
+
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 0);
+        ORIENTATIONS.append(Surface.ROTATION_90, 90);
+        ORIENTATIONS.append(Surface.ROTATION_180, 180);
+        ORIENTATIONS.append(Surface.ROTATION_270, 270);
+    }
+
     private final Semaphore mCameraOpenCloseLock = new Semaphore(1);
-    private boolean flashOn = true;
-    private boolean gridOn = false;
     @Bind(R.id.textureView_preview)
     AutoFitTextureView mTextureView;
+    @Bind(R.id.view_grid)
+    View myGridView;
     @Bind(R.id.button_capture)
     Button buttonCapture;
     @Bind(R.id.button_flash)
     Button buttonFlash;
     @Bind(R.id.button_grid)
     Button buttonGrid;
-    private File mFile;
+    @Bind(R.id.button_gallery)
+    Button buttonGallery;
+    private boolean flashOn = true;
+    private boolean gridOn = false;
+    private String folderPath;
     private State mState = State.PREVIEW;
     private String mCameraId;
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
+    private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
+            = new ImageReader.OnImageAvailableListener() {
+
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+            // TODO
+//            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), folderPath));
+            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()));
+//            startDisplayActivity(reader.acquireNextImage());
+        }
+
+    };
+
+//    private void startDisplayActivity(Image image) {
+//        Intent intent = new Intent(this, ImageDisplayActivity.class);
+//        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+//        byte[] bytes = new byte[buffer.remaining()];
+//        buffer.get(bytes);
+//        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//        intent.putExtra("bitmap", bitmap);
+//        startActivity(intent);
+//    }
+
     private Size mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
     private CaptureRequest mPreviewRequest;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mCaptureSession;
     private ImageReader mImageReader;
+    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+            = new TextureView.SurfaceTextureListener() {
+
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+            openCamera(width, height);
+        }
+
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+            configTextureViewOutput(width, height);
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+            return true;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+        }
+
+    };
     private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
 
         private void process(CaptureResult result) {
@@ -118,31 +171,6 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
             process(result);
         }
     };
-
-    private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
-            = new ImageReader.OnImageAvailableListener() {
-
-        @Override
-        public void onImageAvailable(ImageReader reader) {
-            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
-        }
-
-    };
-
-    private void runPrecaptureSequence() {
-        try {
-            // This is how to tell the camera to trigger.
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
-            // Tell #mCaptureCallback to wait for the precapture sequence to be set.
-            mState = State.WAITING_PRECAPTURE;
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
@@ -169,29 +197,20 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
             finish();
         }
     };
-    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
-            = new TextureView.SurfaceTextureListener() {
 
-        @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-            openCamera(width, height);
+    private void runPrecaptureSequence() {
+        try {
+            // This is how to tell the camera to trigger.
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+            // Tell #mCaptureCallback to wait for the precapture sequence to be set.
+            mState = State.WAITING_PRECAPTURE;
+            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
+                    mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
-
-        @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
-            configTextureViewOutput(width, height);
-        }
-
-        @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
-            return true;
-        }
-
-        @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture texture) {
-        }
-
-    };
+    }
 
     private void captureStillPicture() {
         try {
@@ -203,7 +222,6 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(mImageReader.getSurface());
 
-            // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
@@ -218,19 +236,18 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
 
-            CameraCaptureSession.CaptureCallback CaptureCallback
+            CameraCaptureSession.CaptureCallback captureCallback
                     = new CameraCaptureSession.CaptureCallback() {
 
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    showToast("Saved: " + mFile);
-                    Log.d(TAG, mFile.toString());
+                    showToast("Image Saved.");
                     unlockFocus();
                 }
             };
 
             mCaptureSession.stopRepeating();
-            mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
+            mCaptureSession.capture(captureBuilder.build(), captureCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -317,10 +334,10 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
         // Full screen.
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        mFile = new File(getExternalFilesDir(null), "pic.jpg");
         buttonCapture.setOnClickListener(this);
         buttonFlash.setOnClickListener(this);
         buttonGrid.setOnClickListener(this);
+        buttonGallery.setOnClickListener(this);
 
     }
 
@@ -491,28 +508,6 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_camera, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_capture:
@@ -528,7 +523,20 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
                 }
                 break;
             case R.id.button_grid:
-
+                // TODO
+                if (gridOn) {
+                    gridOn = false;
+                    myGridView.setVisibility(View.INVISIBLE);
+                    buttonGrid.setText(R.string.button_grid_off);
+                } else {
+                    gridOn = true;
+                    myGridView.setVisibility(View.VISIBLE);
+                    buttonGrid.setText(R.string.button_grid_on);
+                }
+                break;
+            case R.id.button_gallery:
+                startActivity(new Intent(this, ImageDisplayActivity.class));
+                break;
         }
 
     }
@@ -562,14 +570,34 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
         }
     }
 
-    private static class ImageSaver implements Runnable {
+    private class ImageInserter implements Runnable {
+
+        private final Image mImage;
+        private final String fileName;
+
+        public ImageInserter(Image mImage) {
+            this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
+            this.mImage = mImage;
+        }
+
+        @Override
+        public void run() {
+            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName, null);
+        }
+    }
+
+    private class ImageSaver implements Runnable {
 
         private final Image mImage;
         private final File mFile;
 
-        public ImageSaver(Image image, File file) {
+        public ImageSaver(Image image, String filePath) {
             mImage = image;
-            mFile = file;
+            mFile = new File(filePath, "image_" + Long.toString(mImage.getTimestamp()) + ".jpg");
         }
 
         @Override
@@ -581,6 +609,7 @@ public class CameraActivity extends ActionBarActivity implements OnClickListener
             try {
                 output = new FileOutputStream(mFile);
                 output.write(bytes);
+
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {

@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-        >
-
-
-    <cliq.com.cliqgram.views.AutoFitTextureView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textureView_preview"
-            android:layout_gravity="center_vertical"/>
+                android:layout_height="fill_parent">
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/relativeLayout_camera">
+        <cliq.com.cliqgram.views.AutoFitTextureView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textureView_preview"
+                android:layout_gravity="center_vertical"/>
+        <cliq.com.cliqgram.views.MyGridView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/view_grid"
+                android:visibility="invisible"
+                android:layout_alignTop="@+id/textureView_preview"
+                android:layout_alignLeft="@+id/textureView_preview"
+                android:layout_alignBottom="@+id/textureView_preview"
+                android:layout_alignRight="@+id/textureView_preview"/>
+    </RelativeLayout>
     <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
-            android:layout_alignParentBottom="true" android:id="@+id/linearLayout"
-            android:layout_below="@+id/textureView_preview">
-        <Button
-                android:id="@+id/button_flash"
-                android:text="@string/button_flash_on"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/linearLayout_button"
+            android:orientation="vertical"
+            android:layout_toRightOf="@+id/relativeLayout_camera">
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+            <Button
+                    android:id="@+id/button_flash"
+                    android:text="@string/button_flash_on"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+            <Button
+                    android:id="@+id/button_grid"
+                    android:text="@string/button_grid_off"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+        </LinearLayout>
         <Button
                 android:id="@+id/button_capture"
                 android:text="@string/button_capture"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"/>
         <Button
-                android:id="@+id/button_grid"
-                android:text="@string/button_grid_on"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:id="@+id/button_gallery"
+                android:text="@string/button_gallery"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"/>
     </LinearLayout>
 
