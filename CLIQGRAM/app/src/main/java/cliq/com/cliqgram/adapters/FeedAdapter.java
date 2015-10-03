@@ -13,6 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
+import com.parse.GetDataCallback;
+import com.parse.ParseException;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -41,6 +44,7 @@ public class FeedAdapter extends RecyclerView
 
         this.feedList = feedList;
         this.context = context;
+
     }
 
     @Override
@@ -53,17 +57,25 @@ public class FeedAdapter extends RecyclerView
     }
 
     @Override
-    public void onBindViewHolder(FeedViewHolder feedViewHolder, int position) {
+    public void onBindViewHolder(final FeedViewHolder feedViewHolder, int position) {
 
         runEnterAnimation(feedViewHolder.itemView, position);
 
-        Post post = feedList.get(position);
+        final Post post = feedList.get(position);
 
 //        Log.e("FeedAdapter", feed.toString());
 
-        feedViewHolder.feed_photo.setImageBitmap(post.getPhotoInBitmap(context));
-//        feedViewHolder.feed_photo.setImageDrawable(post.getPhotoInBitmapDrawable(context));
-//        feedViewHolder.feed_comments.setText(feed.getComments().get(0)
+        post.getPhotoData(new GetDataCallback() {
+            @Override
+            public void done(byte[] data, ParseException e) {
+                feedViewHolder.feed_photo.setImageBitmap(post
+                        .getPhotoInBitmap(context, data));
+            }
+        });
+
+        feedViewHolder.feed_comments.setText(post.getDescription());
+
+//        feedViewHolder.feed_comments.setText(post.getCommentList().get(0)
 //                .getContent());
 
         updateUserProfile(feedViewHolder);
@@ -72,7 +84,7 @@ public class FeedAdapter extends RecyclerView
         // add tag to btn
         feedViewHolder.feed_btn_like.setTag(feedViewHolder);
         feedViewHolder.feed_btn_more.setTag(position);
-        feedViewHolder.feed_btn_comments.setTag(position);
+        feedViewHolder.feed_btn_comments.setTag(post);
         feedViewHolder.feed_photo.setTag(feedViewHolder);
 
         this.bindClickListener(feedViewHolder, this.onClickListener, this.onTouchListener);
@@ -94,11 +106,10 @@ public class FeedAdapter extends RecyclerView
 
         BitmapDrawable bm_avatar = Util.resizeBitmapDrawable(context,
                 post.getOwner().getAvatarInBitmapDrawable(context), 0.7f);
-
         feedViewHolder.feed_avatar.setImageDrawable(bm_avatar);
         feedViewHolder.feed_user_name.setText(post.getOwner().getUsername());
         // TODO:
-//        feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
+        feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
 
 
     }
@@ -246,4 +257,9 @@ public class FeedAdapter extends RecyclerView
     }
 
 
+    public void updateFeedList(List<Post> feedList) {
+        this.feedList = feedList;
+
+        this.notifyDataSetChanged();
+    }
 }

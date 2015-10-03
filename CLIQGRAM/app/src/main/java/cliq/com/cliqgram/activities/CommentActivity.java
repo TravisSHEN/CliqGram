@@ -39,12 +39,8 @@ public class CommentActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent();
-//        intent.putExtra("username",
-//                ((SignupSuccessEvent) baseEvent).getUsername());
-//        intent.putExtra("password",
-//                ((SignupSuccessEvent) baseEvent).getPassword());
-        setResult(RESULT_OK, intent);
+//        Intent intent = new Intent();
+//        setResult(RESULT_OK, intent);
         this.finish();
     }
 }

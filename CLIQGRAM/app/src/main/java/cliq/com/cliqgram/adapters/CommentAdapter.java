@@ -21,7 +21,7 @@ import cliq.com.cliqgram.viewHolders.CommentViewHolder;
  * Created by litaoshen on 27/09/2015.
  */
 public class CommentAdapter extends RecyclerView
-        .Adapter<CommentViewHolder>{
+        .Adapter<CommentViewHolder> {
 
     private static final int ANIMATED_ITEMS_COUNT = 2;
     private int lastAnimatedPosition = -1;
@@ -45,11 +45,11 @@ public class CommentAdapter extends RecyclerView
     }
 
     @Override
-    public void onBindViewHolder(CommentViewHolder holder, int position) {
+    public void onBindViewHolder(final CommentViewHolder holder, int position) {
 
         runEnterAnimation(holder.itemView, position);
 
-        Comment comment = commentList.get(position);
+        final Comment comment = commentList.get(position);
 
         BitmapDrawable bm_avatar = Util.resizeBitmapDrawable(context, comment
                 .getOwner().getAvatarInBitmapDrawable(context), 0.8f);
@@ -83,4 +83,14 @@ public class CommentAdapter extends RecyclerView
                     .start();
         }
     }
+
+    public void updateComments(List<Comment> commentList) {
+        this.commentList = commentList;
+        this.notifyDataSetChanged();
+    }
+//
+//    public void updateComments(Comment comment){
+//        this.commentList.add(comment);
+//        this.notifyItemInserted(this.commentList.size()-1);
+//    }
 }

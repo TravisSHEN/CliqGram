@@ -37,6 +37,7 @@ Temporary Items
 ### Example user template
 
 # IntelliJ project files
+/.idea
 .idea
 *.iml
 out

@@ -8,6 +8,7 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import cliq.com.cliqgram.model.Comment;
+import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
 
 /**
@@ -20,6 +21,7 @@ public class ParseConnector {
 
         ParseObject.registerSubclass(Comment.class);
         ParseObject.registerSubclass(Post.class);
+        ParseObject.registerSubclass(Like.class);
 
         // Add your initialization code here
         Parse.initialize(context, Keys.applicationId, Keys.clientKey);
@@ -27,7 +29,7 @@ public class ParseConnector {
         ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
-        // defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
     }
 

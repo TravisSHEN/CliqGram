@@ -4,6 +4,7 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cliq.com.cliqgram.model.Activity;
@@ -58,6 +59,9 @@ public class UserService {
 
 
     public static User getUserFromParseUser(ParseUser parseUser) {
+        if(parseUser == null ){
+            return null;
+        }
         User user = User.userFactory();
 
         user.setUserId(parseUser.getObjectId());
@@ -72,6 +76,18 @@ public class UserService {
         return user;
     }
 
+
+    public static ArrayList<String> getUserIdList(List<ParseUser> userList) {
+        if( userList == null || userList.size() <= 0){
+            return null;
+        }
+        ArrayList<String> userIdList = new ArrayList<>();
+        for (ParseUser user : userList) {
+            userIdList.add(user.getObjectId());
+        }
+
+        return userIdList;
+    }
 
     public User getUser() {
         return user;

@@ -23,8 +23,6 @@ import android.widget.Toast;
 
 import com.parse.ParseUser;
 
-import java.util.Date;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -135,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == PICKED_IMG && resultCode == RESULT_OK  && data != null) {
             ContentResolver contentResolver = getBaseContext().getContentResolver();
             Uri selectedImage = data.getData();
-            Date date = Util.getCurrentDate();
             byte[] imageData = Util.convertImageToByte(selectedImage, contentResolver);
             // TODO: pass current user to here to create a new Post
             User user = UserService.getCurrentUser();
@@ -334,40 +331,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onOpenCommentFragment(final OpenCommentEvent
                                               openFragmentEvent) {
 
-        // TODO: uncomment these if don't need tab bar on bottom
-//        CommentFragment fragment = CommentFragment.newInstance();
-//        String title = getString(R.string.navigation_item_comment);
-////
-////        Snackbar.make(toolbar, "Comment opened", Snackbar
-////                .LENGTH_SHORT)
-////                .show();
-//
-//        if (fragment != null) {
-//
-//            float_button.setVisibility(View.INVISIBLE);
-//
-//            fm.beginTransaction()
-//                    .add(fragment, "")
-////                    .replace(R.id.container_body, fragment)
-//                    .addToBackStack(null)
-//                    .commit();
-//
-//            // set the toolbar title
-//            getSupportActionBar().setTitle(title);
-//        }
-        String postId = openFragmentEvent.getPost().getPostId();
+
+        String postId = openFragmentEvent.getPost().getObjectId();
         Intent intent = new Intent(this, CommentActivity.class);
         intent.putExtra(CommentActivity.ARG_POST, postId);
         this.startActivityForResult(intent, REQUEST_COMMENT);
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == REQUEST_COMMENT) {
-//            if (resultCode == RESULT_OK) {
-//                 TODO: show new comment if necessary
-//            }
-//        }
-//    }
 
 }

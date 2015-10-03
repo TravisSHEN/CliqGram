@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.parse.ParseUser;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +20,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.CommentAdapter;
+import cliq.com.cliqgram.events.CommentReadyEvent;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
-import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.CommentService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import de.greenrobot.event.Subscribe;
@@ -91,6 +90,7 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         AppStarter.eventBus.register(this);
 
         commentList = new ArrayList<>();
+        this.initializeData();
     }
 
     @Override
@@ -98,14 +98,13 @@ public class CommentFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-       View root_view = inflater.inflate(R.layout.fragment_comment,
-               container, false);
+        View root_view = inflater.inflate(R.layout.fragment_comment,
+                container, false);
 
         // bind this fragment
         ButterKnife.bind(this, root_view);
 
         this.initializeCommentView();
-        this.initializeData();
 
         return root_view;
     }
@@ -121,44 +120,29 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         commentView.setAdapter(commentAdapter);
     }
 
-    private void initializeData(){
-
-        Post post = null;
+    private void initializeData() {
 
         // TODO: find post by id via post service
-//        PostService.getPost( postId );
-        PostService.getPost("X8f2UlSJIc");
+        PostService.getPost(postId);
+//        PostService.getPost("X8f2UlSJIc");
         ProgressSpinner.getInstance().showSpinner(this.getActivity(),
                 "Loading...");
-
-        ParseUser currentUser = ParseUser.getCurrentUser();
-
-        User user1 = User.userFactory(currentUser
-                        .getUsername(),
-                currentUser.getEmail());
-
-        User user2 = User.userFactory("abc",
-                "abc@abc.com");
-
-        Comment c1 = Comment.createComment(user1, post, "Good angle");
-        Comment c2 = Comment.createComment( user2, post, "Good to hear this");
-
-        commentList.add(c1);
-        commentList.add(c2);
-
-        commentAdapter.notifyDataSetChanged();
     }
 
     @Subscribe
-    public void onGetPostEvent(GetPostEvent event){
+    public void onGetPostEvent(GetPostEvent event) {
 
-        if(event.isSuccess()){
-           this.post = event.getPost();
+        if (event.isSuccess()) {
+            this.post = event.getPost();
+            // check if it's in same post
+            if (!this.post.getObjectId().equals(postId)) {
+                return;
+            }
             this.commentList = post.getCommentList();
-            // notify adapter to load data
-            commentAdapter.notifyDataSetChanged();
+            commentAdapter.updateComments(this.commentList);
 
-            Toast.makeText(getActivity(), post.getPostId(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getActivity(), post.getObjectId(), Toast
+                    .LENGTH_LONG).show();
         } else {
             Toast.makeText(getActivity(), "No data found.", Toast
                     .LENGTH_SHORT).show();
@@ -166,19 +150,39 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         ProgressSpinner.getInstance().dismissSpinner();
     }
 
+    @Subscribe
+    public void onCommentReadyEvent(CommentReadyEvent event) {
+        Comment comment = event.getComment();
+        // if not belong to this post, then return;
+        if (comment == null || ! comment.getPost().getObjectId().equals
+                (postId)) {
+            Toast.makeText(this.getActivity(), "Not updated", Toast
+                    .LENGTH_SHORT).show();
+            return;
+        }
+
+        // if existing in commentList, then return;
+        for(Comment c : commentList){
+            if(c.getObjectId().equals(comment.getObjectId())){
+                return;
+            }
+        }
+
+        this.commentList.add(comment);
+        commentAdapter.updateComments(this.commentList);
+    }
+
     @OnClick(R.id.comment_send)
-    public void onSendClick(View view){
+    public void onSendClick(View view) {
 
         String content = commentEdit.getText().toString();
 
-        if( validateComment(content) ) {
+        if (validateComment(content)) {
             commentEdit.setText("");
 
             Comment comment = Comment.createComment(UserService.getCurrentUser(), post,
                     content);
-            commentList.add(comment);
-
-            commentAdapter.notifyDataSetChanged();
+            CommentService.comment(this.post, comment);
         }
     }
 

@@ -2,12 +2,11 @@ package cliq.com.cliqgram.services;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cliq.com.cliqgram.events.CommentFailEvent;
 import cliq.com.cliqgram.events.CommentSuccessEvent;
@@ -20,28 +19,25 @@ import cliq.com.cliqgram.server.AppStarter;
  */
 public class CommentService {
 
-    public static final String TABLE_NAME = "Comment";
-
-
+    /**
+     *
+     * @param post
+     * @param comment
+     */
     public static void comment(Post post, final Comment comment){
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Post");
-        query.getInBackground(post.getPostId(), new GetCallback<ParseObject>() {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
             @Override
-            public void done(ParseObject postObject, ParseException e) {
+            public void done(Post postObject, ParseException e) {
                 if(e == null){
-                    ParseUser currentUser = ParseUser.getCurrentUser();
 
-                    ParseObject parseObject = new ParseObject(TABLE_NAME);
-                    parseObject.put("owner", currentUser);
-                    parseObject.put("content", comment.getContent());
-                    parseObject.put("post", postObject);
-                    parseObject.saveInBackground();
-                    ArrayList<ParseObject> relation = (ArrayList)postObject.get("comments");
+                    List<Comment> relation = (ArrayList) postObject.get
+                            ("comments");
                     if(relation == null){
                         relation = new ArrayList<>();
                     }
-                    relation.add(parseObject);
+                    relation.add(comment);
                     postObject.put("comments", relation);
                     postObject.saveInBackground(new SaveCallback() {
                         @Override
@@ -61,4 +57,5 @@ public class CommentService {
             }
         });
     }
+
 }
