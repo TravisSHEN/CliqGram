@@ -35,6 +35,9 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_comment">Comment</string>
     <string name="navigation_item_search">Search</string>
+    <string name="profile_posts">posts</string>
+    <string name="profile_followers">followers</string>
+    <string name="profile_followings">followings</string>
 
     <!-- Plurals for feed_likes_count -->
     <plurals name="feed_likes_count">

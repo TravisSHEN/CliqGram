@@ -7,6 +7,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import cliq.com.cliqgram.events.CommentFailEvent;
@@ -84,7 +85,7 @@ public class LikeService {
                             } else {
                                 AppStarter.eventBus.post(new LikeSuccessEvent
                                         ("Like failed - " +
-                                        e.getMessage()));
+                                                e.getMessage()));
                             }
                         }
                     });
@@ -106,8 +107,9 @@ public class LikeService {
            return isLiked;
         }
 
-        for(Like like : likeList){
-            if( like.getUser().getUserId().equals(parseUser.getObjectId())){
+        for(Iterator<Like> iter = likeList.listIterator(); iter.hasNext();){
+            Like like = iter.next();
+            if( like.getUser().getUsername().equals(parseUser.getUsername())){
                 isLiked = true;
                 return  isLiked;
             }

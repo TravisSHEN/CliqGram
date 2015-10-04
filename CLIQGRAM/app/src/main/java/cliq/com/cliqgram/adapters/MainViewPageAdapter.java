@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,9 @@ public class MainViewPageAdapter extends FragmentStatePagerAdapter {
         tabItemList.add(new TabItem(SearchFragment.newInstance(), "Search"));
         tabItemList.add(new TabItem(FeedFragment.newInstance(), "Camera"));
         tabItemList.add(new TabItem(ActivityFragment.newInstance(), "Activity"));
-        tabItemList.add(new TabItem(ProfileFragment.newInstance(), "Profile"));
+        tabItemList.add(new TabItem(ProfileFragment.newInstance(ParseUser
+                .getCurrentUser().getObjectId()),
+                "Profile"));
     }
 
     @Override

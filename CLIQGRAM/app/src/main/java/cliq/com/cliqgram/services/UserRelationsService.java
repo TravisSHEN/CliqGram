@@ -1,6 +1,7 @@
 package cliq.com.cliqgram.services;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -9,6 +10,10 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cliq.com.cliqgram.events.RelationGetEvent;
+import cliq.com.cliqgram.model.UserRelation;
+import cliq.com.cliqgram.server.AppStarter;
 
 /**
  * Created by ilkan on 2/10/2015.
@@ -49,7 +54,7 @@ public class UserRelationsService {
                     if (relation == null) {
                         relation = new ArrayList<>();
                     }
-                    if( isInList(relation, user )){
+                    if (isInList(relation, user)) {
                         return;
                     }
                     relation.add(user);
@@ -73,6 +78,39 @@ public class UserRelationsService {
 
     }
 
+    /**
+     *
+     * @param username
+     */
+    public static void getRelation(final String username) {
+       ParseQuery<UserRelation> query = ParseQuery.getQuery(UserRelation.class);
+        query.include("followings");
+        query.include("followers");
+
+        query.whereEqualTo("username", username);
+
+        query.getFirstInBackground(new GetCallback<UserRelation>() {
+            @Override
+            public void done(UserRelation relation, ParseException e) {
+
+                if (e == null) {
+                    AppStarter.eventBus.post(new RelationGetEvent(relation));
+                } else {
+                    AppStarter.eventBus.post(new RelationGetEvent("Fail to " +
+                            "get relation with" + username + " " + e.getMessage()));
+                }
+
+            }
+        });
+
+    }
+
+    /**
+     *
+     * @param userName
+     * @param relation
+     * @return
+     */
     public static List<ParseUser> getRelation(String userName, String relation){
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);

@@ -41,7 +41,7 @@ public class FeedFragment extends Fragment {
 
     private FeedAdapter feedAdapter;
 
-    private List<Post> feedList;
+    private List<Post> postList;
 
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
@@ -70,7 +70,7 @@ public class FeedFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        feedList = new ArrayList<>();
+        postList = new ArrayList<>();
         this.initializeData();
     }
 
@@ -114,7 +114,7 @@ public class FeedFragment extends Fragment {
         feedView.setHasFixedSize(true);
 
 
-        feedAdapter = new FeedAdapter(this.getActivity(), feedList);
+        feedAdapter = new FeedAdapter(this.getActivity(), postList);
         feedView.setAdapter(feedAdapter);
     }
 
@@ -139,8 +139,8 @@ public class FeedFragment extends Fragment {
     public void onPostDataReady(GetPostEvent event) {
 
         if (event.getPostList() != null) {
-            feedList = event.getPostList();
-            feedAdapter.updateFeedList(feedList);
+            postList = event.getPostList();
+            feedAdapter.updateFeedList(postList);
         } else {
             Toast.makeText(this.getActivity(), event.getMessage(), Toast
                     .LENGTH_LONG).show();
@@ -152,8 +152,8 @@ public class FeedFragment extends Fragment {
     public void onPostSuccessEvent(PostSuccessEvent event){
         Post post = event.getPost();
         if(post != null ){
-            feedList.add(post);
-            feedAdapter.updateFeedList(feedList);
+            postList.add(post);
+            feedAdapter.updateFeedList(postList);
         }
     }
 

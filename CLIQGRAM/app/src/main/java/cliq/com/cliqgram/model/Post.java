@@ -98,6 +98,10 @@ public class Post extends ParseObject implements Comparable<Post> {
 
         Like like = Like.createLike(this, UserService.getCurrentUser());
 
+        if(this.getLikeList() == null){
+            this.setLikeList( new ArrayList<Like>());
+            this.saveInBackground();
+        }
         this.getLikeList().add(like);
         return true;
 
@@ -252,7 +256,11 @@ public class Post extends ParseObject implements Comparable<Post> {
     }
 
     public int getLikes_count() {
-        return this.getLikeList().size();
+        int count = 0;
+        if( this.getLikeList() != null ){
+           count = this.getLikeList().size();
+        }
+        return count;
     }
 
 }

@@ -1,15 +1,18 @@
 package cliq.com.cliqgram.services;
 
+import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cliq.com.cliqgram.model.Activity;
+import cliq.com.cliqgram.events.UserGetEvent;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.server.AppStarter;
 
 /**
  * Created by litaoshen on 30/09/2015.
@@ -19,21 +22,45 @@ public class UserService {
     private User user = User.userFactory();
     private static UserService userService = new UserService();
 
-    public static User getCurrentUser() {
+    public static void getUser(String userId){
 
-        ParseUser parseUser = ParseUser.getCurrentUser();
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.include("posts");
+        query.getInBackground(userId, new GetCallback<ParseUser>() {
+            @Override
+            public void done(ParseUser object, ParseException e) {
+                if( e == null ){
 
-        userService.getUser().setUserId(parseUser.getObjectId());
-        userService.getUser().setUsername(parseUser.getUsername());
-        userService.getUser().setEmail(parseUser.getEmail());
-//        userService.getUser().setAvatarData(parseUser.getBytes("avatar"));
-//        userService.getUser().setActivities((List<Activity>) parseUser.get("activities"));
-        //userService.getUser().setFollowerList((List<User>) parseUser.get("followers"));
-        //userService.getUser().setFollowingList((List<User>) parseUser.get("followings"));
+                    List<Post> postList = object.getList("posts");
+                    ParseFile avatar = object.getParseFile("avatar");
+                    byte[] avatarData = new byte[0];
+                    if (avatar != null ) {
+                        try {
+                            avatarData = avatar.getData();
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
 
-        return userService.getUser();
+                    User user = UserService.getUserFromParseUser(object);
+                    user.setPostList(postList);
+                    user.setAvatarData(avatarData);
+
+                    AppStarter.eventBus.post(new UserGetEvent(user));
+                } else {
+
+                    AppStarter.eventBus.post(new UserGetEvent("Fail to get " +
+                            "user - " + e.getMessage()));
+                }
+            }
+        });
     }
 
+    public static void getUser( String userId, GetCallback<ParseUser> callback ) {
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+
+        query.getInBackground(userId, callback);
+    }
 
     public static ParseUser findParseUserByName(String userName){
         ParseQuery<ParseUser> query = ParseUser.getQuery();
@@ -53,6 +80,19 @@ public class UserService {
         }
     }
 
+    public static User getCurrentUser() {
+
+        ParseUser parseUser = ParseUser.getCurrentUser();
+
+        userService.getUser().setUserId(parseUser.getObjectId());
+        userService.getUser().setUsername(parseUser.getUsername());
+        userService.getUser().setEmail(parseUser.getEmail());
+
+        return userService.getUser();
+    }
+
+
+
 
     public static User getUserFromParseUser(ParseUser parseUser) {
         if(parseUser == null ){
@@ -64,10 +104,6 @@ public class UserService {
         user.setUsername(parseUser.getUsername());
         user.setEmail(parseUser.getEmail());
         user.setAvatarData((byte[]) parseUser.get("avatar"));
-        user.setActivities((List<Activity>) parseUser.get("activities"));
-        user.setPostList((List<Post>) parseUser.get("posts"));
-        user.setFollowerList((List<User>) parseUser.get("followers"));
-        user.setFollowingList((List<User>) parseUser.get("followings"));
 
         return user;
     }

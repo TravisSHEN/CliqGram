@@ -23,6 +23,7 @@ import java.util.List;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.OpenCommentEvent;
+import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
@@ -40,12 +41,12 @@ public class FeedAdapter extends RecyclerView
 
 
     private Context context;
-    private List<Post> feedList;
+    private List<Post> postList;
 
 
-    public FeedAdapter(Context context, List<Post> feedList) {
+    public FeedAdapter(Context context, List<Post> postList) {
 
-        this.feedList = feedList;
+        this.postList = postList;
         this.context = context;
 
     }
@@ -64,7 +65,7 @@ public class FeedAdapter extends RecyclerView
 
         runEnterAnimation(feedViewHolder.itemView, position);
 
-        final Post post = feedList.get(position);
+        final Post post = postList.get(position);
 
 //        Log.e("FeedAdapter", feed.toString());
 
@@ -95,7 +96,7 @@ public class FeedAdapter extends RecyclerView
 
     @Override
     public int getItemCount() {
-        return feedList.size();
+        return postList.size();
     }
 
     /**
@@ -105,7 +106,7 @@ public class FeedAdapter extends RecyclerView
 
         int position = feedViewHolder.getAdapterPosition();
 
-        Post post = feedList.get(position);
+        Post post = postList.get(position);
 
         BitmapDrawable bm_avatar = Util.resizeBitmapDrawable(context,
                 post.getOwner().getAvatarInBitmapDrawable(context), 0.7f);
@@ -114,8 +115,17 @@ public class FeedAdapter extends RecyclerView
         // TODO:
         feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
 
+        List<Like> likeList = post.getLikeList();
         // highlight red heart button if user already liked.
-        if (LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), post.getLikeList())) {
+        if (likeList != null && likeList.size() > 0 &&
+                LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), likeList)) {
+            if( post.getObjectId().equals( "X5NTh1VrId")){
+                for(Like like: post.getLikeList()){
+                   Log.e("Like", like.getObjectId());
+                    Log.e("Like", like.getUser().getUsername());
+                    Log.e("Like", like.getPost().getObjectId());
+                }
+            }
             setHeartButtonLiked(feedViewHolder);
         }
     }
@@ -127,7 +137,7 @@ public class FeedAdapter extends RecyclerView
     private void updateLikesCounter(FeedViewHolder feedViewHolder, boolean animated) {
 
         int position = feedViewHolder.getAdapterPosition();
-        Post post = feedList.get(position);
+        Post post = postList.get(position);
 
         int currentLikesCount = post.getLikes_count();
         String likesCountText = context.getResources().getQuantityString(
@@ -145,7 +155,7 @@ public class FeedAdapter extends RecyclerView
 
     private void updateLikes(View view) {
         FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
-        Post post = feedList.get(feedViewHolder.getAdapterPosition());
+        Post post = postList.get(feedViewHolder.getAdapterPosition());
 
         if(LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), post.getLikeList())){
             post.unlike();
@@ -251,7 +261,7 @@ public class FeedAdapter extends RecyclerView
         feedViewHolder.feed_btn_more.setOnClickListener(onClickListener);
         feedViewHolder.feed_btn_comments.setOnClickListener(onClickListener);
 
-        feedViewHolder.feed_btn_comments.setTag(feedList.get(feedViewHolder.getAdapterPosition()));
+        feedViewHolder.feed_btn_comments.setTag(postList.get(feedViewHolder.getAdapterPosition()));
 
         feedViewHolder.feed_photo.setOnTouchListener(onTouchListener);
 
@@ -279,7 +289,7 @@ public class FeedAdapter extends RecyclerView
 
 
     public void updateFeedList(List<Post> feedList) {
-        this.feedList = feedList;
+        this.postList = feedList;
 
         Collections.sort(feedList);
 
