@@ -20,18 +20,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.parse.ParseUser;
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.fragments.ActivityFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
@@ -41,6 +34,15 @@ import cliq.com.cliqgram.helper.Utils;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.ToolbarModel;
 import cliq.com.cliqgram.services.PostService;
+
+import com.parse.ParseUser;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
