@@ -9,6 +9,7 @@ import android.hardware.camera2.*;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -63,7 +64,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     Button buttonGallery;
     private boolean flashOn = true;
     private boolean gridOn = false;
-    private String folderPath;
+    private String filePath;
     private State mState = State.PREVIEW;
     private String mCameraId;
     private HandlerThread mBackgroundThread;
@@ -241,7 +242,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    showToast("Image Saved.");
+                    Log.e(TAG, filePath);
+                    showToast("Image saved to " + filePath);
                     unlockFocus();
                 }
             };
@@ -586,7 +588,8 @@ public class CameraActivity extends Activity implements OnClickListener {
             byte[] bytes = new byte[buffer.remaining()];
             buffer.get(bytes);
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName, null);
+            filePath = MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
+                    null);
         }
     }
 
