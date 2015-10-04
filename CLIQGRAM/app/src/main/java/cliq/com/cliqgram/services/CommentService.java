@@ -43,7 +43,8 @@ public class CommentService {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
-                                AppStarter.eventBus.post(new CommentSuccessEvent());
+                                AppStarter.eventBus.post(new
+                                        CommentSuccessEvent(comment));
                             } else {
                                 AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
                                         e.getMessage()));

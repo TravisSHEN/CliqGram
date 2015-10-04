@@ -39,7 +39,6 @@ import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
@@ -148,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // TODO: pass current user to here to create a new Post
             User user = UserService.getCurrentUser();
             Post post = Post.createPost(imageData, user, "New photo");
-            PostService.post(post);
         }
     }
 

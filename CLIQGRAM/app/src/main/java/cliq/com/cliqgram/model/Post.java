@@ -4,16 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
-import android.util.Log;
 
-import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
@@ -21,11 +17,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
-import de.greenrobot.event.Subscribe;
 
 /**
  * Created by ilkan on 27/09/2015.
@@ -52,6 +47,8 @@ public class Post extends ParseObject implements Comparable<Post> {
         post.setCommentList(new ArrayList<Comment>());
         post.setLikeList(new ArrayList<Like>());
 
+        post.saveInBackground();
+        PostService.post(post);
         return post;
     }
 
@@ -73,19 +70,21 @@ public class Post extends ParseObject implements Comparable<Post> {
         post.setCommentList(new ArrayList<Comment>());
         post.setLikeList(new ArrayList<Like>());
 
+        post.saveInBackground();
+        PostService.post(post);
+
         return post;
 
     }
 
     public Post() {
         super();
-        AppStarter.eventBus.register(this);
     }
 
-    @Subscribe
-    public void onReadySaveEvent(ModelReadyToSave event) {
-        this.saveInBackground();
-    }
+//    @Subscribe
+//    public void onReadySaveEvent(ModelReadyToSave event) {
+//        this.saveInBackground();
+//    }
 
 
     /**
@@ -144,22 +143,23 @@ public class Post extends ParseObject implements Comparable<Post> {
     public void setOwner(User owner) {
         // creates one-to-one relationship
         // associate to current user
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo("username", owner.getUsername());
-        query.findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> objects, ParseException e) {
-                if (e == null && objects.size() > 0) {
-                    Post.this.put("user", objects.get(0));
-
-                    AppStarter.eventBus.post(new ModelReadyToSave());
-                } else {
-                    Log.e("Comment", "User not found");
-                }
-            }
-        });
+//        ParseQuery<ParseUser> query = ParseUser.getQuery();
+//        query.whereEqualTo("username", owner.getUsername());
+//        query.findInBackground(new FindCallback<ParseUser>() {
+//            @Override
+//            public void done(List<ParseUser> objects, ParseException e) {
+//                if (e == null && objects.size() > 0) {
+//                    Post.this.put("user", objects.get(0));
+//
+//                    AppStarter.eventBus.post(new ModelReadyToSave());
+//                } else {
+//                    Log.e("Comment", "User not found");
+//                }
+//            }
+//        });
 //        this.put("user", UserService.findParseUserByName(owner.getUsername()));
 //        this.owner = owner;
+        this.put("user", ParseUser.getCurrentUser());
     }
 
     /*
@@ -244,19 +244,5 @@ public class Post extends ParseObject implements Comparable<Post> {
     public int getLikes_count() {
         return this.getLikeList().size();
     }
-
-    private static class ModelReadyToSave extends BaseEvent {
-
-        Post post;
-
-        public ModelReadyToSave() {
-            super("Post model ready");
-        }
-
-        public ModelReadyToSave(String message) {
-            super(message);
-        }
-    }
-
 
 }

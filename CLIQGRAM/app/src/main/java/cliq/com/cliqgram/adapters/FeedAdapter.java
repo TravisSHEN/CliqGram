@@ -17,6 +17,7 @@ import com.parse.GetDataCallback;
 import com.parse.ParseException;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
@@ -259,6 +260,8 @@ public class FeedAdapter extends RecyclerView
 
     public void updateFeedList(List<Post> feedList) {
         this.feedList = feedList;
+
+        Collections.sort(feedList);
 
         this.notifyDataSetChanged();
     }

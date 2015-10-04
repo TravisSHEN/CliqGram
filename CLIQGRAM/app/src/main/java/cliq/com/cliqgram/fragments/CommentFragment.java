@@ -20,13 +20,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.CommentAdapter;
-import cliq.com.cliqgram.events.CommentReadyEvent;
+import cliq.com.cliqgram.events.CommentSuccessEvent;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.services.CommentService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import de.greenrobot.event.Subscribe;
@@ -164,10 +163,10 @@ public class CommentFragment extends android.support.v4.app.Fragment {
     }
 
     @Subscribe
-    public void onCommentReadyEvent(CommentReadyEvent event) {
+    public void onCommentReadyEvent(CommentSuccessEvent event) {
         Comment comment = event.getComment();
         // if not belong to this post, then return;
-        if (comment == null || ! comment.getPost().getObjectId().equals
+        if (comment == null || !comment.getPost().getObjectId().equals
                 (postId)) {
             Toast.makeText(this.getActivity(), "Not updated", Toast
                     .LENGTH_SHORT).show();
@@ -175,8 +174,8 @@ public class CommentFragment extends android.support.v4.app.Fragment {
         }
 
         // if existing in commentList, then return;
-        for(Comment c : commentList){
-            if(c.getObjectId().equals(comment.getObjectId())){
+        for (Comment c : commentList) {
+            if (c.getObjectId().equals(comment.getObjectId())) {
                 return;
             }
         }
@@ -195,7 +194,6 @@ public class CommentFragment extends android.support.v4.app.Fragment {
 
             Comment comment = Comment.createComment(UserService.getCurrentUser(), post,
                     content);
-            CommentService.comment(this.post, comment);
         }
     }
 
