@@ -15,6 +15,7 @@ import android.view.animation.DecelerateInterpolator;
 
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.viewHolders.FeedViewHolder;
 
@@ -112,7 +114,10 @@ public class FeedAdapter extends RecyclerView
         // TODO:
         feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
 
-
+        // highlight red heart button if user already liked.
+        if (LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), post.getLikeList())) {
+            setHeartButtonLiked(feedViewHolder);
+        }
     }
 
     /**
@@ -137,7 +142,24 @@ public class FeedAdapter extends RecyclerView
 //        Log.e("UpdateLikesCount ", feedList.get(position).toString());
     }
 
-    private void updateHeartButton(FeedViewHolder feedViewHolder) {
+
+    private void updateLikes(View view) {
+        FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
+        Post post = feedList.get(feedViewHolder.getAdapterPosition());
+
+        if(LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), post.getLikeList())){
+            post.unlike();
+            setHeartButtonUnLiked(feedViewHolder);
+        } else {
+            post.incrementLikes();
+            setHeartButtonLiked(feedViewHolder);
+        }
+
+        updateLikesCounter(feedViewHolder, true);
+    }
+
+
+    private void setHeartButtonLiked(FeedViewHolder feedViewHolder){
 
         Bitmap bm_btn_like = Util.decodeResource(context,
                 R.drawable.ic_heart_red);
@@ -146,17 +168,14 @@ public class FeedAdapter extends RecyclerView
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
 
-    private void updateLikes(View view) {
-        FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
-        Post post = feedList.get(feedViewHolder.getAdapterPosition());
-        boolean isIncrement = post.incrementLikes();
-        if (isIncrement) {
-            updateHeartButton(feedViewHolder);
-            updateLikesCounter(feedViewHolder, true);
-        }
+    private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder){
+
+        Bitmap bm_btn_like = Util.decodeResource(context,
+                R.drawable.ic_heart_outline_grey);
+        Bitmap resized_like = Util.resizeBitmap(bm_btn_like,
+                FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
-
-
     /**
      *
      */
@@ -190,14 +209,15 @@ public class FeedAdapter extends RecyclerView
 
         boolean firstTouch = false;
         long time = 0;
+
         @Override
         public boolean onTouch(View v, MotionEvent event) {
 
             switch (v.getId()) {
                 case R.id.feed_photo:
-                    if(event.getAction() == event.ACTION_DOWN){
+                    if (event.getAction() == event.ACTION_DOWN) {
                         Calendar calendar = Calendar.getInstance();
-                        if(firstTouch &&
+                        if (firstTouch &&
                                 (calendar.getTimeInMillis() - time) <= 300) {
 //                            Log.e("** DOUBLE TAP**"," second tap ");
                             firstTouch = false;
@@ -231,7 +251,7 @@ public class FeedAdapter extends RecyclerView
         feedViewHolder.feed_btn_more.setOnClickListener(onClickListener);
         feedViewHolder.feed_btn_comments.setOnClickListener(onClickListener);
 
-        feedViewHolder.feed_btn_comments.setTag(feedList.get(feedViewHolder.getAdapterPosition() ));
+        feedViewHolder.feed_btn_comments.setTag(feedList.get(feedViewHolder.getAdapterPosition()));
 
         feedViewHolder.feed_photo.setOnTouchListener(onTouchListener);
 

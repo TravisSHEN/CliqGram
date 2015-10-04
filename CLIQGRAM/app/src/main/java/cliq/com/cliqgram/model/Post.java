@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
@@ -56,7 +57,6 @@ public class Post extends ParseObject implements Comparable<Post> {
             description) {
 
         Post post = new Post();
-//        post.setPostId("");
         post.setOwner(owner);
         post.setPhotoData(Util.convertBitmapToByte(bm.getBitmap()));
         post.setDescription(description);
@@ -81,10 +81,6 @@ public class Post extends ParseObject implements Comparable<Post> {
         super();
     }
 
-//    @Subscribe
-//    public void onReadySaveEvent(ModelReadyToSave event) {
-//        this.saveInBackground();
-//    }
 
 
     /**
@@ -94,14 +90,10 @@ public class Post extends ParseObject implements Comparable<Post> {
      */
     public boolean incrementLikes() {
 
-        User user = UserService.getCurrentUser();
-        String username = user.getUsername();
+        ParseUser currentUser = ParseUser.getCurrentUser();
 
-        for (Like like : this.getLikeList()) {
-            if (like.getUser() != null && username.equals(like.getUser()
-                    .getUsername())) {
-                return false;
-            }
+        if(LikeService.isAlreadyLiked( currentUser, this.getLikeList())){
+            return false;
         }
 
         Like like = Like.createLike(this, UserService.getCurrentUser());
@@ -109,6 +101,24 @@ public class Post extends ParseObject implements Comparable<Post> {
         this.getLikeList().add(like);
         return true;
 
+    }
+
+    /**
+     * unlike the post
+     * @return
+     */
+    public boolean unlike(){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        for (int i = this.getLikeList().size() - 1; i >= 0; i--) {
+           Like like = this.getLikeList().get(i);
+            if(like.getUser().getUserId().equals(currentUser.getObjectId())){
+                this.getLikeList().remove(i);
+                LikeService.unLike(like.getPost(), like);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

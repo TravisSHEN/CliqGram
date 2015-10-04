@@ -92,6 +92,8 @@ public class PostService {
         query.whereContainedIn("user", userList);
         query.orderByDescending("createdAt");
         query.include("user");
+        query.include("comments");
+        query.include("likes");
 
         query.findInBackground(new FindCallback<Post>() {
             @Override

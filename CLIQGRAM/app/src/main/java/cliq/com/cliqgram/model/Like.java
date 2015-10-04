@@ -2,6 +2,10 @@ package cliq.com.cliqgram.model;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
+
+import cliq.com.cliqgram.services.LikeService;
+import cliq.com.cliqgram.services.UserService;
 
 /**
  * Created by ilkan on 27/09/2015.
@@ -9,16 +13,13 @@ import com.parse.ParseObject;
 @ParseClassName("Like")
 public class Like extends ParseObject{
 
-    private String likeId;
-    private Post post;
-    private User user;
-
-
     public static Like createLike(Post post, User user){
         Like like = new Like();
         like.setPost(post);
         like.setUser(user);
 
+        like.saveInBackground();
+        LikeService.like(post, like);
         return like;
     }
 
@@ -27,22 +28,20 @@ public class Like extends ParseObject{
     }
 
 
-    public String getLikeId() {
-        return likeId;
-    }
-    public void setLikeId(String likeId) {
-        this.likeId = likeId;
-    }
     public Post getPost(){
-        return this.post;
+        Post post = (Post) this.getParseObject("post");
+        return post;
     }
     public void setPost(Post post){
-        this.post = post;
+        this.put("post", post);
     }
     public User getUser(){
-        return this.user;
+        ParseUser parseUser = this.getParseUser("owner");
+        User owner = UserService.getUserFromParseUser(parseUser);
+        return owner;
     }
     public void setUser(User user){
-        this.user = user;
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        this.put("owner", currentUser);
     }
 }
