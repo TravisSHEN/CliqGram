@@ -2,13 +2,14 @@ package cliq.com.cliqgram.model;
 
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import cliq.com.cliqgram.helper.Utils;
 
 /**
- * Created by Ilkan on 27/09/2015.
+ * Created by ilkan on 27/09/2015.
  */
 public class Post {
 
@@ -21,14 +22,15 @@ public class Post {
     private List<Like>    likeList;
     private ParseUser     parseUser;
 
+    // Constructor
     public Post(byte[] photoData, String description, String location, ParseUser parseUser) {
         this.photoData = photoData;
         this.description = description;
         this.location = location;
         this.parseUser = parseUser;
-        this.commentList = null;
+        this.commentList = new ArrayList<Comment>();
         this.createdAt = new Date();
-        this.likeList = null;
+        this.likeList = new ArrayList<Like>();
     }
 
     public String getPostId() {
