@@ -159,8 +159,6 @@ public class LoginActivity extends AppCompatActivity {
     private void login(String username, String password) {
 
         if (NetworkConnection.isNetworkConnected(this)) {
-
-//            showProgressDialog("Logging in...");
             ProgressSpinner.getInstance().showSpinner(this, "Logging in...");
             LoginService.authenticate(username, password);
         } else {
