@@ -62,9 +62,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavSelectedItemID;
-    Button post;
+    Button post; //TODO: Specify as either public or private
     private static int PICKED_IMG = 1;
     private static int RESULT_LOAD_IMG = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
