@@ -13,6 +13,17 @@
     <!-- camera-->
     <string name="test_info">This is the test activity for photo taking.</string>
     <string name="button_capture">Capture</string>
+    <string name="button_flash_on">Flash On</string>
+    <string name="button_flash_off">Flash Off</string>
+    <string name="button_grid_on">Grid On</string>
+    <string name="button_grid_off">Grid Off</string>
+    <string name="button_gallery">Gallery</string>
+
+    <!-- gallery-->
+    <string name="action_upload">Upload Photo</string>
+    <string name="action_open_camera">Open Camera</string>
+    <string name="action_edit">Edit Photo</string>
+    <string name="action_share">Share Via Bluetooth</string>
 
     <!--navigation menu-->
     <string name="navigation_item_home">Home</string>
@@ -44,4 +55,5 @@
         <item quantity="one">%d like</item>
         <item quantity="other">%d likes</item>
     </plurals>
+    <string name="title_activity_image_display">ImageDisplayActivity</string>
 </resources>

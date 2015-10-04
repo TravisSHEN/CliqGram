@@ -32,11 +32,11 @@
                     android:layout_weight="1"
                     android:background="@drawable/icon_user"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_gravity="bottom"
-                    android:background="#cccccc"/>
+                <!--<View-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="1dp"-->
+                    <!--android:layout_gravity="bottom"-->
+                    <!--android:background="#cccccc"/>-->
 
                 <TextView
                     android:id="@+id/profile_username"

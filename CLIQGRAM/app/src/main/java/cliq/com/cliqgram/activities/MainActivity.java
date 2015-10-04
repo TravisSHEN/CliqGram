@@ -340,7 +340,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onOpenCommentFragment(final OpenCommentEvent
                                               openFragmentEvent) {
 
-
         String postId = openFragmentEvent.getPost().getObjectId();
         Intent intent = new Intent(this, CommentActivity.class);
         intent.putExtra(CommentActivity.ARG_POST, postId);

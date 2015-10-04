@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="cliq.com.cliqgram.activities.TestActivity">
+    <item android:id="@+id/action_upload"
+          android:title="@string/action_upload"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+    <item android:id="@+id/action_edit"
+          android:title="@string/action_edit"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+    <item android:id="@+id/action_share"
+          android:title="@string/action_share"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+    <item android:id="@+id/action_open_camera"
+          android:title="@string/action_open_camera"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+</menu>
