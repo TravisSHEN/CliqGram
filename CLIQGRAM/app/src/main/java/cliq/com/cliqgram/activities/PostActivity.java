@@ -32,7 +32,9 @@ public class PostActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.fragment_setting);
+
         post = (Button) findViewById(R.id.bPost);
         post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,7 +50,6 @@ public class PostActivity extends AppCompatActivity {
                         PICKED_IMG);*/
             }
         });
-
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -65,6 +66,7 @@ public class PostActivity extends AppCompatActivity {
             PostService.post(post);
         }
     }
+
     private byte[] convertImageToByte(Uri uri){
         byte[] data = null;
         try {
