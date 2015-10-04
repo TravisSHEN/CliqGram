@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.string.drawer_close);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+
         post = (Button) findViewById(R.id.bPost);
         post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,23 +107,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICKED_IMG && resultCode == RESULT_OK
-                && null != data) {
+
+        if (requestCode == PICKED_IMG && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             //String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Date now = new Date();
             String date = Utils.dateFormat.format(now);
             //byte[] imageData = convertImageToByte(selectedImage);
             byte[] imageData = null;
+
             try {
                 imageData = getBytes(selectedImage);
-            }catch(IOException e){
-
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            Post post = new Post(imageData, "my new photo", "Melbourne",
-                    ParseUser.getCurrentUser(), null, date, null);
+
+            //TODO: Get this information from user.
+            String imageDescription = "My first photo!";
+            String location = "Melbourne, Australia";
+
+            ParseUser currentUser = ParseUser.getCurrentUser();
+
+            Post post = new Post(imageData, imageDescription, location, currentUser);
             PostService.post(post);
         }
     }

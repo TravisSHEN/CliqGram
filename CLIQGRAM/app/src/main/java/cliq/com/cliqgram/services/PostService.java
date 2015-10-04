@@ -1,28 +1,14 @@
 package cliq.com.cliqgram.services;
 
-import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.util.Date;
-import java.util.List;
-
-import cliq.com.cliqgram.events.LoginFailEvent;
-import cliq.com.cliqgram.events.LoginSuccessEvent;
 import cliq.com.cliqgram.events.PostFailEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
-import cliq.com.cliqgram.events.SignupFailEvent;
-import cliq.com.cliqgram.events.SignupSuccessEvent;
-import cliq.com.cliqgram.helper.Utils;
-import cliq.com.cliqgram.model.Comment;
-import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
-import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
 
 /**
@@ -40,7 +26,7 @@ public class PostService {
         photo.saveInBackground();
 
         postObject.put("photo", photo);
-        postObject.put("text", post.getText());
+        postObject.put("description", post.getDescription());
         postObject.put("location", post.getLocation());
         postObject.put("user", post.getParseUser());//creates one-to-one relationship
         postObject.saveInBackground();

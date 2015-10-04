@@ -2,34 +2,35 @@ package cliq.com.cliqgram.model;
 
 import com.parse.ParseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import cliq.com.cliqgram.helper.Utils;
+
 /**
- * Created by ilkan on 27/09/2015.
+ * Created by Ilkan on 27/09/2015.
  */
 public class Post {
 
-    private String postId;
-    private byte[] photoData;
-    private String text;
-    private String location;
+    private String        postId;
+    private byte[]        photoData;
+    private String        description;
+    private String        location;
     private List<Comment> commentList;
-    private String createdAt;
-    private List<Like> likeList;
-    private ParseUser parseUser;
+    private Date          createdAt;
+    private List<Like>    likeList;
+    private ParseUser     parseUser;
 
-    public Post(byte[] photoData, String text, String location,
-                ParseUser parseUser, List<Comment> commentList, String createdAt, List<Like> likeList){
+    public Post(byte[] photoData, String description, String location, ParseUser parseUser) {
         this.photoData = photoData;
-        this.text = text;
+        this.description = description;
         this.location = location;
         this.parseUser = parseUser;
-        this.commentList = commentList;
-        this.createdAt = createdAt;
-        this.likeList = likeList;
+        this.commentList = null;
+        this.createdAt = new Date();
+        this.likeList = null;
     }
+
     public String getPostId() {
         return postId;
     }
@@ -46,12 +47,12 @@ public class Post {
         this.photoData = photo;
     }
 
-    public String getText() {
-        return text;
+    public String getDescription() {
+        return description;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getLocation() {
@@ -70,11 +71,11 @@ public class Post {
         this.commentList = commentList;
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -20,8 +19,6 @@ import java.util.Date;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.helper.Utils;
-import cliq.com.cliqgram.model.Comment;
-import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.services.PostService;
 
@@ -64,7 +61,7 @@ public class PostActivity extends AppCompatActivity {
             String date = Utils.dateFormat.format(now);
             byte[] imageData = convertImageToByte(selectedImage);
             Post post = new Post(imageData, "my new photo", "Melbourne",
-                    ParseUser.getCurrentUser(), null, date, null);
+                    ParseUser.getCurrentUser());
             PostService.post(post);
         }
     }
