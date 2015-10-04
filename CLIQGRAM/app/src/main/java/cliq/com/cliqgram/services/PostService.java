@@ -26,7 +26,7 @@ public class PostService {
 
     public static final String TABLE_NAME = "Post";
 
-    public static void post(@NonNull Post post) {
+    public static void post(@NonNull final Post post) {
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
@@ -45,7 +45,7 @@ public class PostService {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    AppStarter.eventBus.post(new PostSuccessEvent("post was successful!"));
+                    AppStarter.eventBus.post(new PostSuccessEvent(post));
                 } else {
                     AppStarter.eventBus.post(new PostFailEvent("post failed -" +
                             " " + e.getMessage()));

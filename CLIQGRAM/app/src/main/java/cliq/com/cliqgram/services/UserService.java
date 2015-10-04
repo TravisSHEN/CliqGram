@@ -16,26 +16,22 @@ import cliq.com.cliqgram.model.User;
  */
 public class UserService {
 
-    private User user;
+    private User user = User.userFactory();
     private static UserService userService = new UserService();
 
     public static User getCurrentUser() {
 
-        return userService.getUser();
-    }
-
-    public static void setCurrentUser() {
-
         ParseUser parseUser = ParseUser.getCurrentUser();
-        userService.setUser(User.userFactory());
 
         userService.getUser().setUserId(parseUser.getObjectId());
         userService.getUser().setUsername(parseUser.getUsername());
         userService.getUser().setEmail(parseUser.getEmail());
-        userService.getUser().setAvatarData(parseUser.getBytes("avatar"));
+//        userService.getUser().setAvatarData(parseUser.getBytes("avatar"));
 //        userService.getUser().setActivities((List<Activity>) parseUser.get("activities"));
         //userService.getUser().setFollowerList((List<User>) parseUser.get("followers"));
         //userService.getUser().setFollowingList((List<User>) parseUser.get("followings"));
+
+        return userService.getUser();
     }
 
 

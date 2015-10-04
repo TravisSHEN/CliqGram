@@ -49,15 +49,25 @@ public class SignupActivity extends AppCompatActivity {
         // inject views
         ButterKnife.bind(this);
 
-        // register this activity to eventbus
-        AppStarter.eventBus.register(this);
-
-
         // setup toolbar
         ToolbarModel.setupToolbar(this);
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // register with EventBus
+        AppStarter.eventBus.register(this);
+
+    }
+
+    @Override
+    public void onStop() {
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

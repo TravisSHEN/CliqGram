@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FeedAdapter;
 import cliq.com.cliqgram.events.GetPostEvent;
+import cliq.com.cliqgram.events.PostSuccessEvent;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
@@ -69,13 +70,23 @@ public class FeedFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!AppStarter.eventBus.isRegistered(this)) {
-            // register this class with EventBus
-            AppStarter.eventBus.register(this);
-        }
-
         feedList = new ArrayList<>();
         this.initializeData();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // register with EventBus
+        AppStarter.eventBus.register(this);
+
+    }
+
+    @Override
+    public void onStop() {
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -112,10 +123,11 @@ public class FeedFragment extends Fragment {
 //        this.addFakeData();
 
 //        //this is for testing followings list
-        List<ParseUser> followings = UserRelationsService.getRelation
+        List<ParseUser> users = UserRelationsService.getRelation
                 (UserService.getCurrentUser().getUsername(),
                         "followings");
-        PostService.getPosts(followings);
+        users.add(ParseUser.getCurrentUser());
+        PostService.getPosts(users);
         //this is for testing followers list
 //        List<ParseUser> followers =  UserRelationsService.getRelation
 //                ("litaos",
@@ -134,6 +146,15 @@ public class FeedFragment extends Fragment {
                     .LENGTH_LONG).show();
         }
 
+    }
+
+    @Subscribe
+    public void onPostSuccessEvent(PostSuccessEvent event){
+        Post post = event.getPost();
+        if(post != null ){
+            feedList.add(post);
+            feedAdapter.updateFeedList(feedList);
+        }
     }
 
 

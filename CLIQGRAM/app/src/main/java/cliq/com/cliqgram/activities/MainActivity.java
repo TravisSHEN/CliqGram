@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // inject views
         ButterKnife.bind(this);
 
-        // Register this activity to EventBus
-        AppStarter.eventBus.register(this);
-
         // setup toolbar
         ToolbarModel.setupToolbar(this);
 
@@ -125,6 +122,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Register this activity to EventBus
+        AppStarter.eventBus.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
     }
 
     @Override

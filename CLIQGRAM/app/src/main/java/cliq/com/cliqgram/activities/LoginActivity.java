@@ -27,7 +27,6 @@ import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LoginService;
-import cliq.com.cliqgram.services.UserService;
 import de.greenrobot.event.Subscribe;
 
 public class LoginActivity extends AppCompatActivity {
@@ -53,13 +52,24 @@ public class LoginActivity extends AppCompatActivity {
         // inject views
         ButterKnife.bind(this);
 
-        // register this activity to eventbus
-        AppStarter.eventBus.register(this);
-
         // setup action bar by using toolbar
         ToolbarModel.setupToolbar(this);
 
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Register this activity to EventBus
+        AppStarter.eventBus.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -118,8 +128,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (baseEvent instanceof LoginSuccessEvent) {
 
-                    // set current user
-                    UserService.setCurrentUser();
                     // open main activity
                     Intent intent = new Intent(LoginActivity.this,
                             MainActivity.class);

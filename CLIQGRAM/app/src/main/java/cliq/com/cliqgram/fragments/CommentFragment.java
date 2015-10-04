@@ -86,9 +86,6 @@ public class CommentFragment extends android.support.v4.app.Fragment {
 
         }
 
-        // register with EventBus
-        AppStarter.eventBus.register(this);
-
         commentList = new ArrayList<>();
         this.initializeData();
     }
@@ -108,6 +105,22 @@ public class CommentFragment extends android.support.v4.app.Fragment {
 
         return root_view;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // register with EventBus
+        AppStarter.eventBus.register(this);
+
+    }
+
+    @Override
+    public void onStop() {
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
+    }
+
 
     private void initializeCommentView() {
         LinearLayoutManager llm = new LinearLayoutManager(this.getActivity(),
