@@ -19,13 +19,13 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.StarterApplication;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
 import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
-import cliq.com.cliqgram.model.ToolbarModel;
+import cliq.com.cliqgram.helper.ToolbarModel;
+import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LoginService;
 import de.greenrobot.event.Subscribe;
 
@@ -52,13 +52,24 @@ public class LoginActivity extends AppCompatActivity {
         // inject views
         ButterKnife.bind(this);
 
-        // register this activity to eventbus
-        StarterApplication.BUS.register(this);
-
         // setup action bar by using toolbar
         ToolbarModel.setupToolbar(this);
 
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Register this activity to EventBus
+        AppStarter.eventBus.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -116,6 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                 ProgressSpinner.getInstance().dismissSpinner();
 
                 if (baseEvent instanceof LoginSuccessEvent) {
+
                     // open main activity
                     Intent intent = new Intent(LoginActivity.this,
                             MainActivity.class);
@@ -127,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                             .show();
                 }
             }
-        }, 3000);
+        }, 2000);
 
     }
 
@@ -158,8 +170,8 @@ public class LoginActivity extends AppCompatActivity {
 
         if (NetworkConnection.isNetworkConnected(this)) {
 
-//            showProgressDialog("Loging in...");
-            ProgressSpinner.getInstance().showSpinner(this, "Loging in...");
+//            showProgressDialog("Logging in...");
+            ProgressSpinner.getInstance().showSpinner(this, "Logging in...");
             LoginService.authenticate(username, password);
         } else {
             NetworkConnection.showAlert(this, loginBtn);

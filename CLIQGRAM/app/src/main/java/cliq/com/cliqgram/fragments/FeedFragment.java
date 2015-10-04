@@ -7,6 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +20,17 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FeedAdapter;
+import cliq.com.cliqgram.events.GetPostEvent;
+import cliq.com.cliqgram.events.PostSuccessEvent;
 import cliq.com.cliqgram.model.Comment;
-import cliq.com.cliqgram.model.Feed;
+import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.CommentService;
+import cliq.com.cliqgram.services.PostService;
+import cliq.com.cliqgram.services.UserRelationsService;
+import cliq.com.cliqgram.services.UserService;
+import de.greenrobot.event.Subscribe;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,18 +38,10 @@ import cliq.com.cliqgram.model.Feed;
  * create an instance of this fragment.
  */
 public class FeedFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private FeedAdapter feedAdapter;
 
-    private List<Feed> feedList;
+    private List<Post> postList;
 
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
@@ -45,16 +51,12 @@ public class FeedFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment UserFeed.
      */
     // TODO: Rename and change types and number of parameters
     public static FeedFragment newInstance() {
         FeedFragment fragment = new FeedFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,12 +69,24 @@ public class FeedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
-        feedList = new ArrayList<>();
+        postList = new ArrayList<>();
+        this.initializeData();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // register with EventBus
+        AppStarter.eventBus.register(this);
+
+    }
+
+    @Override
+    public void onStop() {
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -85,7 +99,6 @@ public class FeedFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         this.initializeFeedView();
-        this.initializeData();
 
         return view;
     }
@@ -100,18 +113,90 @@ public class FeedFragment extends Fragment {
         feedView.setLayoutManager(llm);
         feedView.setHasFixedSize(true);
 
-        feedAdapter = new FeedAdapter(feedList, this.getActivity());
+
+        feedAdapter = new FeedAdapter(this.getActivity(), postList);
         feedView.setAdapter(feedAdapter);
     }
 
     private void initializeData() {
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedAdapter.notifyDataSetChanged();
+
+//        this.addFakeData();
+
+//        //this is for testing followings list
+        List<ParseUser> users = UserRelationsService.getRelation
+                (UserService.getCurrentUser().getUsername(),
+                        "followings");
+        users.add(ParseUser.getCurrentUser());
+        PostService.getPosts(users);
+        //this is for testing followers list
+//        List<ParseUser> followers =  UserRelationsService.getRelation
+//                ("litaos",
+//                "followers");
+
     }
 
+    @Subscribe
+    public void onPostDataReady(GetPostEvent event) {
+
+        if (event.getPostList() != null) {
+            postList = event.getPostList();
+            feedAdapter.updateFeedList(postList);
+        } else {
+            Toast.makeText(this.getActivity(), event.getMessage(), Toast
+                    .LENGTH_LONG).show();
+        }
+
+    }
+
+    @Subscribe
+    public void onPostSuccessEvent(PostSuccessEvent event){
+        Post post = event.getPost();
+        if(post != null ){
+            postList.add(post);
+            feedAdapter.updateFeedList(postList);
+        }
+    }
+
+
+    public void addFakeData(){
+        //
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        User user1 = UserService.getUserFromParseUser( currentUser );
+
+////        User user2 = User.userFactory("abc",
+////                "abc@abc.com");
+//
+//        Post post1 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+//                .lavery, 1f), user1, "good");
+//        post1.setOwner( user1 );
+////        post1.saveInBackground();
+////
+//////        Post post2 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+//////                .lavery, 1f), user2, "yes");
+//
+//        Post post3 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
+//                .lavery, 1f), user1, "no");
+//        post3.setOwner(user1);
+//
+//        feedList.add(post1);
+//////        feedList.add(post2);
+//        feedList.add(post3);
+
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+
+        Comment comment = null;
+        try {
+            Post post = query.get("GKodyBu9mj");
+            comment = Comment.createComment(user1, post,
+                    "It's Good");
+            CommentService.comment(post, comment);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+//        //this is for testing follow operation
+//        UserRelationsService.follow("litaos");
+    }
 }

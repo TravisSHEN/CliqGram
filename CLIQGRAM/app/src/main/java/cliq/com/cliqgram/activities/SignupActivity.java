@@ -11,20 +11,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.StarterApplication;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
 import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
-import cliq.com.cliqgram.model.ToolbarModel;
+import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.services.SignupService;
 import de.greenrobot.event.Subscribe;
+import cliq.com.cliqgram.server.AppStarter;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -48,15 +49,25 @@ public class SignupActivity extends AppCompatActivity {
         // inject views
         ButterKnife.bind(this);
 
-        // register this activity to eventbus
-        StarterApplication.BUS.register(this);
-
-
         // setup toolbar
         ToolbarModel.setupToolbar(this);
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // register with EventBus
+        AppStarter.eventBus.register(this);
+
+    }
+
+    @Override
+    public void onStop() {
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -113,6 +124,9 @@ public class SignupActivity extends AppCompatActivity {
 
                 } else if (baseEvent instanceof SignupFailEvent) {
                     // display failure message
+                    Toast.makeText(SignupActivity.this, baseEvent.getMessage(),
+                            Toast
+                            .LENGTH_LONG).show();
                     Snackbar.make(submitBtn, baseEvent.getMessage(), Snackbar.LENGTH_LONG)
                             .show();
                 }

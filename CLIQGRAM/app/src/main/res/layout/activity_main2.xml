@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true">
@@ -22,6 +23,7 @@
 
         </android.support.design.widget.AppBarLayout>
 
+
         <!--<android.support.v4.widget.NestedScrollView-->
         <!--android:id="@+id/scroll_content"-->
         <!--android:layout_width="match_parent"-->
@@ -29,14 +31,41 @@
         <!--android:layout_below="@id/toolbar"-->
         <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
-            <!-- contains fragments -->
-            <FrameLayout
-                android:id="@+id/container_body"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
+        <!-- contains fragments -->
+        <FrameLayout
+            android:id="@+id/container_body"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
 
         <!--</android.support.v4.widget.NestedScrollView>-->
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/tab_layout"
+            android:layout_weight="0"/>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            android:layout_gravity="bottom"
+            android:padding="2dp"
+            app:tabGravity="fill"/>
+        <!--android:layout_marginTop="200dp"-->
+
+        <Button
+            android:id="@+id/bPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:layout_below="@+id/appBar"
+            android:background="@color/primary"
+            android:text="post"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_float_action"

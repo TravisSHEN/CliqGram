@@ -1,12 +1,21 @@
 package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.Serializable;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.adapters.ActivityViewPageAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,13 +28,14 @@ import cliq.com.cliqgram.R;
 public class ActivityFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_ACTIONBAR = "actionbar";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private FragmentManager fm;
 
+    @Bind(R.id.activity_tab_layout)
+    TabLayout activity_tabLayout;
+    @Bind(R.id.activity_view_pager)
+    ViewPager viewPager;
 
     /**
      * Use this factory method to create a new instance of
@@ -39,8 +49,7 @@ public class ActivityFragment extends Fragment {
     public static ActivityFragment newInstance() {
         ActivityFragment fragment = new ActivityFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
+//        args.putSerializable(ARG_ACTIONBAR, (Serializable) actionBar);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,16 +62,31 @@ public class ActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        fm = getFragmentManager();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_activity, container, false);
+        View root_view = inflater.inflate(R.layout.fragment_activity, container, false);
+
+        // bind view with ButterKnife
+        ButterKnife.bind(this, root_view);
+
+//        activity_tabLayout.addTab(activity_tabLayout.newTab().setText
+//                ("FOLLOWING"));
+//        activity_tabLayout.addTab(activity_tabLayout.newTab().setText
+//                ("YOU"));
+        ActivityViewPageAdapter pageAdapter = new ActivityViewPageAdapter
+                (this.getActivity(), fm);
+        viewPager.setAdapter(pageAdapter);
+        activity_tabLayout.setupWithViewPager(viewPager);
+
+        return root_view;
     }
 
 }

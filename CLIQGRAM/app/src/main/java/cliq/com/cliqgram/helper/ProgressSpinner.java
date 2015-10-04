@@ -49,7 +49,7 @@ public class ProgressSpinner {
             public void run() {
                 progressDialog.dismiss();
 
-                Toast.makeText(ctx, "Log in timeout.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, "timeout.", Toast.LENGTH_SHORT).show();
 
             }
         }, time);

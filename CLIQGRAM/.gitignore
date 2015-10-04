@@ -1,5 +1,46 @@
-# Mac
+# Created by .ignore support plugin (hsz.mobi)
+### Gradle template
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# OSX template
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# IntelliJ project files
+/.idea
+.idea
+*.iml
+out
+gen
 
 # Built application files
 *.apk
@@ -15,10 +56,6 @@
 bin/
 gen/
 
-# Gradle files
-.gradle/
-build/
-
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -33,12 +70,6 @@ proguard/
 .project
 .settings/
 
-# Intellij project files
-.idea/
-/captures
-*.iml
-*.ipr
-*.iws
-
 # Apt
 .apt_generated/
+

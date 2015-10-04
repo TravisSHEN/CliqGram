@@ -1,16 +1,24 @@
 package cliq.com.cliqgram.activities;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
@@ -20,15 +28,40 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.adapters.MainViewPageAdapter;
+import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.fragments.ActivityFragment;
 import cliq.com.cliqgram.fragments.FeedFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
+import cliq.com.cliqgram.fragments.SearchFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
-import cliq.com.cliqgram.model.ToolbarModel;
+import cliq.com.cliqgram.helper.ToolbarModel;
+import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.UserService;
+import cliq.com.cliqgram.utils.Util;
+import de.greenrobot.event.Subscribe;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String NAVIGATION_ITEM_ID = "navigationItemID";
+
+    private static final int REQUEST_COMMENT = 0;
+
+    public static final int TAB_FEED = 0;
+    public static final int TAB_SEARCH = 1;
+    public static final int TAB_CAMERA = 2;
+    public static final int TAB_ACTIVITY = 3;
+    public static final int TAB_PROFILE = 4;
+
+
+    FragmentManager fm = getSupportFragmentManager();
+
+    @Bind(R.id.tab_layout)
+    TabLayout tabLayout;
+    @Bind(R.id.view_pager)
+    ViewPager viewPager;
 
     @Bind(R.id.mDrawer)
     DrawerLayout mDrawerLayout;
@@ -44,7 +77,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ActionBarDrawerToggle mDrawerToggle;
     private int mNavSelectedItemID;
-
+    Button post;
+    private static int PICKED_IMG = 1;
+    private static int RESULT_LOAD_IMG = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +91,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // setup toolbar
         ToolbarModel.setupToolbar(this);
 
-        // set click listener to navigation view
-        navigationView.setNavigationItemSelectedListener(this);
+        // TODO: uncomment these if don't need tab bar on bottom
+         // set click listener to navigation view
+//        navigationView.setNavigationItemSelectedListener(this);
 
         // initialize showing fragment
-        this.showInitialSelectedFragment(savedInstanceState);
+//        this.showInitialSelectedFragment(savedInstanceState);
 
         // set up the hamburger icon to open and close the drawer
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R
@@ -68,7 +104,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.string.drawer_close);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+
+        // initialize tab bar layout
+        initializeTabLayout();
+
+        // TODO: select photo from gallery
+
+        post = (Button) findViewById(R.id.bPost);
+        post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICKED_IMG);
+
+            }
+        });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Register this activity to EventBus
+        AppStarter.eventBus.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICKED_IMG && resultCode == RESULT_OK  && data != null) {
+            ContentResolver contentResolver = getBaseContext().getContentResolver();
+            Uri selectedImage = data.getData();
+            byte[] imageData = Util.convertImageToByte(selectedImage, contentResolver);
+            // TODO: pass current user to here to create a new Post
+            User user = UserService.getCurrentUser();
+            Post post = Post.createPost(imageData, user, "New photo");
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,11 +183,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
-        // disable going back to the MainActivity
-        moveTaskToBack(true);
+        if (fm.getBackStackEntryCount() > 0) {
+            float_button.setVisibility(View.VISIBLE);
+            // enable moving back
+            moveTaskToBack(false);
+            fm.popBackStack();
+        } else {
+            // disable moving back
+            moveTaskToBack(true);
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -124,6 +212,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
+    void initializeTabLayout(){
+        MainViewPageAdapter mainViewPageAdapter = new MainViewPageAdapter(this, fm);
+        viewPager.setAdapter(mainViewPageAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+        float scale_factor = 0.7f;
+        tabLayout.getTabAt(TAB_FEED).setIcon(Util.resizeDrawable(this,
+                R.drawable.icon_home, scale_factor));
+        tabLayout.getTabAt(TAB_SEARCH).setIcon(Util.resizeDrawable(this,R
+                .drawable.icon_search, scale_factor));
+//        tabLayout.getTabAt(TAB_CAMERA).setIcon(R.drawable.icon_camera);
+        tabLayout.getTabAt(TAB_CAMERA).setCustomView(float_button);
+        tabLayout.getTabAt(TAB_ACTIVITY).setIcon(Util.resizeDrawable(this,R
+                .drawable.icon_star, scale_factor));
+        tabLayout.getTabAt(TAB_PROFILE).setIcon(Util.resizeDrawable(this, R
+                .drawable.icon_user, scale_factor));
+    }
 
     //    @OnItemSelected( R.id.navigation_view )
     void showFragment(MenuItem menuItem) {
@@ -146,6 +251,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 title = getString(R.string.navigation_item_home);
 
                 Snackbar.make(toolbar, "Home selected", Snackbar
+                        .LENGTH_SHORT)
+                        .show();
+                break;
+            case R.id.navigation_item_search:
+                fragment = SearchFragment.newInstance();
+                title = getString(R.string.navigation_item_search);
+
+                Snackbar.make(toolbar, "Search selected", Snackbar
                         .LENGTH_SHORT)
                         .show();
                 break;
@@ -182,8 +295,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (fragment != null) {
 
-            getSupportFragmentManager()
-                    .beginTransaction()
+            fm.beginTransaction()
                     .replace(R.id.container_body, fragment)
                     .commit();
 
@@ -206,15 +318,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @OnLongClick(R.id.btn_float_action)
-    boolean onLongClick() {
+    boolean onLongClick(View view) {
+
+//        StarterApplication.BUS.post(new FABLongClickEvent());
         Toast.makeText(this, "Long click", Toast.LENGTH_SHORT)
                 .show();
         return true;
     }
 
     @OnClick(R.id.btn_float_action)
-    void onClick() {
+    void onClick(View view) {
+
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
+//        StarterApplication.BUS.post(new FABClickEvent());
         Toast.makeText(this, "Short click", Toast.LENGTH_SHORT)
                 .show();
     }
+
+    @Subscribe
+    public void onOpenCommentFragment(final OpenCommentEvent
+                                              openFragmentEvent) {
+
+
+        String postId = openFragmentEvent.getPost().getObjectId();
+        Intent intent = new Intent(this, CommentActivity.class);
+        intent.putExtra(CommentActivity.ARG_POST, postId);
+        this.startActivityForResult(intent, REQUEST_COMMENT);
+    }
+
 }

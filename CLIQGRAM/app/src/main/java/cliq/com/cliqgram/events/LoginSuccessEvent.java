@@ -7,7 +7,7 @@ public class LoginSuccessEvent extends BaseEvent {
 
 
     public LoginSuccessEvent() {
-        super("Log in successfully !");
+        super("Log in was successful !");
     }
 
     public LoginSuccessEvent(String message) {
