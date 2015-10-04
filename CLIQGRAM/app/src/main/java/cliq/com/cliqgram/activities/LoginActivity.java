@@ -12,13 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import cliq.com.cliqgram.server.AppStarter;
-
-import com.parse.ParseAnalytics;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
@@ -26,7 +24,11 @@ import cliq.com.cliqgram.events.LoginSuccessEvent;
 import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.ToolbarModel;
+import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LoginService;
+
+import com.parse.ParseAnalytics;
+
 import de.greenrobot.event.Subscribe;
 
 public class LoginActivity extends AppCompatActivity {
