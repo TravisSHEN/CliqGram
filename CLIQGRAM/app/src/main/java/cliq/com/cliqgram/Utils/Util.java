@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.DrawableRes;
 
 import java.io.ByteArrayOutputStream;
@@ -163,6 +164,15 @@ public class Util {
         Date date = calendar.getTime();
 
         return date;
+    }
+
+    public static Uri getImageUri(Context context, Bitmap inImage, String
+            imageName) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context
+                .getContentResolver(), inImage, imageName, null);
+        return Uri.parse(path);
     }
 
 }

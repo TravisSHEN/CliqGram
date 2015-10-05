@@ -56,4 +56,9 @@
         <item quantity="other">%d likes</item>
     </plurals>
     <string name="title_activity_image_display">ImageDisplayActivity</string>
+
+    <string name="profile_follow">follow</string>
+    <string name="profile_following">following</string>
+    <string name="profile_unfollow">unfollow</string>
+    <string name="search">search</string>
 </resources>

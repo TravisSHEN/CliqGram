@@ -1,5 +1,7 @@
 package cliq.com.cliqgram.services;
 
+import android.util.Log;
+
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -22,21 +24,20 @@ import cliq.com.cliqgram.server.AppStarter;
 public class LikeService {
 
     /**
-     *
      * @param post
      * @param like
      */
-    public static void like(Post post, final Like like){
+    public static void like(Post post, final Like like) {
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
             @Override
             public void done(Post postObject, ParseException e) {
-                if(e == null){
+                if (e == null) {
 
                     List<Like> relation = (ArrayList) postObject.get
                             ("likes");
-                    if(relation == null){
+                    if (relation == null) {
                         relation = new ArrayList<>();
                     }
                     relation.add(like);
@@ -50,28 +51,29 @@ public class LikeService {
                             } else {
                                 AppStarter.eventBus.post(new LikeSuccessEvent
                                         ("Like failed - " +
-                                        e.getMessage()));
+                                                e.getMessage()));
                             }
                         }
                     });
-                }else{
+                } else {
                     AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
                             e.getMessage()));
                 }
             }
         });
     }
-    public static void unLike(Post post, final Like like){
+
+    public static void unLike(Post post, final Like like) {
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
             @Override
             public void done(Post postObject, ParseException e) {
-                if(e == null){
+                if (e == null) {
 
                     List<Like> relation = (ArrayList) postObject.get
                             ("likes");
-                    if(relation == null){
+                    if (relation == null) {
                         relation = new ArrayList<>();
                     }
                     relation.remove(like);
@@ -91,7 +93,7 @@ public class LikeService {
                     });
 
                     like.deleteInBackground();
-                }else{
+                } else {
                     AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
                             e.getMessage()));
                 }
@@ -99,19 +101,24 @@ public class LikeService {
         });
     }
 
-    public static boolean isAlreadyLiked(ParseUser parseUser, List<Like> likeList){
+    public static boolean isAlreadyLiked(ParseUser parseUser, List<Like> likeList) {
 
         boolean isLiked = false;
 
-        if (likeList == null || likeList.isEmpty()){
-           return isLiked;
+        if (likeList == null || likeList.isEmpty()) {
+            return isLiked;
         }
 
-        for(Iterator<Like> iter = likeList.listIterator(); iter.hasNext();){
-            Like like = iter.next();
-            if( like.getUser().getUsername().equals(parseUser.getUsername())){
-                isLiked = true;
-                return  isLiked;
+        for (Iterator<Like> iter = likeList.listIterator(); iter.hasNext(); ) {
+            try {
+                Like like = iter.next();
+                if (like.getUser().getUsername().equals(parseUser.getUsername())) {
+                    isLiked = true;
+                    return isLiked;
+                }
+            } catch (java.lang.ClassCastException e) {
+                Log.e("LikeService", "Invalid Like object from Parse.");
+                Log.e("LikeService", e.getMessage());
             }
         }
 
