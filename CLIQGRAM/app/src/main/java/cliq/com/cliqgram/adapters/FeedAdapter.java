@@ -119,14 +119,10 @@ public class FeedAdapter extends RecyclerView
         // highlight red heart button if user already liked.
         if (likeList != null && likeList.size() > 0 &&
                 LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), likeList)) {
-            if( post.getObjectId().equals( "X5NTh1VrId")){
-                for(Like like: post.getLikeList()){
-                   Log.e("Like", like.getObjectId());
-                    Log.e("Like", like.getUser().getUsername());
-                    Log.e("Like", like.getPost().getObjectId());
-                }
-            }
+
             setHeartButtonLiked(feedViewHolder);
+        } else {
+            setHeartButtonUnLiked(feedViewHolder);
         }
     }
 

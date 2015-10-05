@@ -23,6 +23,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -61,6 +63,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final String TAG = "CameraActivity";
+
+    private int PICK_IMAGE_REQUEST = 1;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 0);
@@ -264,7 +268,7 @@ public class CameraActivity extends Activity implements OnClickListener {
 
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    if(filePath != null) {
+                    if (filePath != null) {
                         Log.e(TAG, filePath);
                         showToast("Image saved to " + filePath);
                     }
@@ -567,7 +571,14 @@ public class CameraActivity extends Activity implements OnClickListener {
                 }
                 break;
             case R.id.button_gallery:
-                startActivity(new Intent(this, ImageDisplayActivity.class));
+
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
                 break;
         }
 
@@ -620,6 +631,9 @@ public class CameraActivity extends Activity implements OnClickListener {
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             filePath = MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
                     null);
+
+            // start ImageDisplayActivity
+            startImageDisplayActivity( bitmap );
         }
     }
 
@@ -657,5 +671,41 @@ public class CameraActivity extends Activity implements OnClickListener {
             }
         }
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap
+                        (getContentResolver(), uri);
+                // Log.d(TAG, String.valueOf(bitmap));
+
+                startImageDisplayActivity( bitmap );
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            finish();
+        }
+    }
+
+    /**
+     * open ImageDisplayActivity and pass recent taken/selected image to it
+     * @param bitmap
+     */
+    private void startImageDisplayActivity(Bitmap bitmap) {
+
+        byte[] imageData = Util.convertBitmapToByte(bitmap);
+        Intent intent = new Intent(CameraActivity.this, ImageDisplayActivity.class);
+        intent.putExtra("image", imageData);
+        startActivity(intent);
     }
 }

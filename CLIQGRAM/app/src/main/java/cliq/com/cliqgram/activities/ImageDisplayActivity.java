@@ -2,35 +2,52 @@ package cliq.com.cliqgram.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.services.UserService;
+import cliq.com.cliqgram.utils.Util;
 
-import java.io.IOException;
+public class ImageDisplayActivity extends AppCompatActivity {
 
-public class ImageDisplayActivity extends ActionBarActivity {
 
-    private int PICK_IMAGE_REQUEST = 1;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_display);
 
-        Intent intent = new Intent();
-        // Show only images, no videos or anything else
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        // Always show the chooser (if there are multiple options available)
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        // get image from intent when activity start
+        this.bitmap = getImage();
+        // show image to view
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        imageView.setImageBitmap(this.bitmap);
 
-//        mImage = new BitmapDrawable(getResources(), (Bitmap) getIntent().getExtras().get("bitmap"));
-        System.out.println();
+        // using this way to make a post after editing
+        // PS: passing a byte[] into this function
+        // PS: there is convert function in utils.Util
+        // PS: Geo location is taken care in Post model when post create
+        /**
+         * @param imageDate byte[]
+         * @param currentUser User
+         * @param description String
+         * @return post Post
+         * Note: Any data in post object may not be able to
+         * get before post.saveInBackground() in finished.
+         * So, check the database (table "Post") on Parse to see if post is
+         * created successfully.
+         * If post is created successfully, it will be shown on home page.
+         */
+        Post.createPost( Util.convertBitmapToByte(this.bitmap),
+                UserService
+                .getCurrentUser(), "This is a good photo");
     }
 
     @Override
@@ -68,27 +85,21 @@ public class ImageDisplayActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * get image from intent passed from CameraActivity
+     * @return image Bitmap (format)
+     */
+    private Bitmap getImage(){
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        Intent intent = this.getIntent();
+        byte[] imageData = intent.getByteArrayExtra("image");
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
-            Uri uri = data.getData();
-
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                // Log.d(TAG, String.valueOf(bitmap));
-
-                ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                imageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            finish();
+        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable(this, imageData);
+        Bitmap bitmap = null;
+        if(bitmapDrawable != null ){
+            bitmap = bitmapDrawable.getBitmap();
         }
-    }
 
+        return bitmap;
+    }
 }

@@ -1,8 +1,6 @@
 package cliq.com.cliqgram.activities;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -36,10 +34,7 @@ import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SearchFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
 import cliq.com.cliqgram.helper.ToolbarModel;
-import cliq.com.cliqgram.model.Post;
-import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
 
@@ -54,6 +49,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int TAB_CAMERA = 2;
     public static final int TAB_ACTIVITY = 3;
     public static final int TAB_PROFILE = 4;
+
+    public static final String TAG_FEED_FRAGMENT = "TAG_FeedFragment";
+    public static final String TAG_SEARCH_FRAGMENT = "TAG_SearchFragment";
+    public static final String TAG_ACTIVITY_FRAGMENT = "TAG_ActivityFragment";
+    public static final String TAG_PROFILE_FRAGMENT = "TAG_ProfileFragment";
+    public static final String TAG_CAMERA_FRAGMENT = "TAG_CameraFragment";
 
 
     FragmentManager fm = getSupportFragmentManager();
@@ -107,20 +108,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // initialize tab bar layout
         initializeTabLayout();
-
-        // TODO: select photo from gallery
-
-        post = (Button) findViewById(R.id.bPost);
-        post.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICKED_IMG);
-
-            }
-        });
     }
 
     @Override
@@ -135,19 +122,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         AppStarter.eventBus.unregister(this);
         super.onStop();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICKED_IMG && resultCode == RESULT_OK  && data != null) {
-            ContentResolver contentResolver = getBaseContext().getContentResolver();
-            Uri selectedImage = data.getData();
-            byte[] imageData = Util.convertImageToByte(selectedImage, contentResolver);
-            // TODO: pass current user to here to create a new Post
-            User user = UserService.getCurrentUser();
-            Post post = Post.createPost(imageData, user, "New photo");
-        }
     }
 
 
@@ -217,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MainViewPageAdapter mainViewPageAdapter = new MainViewPageAdapter(this, fm);
         viewPager.setAdapter(mainViewPageAdapter);
         tabLayout.setupWithViewPager(viewPager);
+
         float scale_factor = 0.7f;
         tabLayout.getTabAt(TAB_FEED).setIcon(Util.resizeDrawable(this,
                 R.drawable.icon_home, scale_factor));
@@ -243,12 +218,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // open corresponding fragment
         Fragment fragment = null;
         String title = "";
+        String tag = "";
 
         switch (menuItem.getItemId()) {
             case R.id.navigation_item_home:
 
                 fragment = FeedFragment.newInstance();
                 title = getString(R.string.navigation_item_home);
+                tag = TAG_FEED_FRAGMENT;
 
                 Snackbar.make(toolbar, "Home selected", Snackbar
                         .LENGTH_SHORT)
@@ -257,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.navigation_item_search:
                 fragment = SearchFragment.newInstance();
                 title = getString(R.string.navigation_item_search);
+                tag = TAG_SEARCH_FRAGMENT;
 
                 Snackbar.make(toolbar, "Search selected", Snackbar
                         .LENGTH_SHORT)
@@ -266,6 +244,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 fragment = new ProfileFragment();
                 title = getString(R.string.navigation_item_profile);
+                tag = TAG_PROFILE_FRAGMENT;
 
                 Snackbar.make(toolbar, "Profile selected", Snackbar
                         .LENGTH_SHORT)
@@ -275,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 fragment = new ActivityFragment();
                 title = getString(R.string.navigation_item_activity);
+                tag = TAG_ACTIVITY_FRAGMENT;
 
                 Snackbar.make(toolbar, "Activity selected", Snackbar
                         .LENGTH_SHORT)
@@ -296,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (fragment != null) {
 
             fm.beginTransaction()
-                    .replace(R.id.container_body, fragment)
+                    .replace(R.id.container_body, fragment, tag)
                     .commit();
 
             // set the toolbar title

@@ -1,6 +1,5 @@
 package cliq.com.cliqgram.viewHolders;
 
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,8 +13,6 @@ import cliq.com.cliqgram.R;
  */
 public class ProfileViewHolder extends RecyclerView.ViewHolder {
 
-    @Bind(R.id.profile_item_view)
-    public CardView profile_item_view;
     @Bind(R.id.profile_post_image)
     public ImageView post_image;
 

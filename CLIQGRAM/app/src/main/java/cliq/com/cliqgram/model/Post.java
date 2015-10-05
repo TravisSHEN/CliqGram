@@ -52,30 +52,30 @@ public class Post extends ParseObject implements Comparable<Post> {
         PostService.post(post);
         return post;
     }
-
-    public static Post createPost(BitmapDrawable bm, User owner, String
-            description) {
-
-        Post post = new Post();
-        post.setOwner(owner);
-        post.setPhotoData(Util.convertBitmapToByte(bm.getBitmap()));
-        post.setDescription(description);
-
-        Location current_location = AppStarter.gpsTracker.getLocation();
-        if (current_location != null) {
-            post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
-                    current_location.getLongitude()));
-        }
-
-        post.setCommentList(new ArrayList<Comment>());
-        post.setLikeList(new ArrayList<Like>());
-
-        post.saveInBackground();
-        PostService.post(post);
-
-        return post;
-
-    }
+//
+//    public static Post createPost(BitmapDrawable bm, User owner, String
+//            description) {
+//
+//        Post post = new Post();
+//        post.setOwner(owner);
+//        post.setPhotoData(Util.convertBitmapToByte(bm.getBitmap()));
+//        post.setDescription(description);
+//
+//        Location current_location = AppStarter.gpsTracker.getLocation();
+//        if (current_location != null) {
+//            post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
+//                    current_location.getLongitude()));
+//        }
+//
+//        post.setCommentList(new ArrayList<Comment>());
+//        post.setLikeList(new ArrayList<Like>());
+//
+//        post.saveInBackground();
+//        PostService.post(post);
+//
+//        return post;
+//
+//    }
 
     public Post() {
         super();
