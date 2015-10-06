@@ -30,14 +30,13 @@ public class User extends ParseUser{
      * @param context
      * @return
      */
-    public BitmapDrawable getAvatarInBitmapDrawable(Context context, byte[]
-            avatarData){
-        return Util.convertByteToBitmapDrawable(context, avatarData);
+    public BitmapDrawable getAvatarInBitmapDrawable(Context context){
+        return Util.convertByteToBitmapDrawable(context, this.getAvatarData());
     }
 
-    public Bitmap getAvatarBitmap(Context context, byte[] avatarData){
-        BitmapDrawable bm_drawable = getAvatarInBitmapDrawable(context, avatarData);
-        return bm_drawable == null ? null : bm_drawable.getBitmap();
+    public Bitmap getAvatarBitmap(){
+        Bitmap bitmap = Util.convertByteToBitmap(this.getAvatarData());
+        return bitmap;
     }
 
 

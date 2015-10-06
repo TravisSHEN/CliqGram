@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Toast;
 
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -72,8 +73,13 @@ public class PostAdapter extends RecyclerView
         post.getPhotoData(new GetDataCallback() {
             @Override
             public void done(byte[] data, ParseException e) {
-                feedViewHolder.feed_photo.setImageBitmap(post
-                        .getPhotoInBitmap(context, data));
+                if( e == null ) {
+                    feedViewHolder.feed_photo.setImageBitmap(post
+                            .getPhotoInBitmap(context, data));
+                } else {
+                    Toast.makeText(context, e.getMessage(), Toast
+                            .LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -123,7 +129,7 @@ public class PostAdapter extends RecyclerView
 
         BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable
                 (context, post.getOwner().getAvatarData());
-        feedViewHolder.feed_avatar.setImageDrawable( bitmapDrawable );
+        feedViewHolder.feed_avatar.setImageDrawable(bitmapDrawable);
 
         feedViewHolder.feed_user_name.setText(post.getOwner().getUsername());
         // TODO:
