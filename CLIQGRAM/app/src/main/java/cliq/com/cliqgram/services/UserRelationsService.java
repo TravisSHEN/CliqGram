@@ -2,6 +2,7 @@ package cliq.com.cliqgram.services;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -9,9 +10,11 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import cliq.com.cliqgram.events.RelationGetEvent;
+import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
 
@@ -23,18 +26,30 @@ public class UserRelationsService {
     private static final String TABLE_NAME = "UserRelations";
 
     /**
-     *
      * @param userName
      */
-    public static void follow(final String userName){
+    public static void follow(final String userName) {
 
-        final ParseUser currentUser = ParseUser.getCurrentUser();
-        final ParseUser otherUser = UserService.findParseUserByName(userName);
+        // set current
+        final User currentUser = UserService.getCurrentUser();
         followGenericAction(userName, "followers", currentUser);
-        followGenericAction(currentUser.getUsername(), "followings", otherUser);
+
+        //
+        UserService.getUserByUsername(userName, new GetCallback<ParseUser>() {
+            @Override
+            public void done(ParseUser otherUser, ParseException e) {
+                followGenericAction(currentUser.getUsername(),
+                        "followings", otherUser);
+            }
+        });
     }
 
-    private static void followGenericAction(final String userName, final String operationName, final ParseUser user){
+    /**
+     * @param userName
+     * @param operationName
+     * @param user
+     */
+    private static void followGenericAction(final String userName, final String operationName, final ParseUser user) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);
@@ -43,8 +58,15 @@ public class UserRelationsService {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     ParseObject userRelations;
+
                     if (objects == null || objects.size() == 0) {
                         userRelations = new ParseObject(TABLE_NAME);
+                        // set acl
+                        ParseACL acl = new ParseACL();
+                        acl.setPublicReadAccess(true);
+                        acl.setPublicWriteAccess(true);
+                        userRelations.setACL(acl);
+
                         userRelations.put("username", userName);
                     } else {
                         userRelations = objects.get(0);
@@ -79,11 +101,10 @@ public class UserRelationsService {
     }
 
     /**
-     *
      * @param username
      */
     public static void getRelation(final String username) {
-       ParseQuery<UserRelation> query = ParseQuery.getQuery(UserRelation.class);
+        ParseQuery<UserRelation> query = ParseQuery.getQuery(UserRelation.class);
         query.include("followings");
         query.include("followers");
 
@@ -102,40 +123,60 @@ public class UserRelationsService {
 
             }
         });
+    }
+
+    public static void getRelation(String username,
+                                   GetCallback<UserRelation> callback) {
+        ParseQuery<UserRelation> query =
+                ParseQuery.getQuery(UserRelation.class);
+
+        query.whereEqualTo("username", username);
+        query.include("followings");
+        query.include("followers");
+
+        query.getFirstInBackground(callback);
 
     }
 
     /**
-     *
      * @param userName
      * @param relation
      * @return
      */
-    public static List<ParseUser> getRelation(String userName, String relation){
+    public static List<User> getRelation(String userName, String relation) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);
-        List<ParseUser> userRelations = null;
+        List<User> userRelations = new ArrayList<>();
         try {
             List<ParseObject> parseObjects = query.find();
-            if(parseObjects != null && parseObjects.size() == 1){
+            if (parseObjects != null && parseObjects.size() == 1) {
                 userRelations = parseObjects.get(0).getList(relation);
             }
-        }catch(ParseException e){
+        } catch (ParseException e) {
             //TODO exception
-        }finally {
-            return userRelations;
+        } finally {
+            List<User> users = new ArrayList<>();
+            if (!userRelations.isEmpty()) {
+                for (Iterator iterator = userRelations.listIterator(); iterator
+                        .hasNext(); ) {
+                    User user = (User) iterator.next();
+                    users.add(user);
+                }
+            }
+
+            return users;
         }
 
     }
 
     public static boolean isInList(List<ParseUser> parseUsers, ParseUser
-            parseUser){
+            parseUser) {
 
         boolean in = false;
         for (ParseUser user : parseUsers) {
-           if( user.getObjectId().equals( parseUser.getObjectId() )) {
-               in = true;
-           }
+            if (user.getObjectId().equals(parseUser.getObjectId())) {
+                in = true;
+            }
         }
 
         return in;

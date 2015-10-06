@@ -165,7 +165,7 @@ public class SignupActivity extends AppCompatActivity {
             String password = passwordText.getText().toString();
 
             ProgressSpinner.getInstance().showSpinner(this, "Registering...");
-            SignupService.signup(username, password, email);
+            SignupService.signup(this, username, password, email);
         } else {
             NetworkConnection.showAlert(this, loginBtn);
         }

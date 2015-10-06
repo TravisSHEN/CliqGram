@@ -15,7 +15,6 @@ import android.view.animation.DecelerateInterpolator;
 
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
-import com.parse.ParseUser;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -27,13 +26,14 @@ import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
+import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.viewHolders.FeedViewHolder;
 
 /**
  * Created by litaoshen on 22/09/2015.
  */
-public class FeedAdapter extends RecyclerView
+public class PostAdapter extends RecyclerView
         .Adapter<FeedViewHolder> {
 
     private static final int ANIMATED_ITEMS_COUNT = 2;
@@ -44,7 +44,7 @@ public class FeedAdapter extends RecyclerView
     private List<Post> postList;
 
 
-    public FeedAdapter(Context context, List<Post> postList) {
+    public PostAdapter(Context context, List<Post> postList) {
 
         this.postList = postList;
         this.context = context;
@@ -102,15 +102,29 @@ public class FeedAdapter extends RecyclerView
     /**
      * @param feedViewHolder
      */
-    private void updateUserProfile(FeedViewHolder feedViewHolder) {
+    private void updateUserProfile(final FeedViewHolder feedViewHolder) {
 
         int position = feedViewHolder.getAdapterPosition();
 
-        Post post = postList.get(position);
+        final Post post = postList.get(position);
+//
+//        post.getOwner().getAvatarData(new GetDataCallback() {
+//            @Override
+//            public void done(byte[] data, ParseException e) {
+//                Bitmap bitmap = post.getOwner()
+//                        .getAvatarBitmap(context, data);
+//                Bitmap bitmap_resized = Util.resizeBitmap(context,
+//                        bitmap,
+//                        0.7f);
+//
+//                feedViewHolder.feed_avatar.setImageBitmap(bitmap_resized);
+//            }
+//        });
 
-        BitmapDrawable bm_avatar = Util.resizeBitmapDrawable(context,
-                post.getOwner().getAvatarInBitmapDrawable(context), 0.7f);
-        feedViewHolder.feed_avatar.setImageDrawable(bm_avatar);
+        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable
+                (context, post.getOwner().getAvatarData());
+        feedViewHolder.feed_avatar.setImageDrawable( bitmapDrawable );
+
         feedViewHolder.feed_user_name.setText(post.getOwner().getUsername());
         // TODO:
         feedViewHolder.feed_time.setText(post.getDateString("d.MMM HH:mm"));
@@ -118,7 +132,7 @@ public class FeedAdapter extends RecyclerView
         List<Like> likeList = post.getLikeList();
         // highlight red heart button if user already liked.
         if (likeList != null && likeList.size() > 0 &&
-                LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), likeList)) {
+                LikeService.isAlreadyLiked(UserService.getCurrentUser(), likeList)) {
 
             setHeartButtonLiked(feedViewHolder);
         } else {
@@ -153,7 +167,8 @@ public class FeedAdapter extends RecyclerView
         FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
         Post post = postList.get(feedViewHolder.getAdapterPosition());
 
-        if(LikeService.isAlreadyLiked(ParseUser.getCurrentUser(), post.getLikeList())){
+        if(LikeService.isAlreadyLiked(UserService.getCurrentUser(), post.getLikeList
+                ())){
             post.unlike();
             setHeartButtonUnLiked(feedViewHolder);
         } else {

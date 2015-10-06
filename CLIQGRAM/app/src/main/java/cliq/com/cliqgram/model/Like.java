@@ -2,7 +2,6 @@ package cliq.com.cliqgram.model;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.UserService;
@@ -32,16 +31,15 @@ public class Like extends ParseObject{
         Post post = (Post) this.getParseObject("post");
         return post;
     }
-    public void setPost(Post post){
+    private void setPost(Post post){
         this.put("post", post);
     }
     public User getUser(){
-        ParseUser parseUser = this.getParseUser("owner");
-        User owner = UserService.getUserFromParseUser(parseUser);
+        User owner = (User) this.getParseUser("owner");
         return owner;
     }
-    public void setUser(User user){
-        ParseUser currentUser = ParseUser.getCurrentUser();
+    private void setUser(User user){
+        User currentUser = UserService.getCurrentUser();
         this.put("owner", currentUser);
     }
 }

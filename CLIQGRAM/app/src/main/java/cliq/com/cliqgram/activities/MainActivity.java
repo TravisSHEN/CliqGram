@@ -19,8 +19,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.parse.ParseUser;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -29,12 +27,13 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.MainViewPageAdapter;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.fragments.ActivityFragment;
-import cliq.com.cliqgram.fragments.FeedFragment;
+import cliq.com.cliqgram.fragments.PostFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SearchFragment;
 import cliq.com.cliqgram.fragments.SettingFragment;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
 
@@ -143,9 +142,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.action_logout) {
 
             // Log out current user
-            if (ParseUser.getCurrentUser() != null) {
+            if (UserService.getCurrentUser() != null) {
                 // do stuff with the user
-                ParseUser.logOut();
+                UserService.logOut();
             }
 
             // jump back to login activity
@@ -223,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()) {
             case R.id.navigation_item_home:
 
-                fragment = FeedFragment.newInstance();
+                fragment = PostFragment.newInstance();
                 title = getString(R.string.navigation_item_home);
                 tag = TAG_FEED_FRAGMENT;
 
