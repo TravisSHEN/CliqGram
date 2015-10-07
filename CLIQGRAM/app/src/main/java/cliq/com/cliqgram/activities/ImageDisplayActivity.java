@@ -81,13 +81,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
-            }
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
         // contrast
@@ -102,35 +99,11 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         }));
-
-        // using this way to make a post after editing
-        // PS: passing a byte[] into this function
-        // PS: there is convert function in utils.Util
-        // PS: Geo location is taken care in Post model when post create
-        /**
-         * @param imageDate byte[]
-         * @param currentUser User
-         * @param description String
-         * @return post Post
-         * Note: Any data in post object may not be able to
-         * get before post.saveInBackground() in finished.
-         * So, check the database (table "Post") on Parse to see if post is
-         * created successfully.
-         * If post is created successfully, it will be shown on home page.
-         */
-        User owner = UserService.getCurrentUser();
-        Post.createPost(owner, Util.convertBitmapToByte(this.originalBitmap), "This is" +
-                " a " +
-                "good photo");
     }
 
     @Override
@@ -150,7 +123,28 @@ public class ImageDisplayActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case (R.id.action_upload):
-                // TODO
+                //TODO complete options
+
+                // using this way to make a post after editing
+                // PS: passing a byte[] into this function
+                // PS: there is convert function in utils.Util
+                // PS: Geo location is taken care in Post model when post create
+                /**
+                 * @param imageDate byte[]
+                 * @param currentUser User
+                 * @param description String
+                 * @return post Post
+                 * Note: Any data in post object may not be able to
+                 * get before post.saveInBackground() in finished.
+                 * So, check the database (table "Post") on Parse to see if post is
+                 * created successfully.
+                 * If post is created successfully, it will be shown on home page.
+                 */
+
+                User owner = UserService.getCurrentUser();
+                Post.createPost(UserService.getCurrentUser(),
+                        Util.convertBitmapToByte(editedBitmap),
+                        "This is a great photo now!");
                 finish();
                 break;
             case (R.id.action_crop):
