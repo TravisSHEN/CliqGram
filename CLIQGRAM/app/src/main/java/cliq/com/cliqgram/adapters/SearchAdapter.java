@@ -3,10 +3,13 @@ package cliq.com.cliqgram.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.graphics.Bitmap;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,9 +27,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class SearchAdapter extends CursorAdapter {
 
-    List<User> userList;
+    private FragmentManager fragmentManager;
+
+    private List<User> userList;
 
     // text view for showing results
+    @Bind(R.id.search_result)
+    LinearLayout search_result;
     @Bind(R.id.search_username)
     TextView text_username;
     @Bind(R.id.search_user_avatar)
@@ -70,9 +77,12 @@ public class SearchAdapter extends CursorAdapter {
             return;
         }
 
+        // set tag to text_username
+        text_username.setTag(user);
+
         text_username.setText(user.getUsername());
-//        Bitmap avatar = user.getAvatarBitmap();
-//        search_avatar.setImageBitmap(avatar);
+        Bitmap avatar = user.getAvatarBitmap();
+        search_avatar.setImageBitmap(avatar);
 
 //        List<Post> postList = user.getPostList();
 //
@@ -96,5 +106,34 @@ public class SearchAdapter extends CursorAdapter {
 //                }
 //            }
 //        });
+    }
+
+//    @OnClick(R.id.search_result)
+//    public void onClic() {
+//
+//        Log.e("SearchAdapter", "Clicked");
+//
+//        User selectedUser = (User) text_username.getTag();
+//        if(selectedUser == null ){
+//            return;
+//        }
+//
+//        String userId = selectedUser.getObjectId();
+//
+//        getFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.container_body, ProfileFragment.newInstance(userId),
+//                        userId + "ProfileFragment")
+//                .addToBackStack(null)
+//                .commit();
+//
+//    }
+
+    public FragmentManager getFragmentManager() {
+        return fragmentManager;
+    }
+
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
     }
 }

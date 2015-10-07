@@ -44,6 +44,8 @@ public class PostFragment extends Fragment {
 
     private List<Post> postList;
 
+    private List<User> followings = new ArrayList<>();
+
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
 
@@ -124,25 +126,28 @@ public class PostFragment extends Fragment {
 //        this.addFakeData();
 
         // followings list of currentUser
-        String currentUsername = UserService.getCurrentUser().getUsername();
+        final String currentUsername = UserService.getCurrentUser().getUsername();
+
+        // also put current user's posts
+        this.followings.add(UserService.getCurrentUser());
 
         UserRelationsService.getRelation(currentUsername, new GetCallback<UserRelation>() {
             @Override
             public void done(UserRelation relation, ParseException e) {
                 if (e == null) {
-                    List<User> followings = new ArrayList<>();
 
                     if (relation != null) {
-                        followings.addAll(relation.getFollowings());
+                        PostFragment.this.followings.addAll(relation
+                                .getFollowings());
                     }
 
-                    // also put current user's posts
-                    followings.add(UserService.getCurrentUser());
-                    PostService.getPosts(followings);
                 } else {
-                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                    Toast.makeText(getActivity(), "No followings found for "
+                            + currentUsername, Toast
                             .LENGTH_SHORT).show();
                 }
+
+                PostService.getPosts(PostFragment.this.followings);
             }
         });
     }

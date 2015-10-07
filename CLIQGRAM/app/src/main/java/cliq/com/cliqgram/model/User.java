@@ -3,11 +3,14 @@ package cliq.com.cliqgram.model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.widget.ImageView;
 
 import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,15 +50,34 @@ public class User extends ParseUser{
         }
     }
 
+    public Uri getAvatarUri(){
+        ParseFile photoFile = this.getParseFile("avatar");
+        Uri imageUri = null;
+        if( photoFile != null ) {
+             imageUri = Uri.parse(photoFile.getUrl());
+        }
+
+        return imageUri;
+    }
+
+    public void loadAvatartoView( Context context, ImageView imageView){
+        if(this.getAvatarUri() == null ){
+            return;
+        }
+        Picasso.with(context)
+                .load( this.getAvatarUri().toString() )
+                .resize(200, 200)
+                .centerCrop()
+                .into(imageView);
+    }
+
     public byte[] getAvatarData(){
         return this.getBytes("avatar");
     }
 
-    public void setAvatarData(byte[] avatarData) {
-//        String avatarLabel = "img_" + this.getUsername()+".jpg";
-//        ParseFile avatar = new ParseFile(avatarLabel, avatarData);
-//        avatar.saveInBackground();
-        this.put("avatar", avatarData);
+    public void setAvatarData(ParseFile avatar) {
+        this.put("avatar", avatar);
+//        this.put("avatar", avatarData);
     }
 
     public List<Post> getPostList() {

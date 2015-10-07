@@ -4,12 +4,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.net.Uri;
+import android.widget.ImageView;
 
 import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -148,6 +151,21 @@ public class Post extends ParseObject implements Comparable<Post> {
     public void getPhotoData(GetDataCallback callback) {
         ParseFile photo = this.getParseFile("photo");
         photo.getDataInBackground(callback);
+    }
+
+    public Uri getPhotoUri(){
+        ParseFile photoFile = this.getParseFile("photo");
+        Uri imageUri = Uri.parse(photoFile.getUrl());
+
+        return imageUri;
+    }
+
+    public void loadPhotoToView(Context context, ImageView imageView){
+        Picasso.with(context)
+                .load( this.getPhotoUri().toString() )
+                .resize(400, 400)
+                .centerCrop()
+                .into(imageView);
     }
 
     public void setPhotoData(byte[] photoData) {

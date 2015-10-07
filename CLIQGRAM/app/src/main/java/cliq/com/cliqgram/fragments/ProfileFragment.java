@@ -1,6 +1,5 @@
 package cliq.com.cliqgram.fragments;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -32,7 +31,6 @@ import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.UserRelationsService;
 import cliq.com.cliqgram.services.UserService;
-import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -172,22 +170,7 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-//        user.getAvatarData(new GetDataCallback() {
-//            @Override
-//            public void done(byte[] data, ParseException e) {
-//                Bitmap bitmap = user.getAvatarBitmap(getActivity(), data);
-//                Bitmap bitmap_resized = Util.resizeBitmap(getActivity(),
-//                        bitmap,
-//                        0.7f);
-//
-//                profile_avatar.setImageBitmap(bitmap_resized);
-//            }
-//        });
-
-        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable
-                (getActivity(), user.getAvatarData());
-        profile_avatar.setImageDrawable(Util.resizeBitmapDrawable(getActivity(),
-                bitmapDrawable, 0.7f));
+        user.loadAvatartoView(getActivity(), profile_avatar);
 
         profile_posts_number.setText(
                 String.valueOf(user.getPostList().size()));

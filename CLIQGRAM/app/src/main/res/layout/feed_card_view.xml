@@ -57,10 +57,10 @@
             </LinearLayout>
         </LinearLayout>
 
-        <ImageView
+        <cliq.com.cliqgram.views.SquareImageView
             android:id="@+id/feed_photo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             />
 
         <LinearLayout

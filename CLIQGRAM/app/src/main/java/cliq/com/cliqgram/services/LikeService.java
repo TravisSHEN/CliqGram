@@ -16,6 +16,7 @@ import cliq.com.cliqgram.events.CommentFailEvent;
 import cliq.com.cliqgram.events.LikeSuccessEvent;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
 
 /**
@@ -112,7 +113,9 @@ public class LikeService {
         for (Iterator<Like> iter = likeList.listIterator(); iter.hasNext(); ) {
             try {
                 Like like = iter.next();
-                if (like.getUser().getUsername().equals(parseUser.getUsername())) {
+                User user = like.getUser();
+                if (user != null && user.getUsername().equals
+                        (parseUser.getUsername())) {
                     isLiked = true;
                     return isLiked;
                 }

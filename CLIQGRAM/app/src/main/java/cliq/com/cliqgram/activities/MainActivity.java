@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.activities;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,11 +14,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -80,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Button post;
     private static int PICKED_IMG = 1;
     private static int RESULT_LOAD_IMG = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ToolbarModel.setupToolbar(this);
 
         // TODO: uncomment these if don't need tab bar on bottom
-         // set click listener to navigation view
+        // set click listener to navigation view
 //        navigationView.setNavigationItemSelectedListener(this);
 
         // initialize showing fragment
@@ -107,7 +114,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // initialize tab bar layout
         initializeTabLayout();
+
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+
+            Log.e("MainActivity", query);
+
+            UserService.getUserByUsername(query, new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser user, ParseException e) {
+                    if (user != null) {
+
+                        String userId = user.getObjectId();
+
+
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.container_body, ProfileFragment.newInstance(userId),
+                                        userId + "ProfileFragment")
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }
+            });
+        }
     }
+
+
 
     @Override
     protected void onStart() {
@@ -186,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    void initializeTabLayout(){
+    void initializeTabLayout() {
         MainViewPageAdapter mainViewPageAdapter = new MainViewPageAdapter(this, fm);
         viewPager.setAdapter(mainViewPageAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -194,11 +229,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         float scale_factor = 0.7f;
         tabLayout.getTabAt(TAB_FEED).setIcon(Util.resizeDrawable(this,
                 R.drawable.icon_home, scale_factor));
-        tabLayout.getTabAt(TAB_SEARCH).setIcon(Util.resizeDrawable(this,R
+        tabLayout.getTabAt(TAB_SEARCH).setIcon(Util.resizeDrawable(this, R
                 .drawable.icon_search, scale_factor));
 //        tabLayout.getTabAt(TAB_CAMERA).setIcon(R.drawable.icon_camera);
         tabLayout.getTabAt(TAB_CAMERA).setCustomView(float_button);
-        tabLayout.getTabAt(TAB_ACTIVITY).setIcon(Util.resizeDrawable(this,R
+        tabLayout.getTabAt(TAB_ACTIVITY).setIcon(Util.resizeDrawable(this, R
                 .drawable.icon_star, scale_factor));
         tabLayout.getTabAt(TAB_PROFILE).setIcon(Util.resizeDrawable(this, R
                 .drawable.icon_user, scale_factor));

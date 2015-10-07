@@ -1,6 +1,7 @@
 package cliq.com.cliqgram.model;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 
 import cliq.com.cliqgram.services.LikeService;
@@ -35,7 +36,12 @@ public class Like extends ParseObject{
         this.put("post", post);
     }
     public User getUser(){
-        User owner = (User) this.getParseUser("owner");
+        User owner = null;
+        try {
+            owner = (User) this.fetchIfNeeded().getParseUser("owner");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return owner;
     }
     private void setUser(User user){

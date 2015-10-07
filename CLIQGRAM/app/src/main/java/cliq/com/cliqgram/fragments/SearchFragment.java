@@ -6,9 +6,9 @@ import android.database.MatrixCursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +26,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.SearchAdapter;
+import cliq.com.cliqgram.adapters.UserSuggestAdapter;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserService;
 
@@ -39,10 +40,14 @@ public class SearchFragment extends Fragment {
     @Bind(R.id.search_recycler_view)
     RecyclerView search_recycler_view;
 
+    UserSuggestAdapter userSuggestAdapter;
+
     /**
      * user list storing all able suggesting users
      */
     List<User> userList;
+
+    List<User> suggestList;
 
     /**
      * check if userList is loaded
@@ -102,7 +107,35 @@ public class SearchFragment extends Fragment {
 
         ButterKnife.bind(this, root_view);
 
+        initializeSuggestView();
+
         return root_view;
+    }
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//        // register with EventBus
+//        AppStarter.eventBus.register(this);
+//
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        AppStarter.eventBus.unregister(this);
+//        super.onStop();
+//    }
+
+
+    private void initializeSuggestView() {
+        LinearLayoutManager llm = new LinearLayoutManager(this.getActivity(),
+                LinearLayoutManager.VERTICAL, false);
+        search_recycler_view.setLayoutManager(llm);
+        search_recycler_view.setHasFixedSize(true);
+
+        userSuggestAdapter = new UserSuggestAdapter(getActivity(), suggestList);
+        search_recycler_view.setAdapter(userSuggestAdapter);
     }
 
     @Override
@@ -132,6 +165,7 @@ public class SearchFragment extends Fragment {
 
             SearchView searchView = new SearchView(this.getActivity());
             searchItem.setActionView(searchView);
+            searchView.setIconifiedByDefault(true);
 
             SearchView action_search = (SearchView) searchItem.getActionView();
 
@@ -203,10 +237,7 @@ public class SearchFragment extends Fragment {
                         .toLowerCase()
                         .trim();
 
-                Log.e("Username", normalizedUsername);
                 if( normalizedUsername.contains(normalizedQuery) ) {
-
-                    Log.e("UserQuery", normalizedQuery);
 
                     temp[0] = index;
                     temp[1] = user;
@@ -227,9 +258,12 @@ public class SearchFragment extends Fragment {
                     .findItem(R.id.action_search)
                     .getActionView();
 
-            search.setSuggestionsAdapter(new SearchAdapter(this.getActivity(),
+            SearchAdapter searchAdapter = new SearchAdapter(this.getActivity(),
                     cursor,
-                    resultList));
+                    resultList);
+            searchAdapter.setFragmentManager(getFragmentManager());
+
+            search.setSuggestionsAdapter(searchAdapter);
         }
     }
 
