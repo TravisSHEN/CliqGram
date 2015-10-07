@@ -17,7 +17,7 @@ public class UserRelation extends ParseObject{
         super();
     }
 
-    public List<ParseUser> getFollowings() {
+    public List<User> getFollowings() {
         return this.getList("followings");
     }
 
@@ -25,7 +25,7 @@ public class UserRelation extends ParseObject{
         this.put("followings", followings);
     }
 
-    public List<ParseUser> getFollowers() {
+    public List<User> getFollowers() {
         return this.getList("followers");
     }
 

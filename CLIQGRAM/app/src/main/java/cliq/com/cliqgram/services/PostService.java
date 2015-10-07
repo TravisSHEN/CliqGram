@@ -7,7 +7,6 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostFailEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
 import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
 
 /**
@@ -28,7 +28,7 @@ public class PostService {
 
     public static void post(@NonNull final Post post) {
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
+        User currentUser = UserService.getCurrentUser();
 
         if (post.getOwner() != null && !post.getOwner().getUsername().equals(
                 currentUser.getUsername())) {
@@ -82,7 +82,7 @@ public class PostService {
         });
     }
 
-    public static void getPosts( List<ParseUser> userList) {
+    public static void getPosts( List<User> userList) {
 
         if (userList == null || userList.size() <= 0) {
             return;

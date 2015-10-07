@@ -17,20 +17,21 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.model.User;
 
 /**
  * Created by litaoshen on 5/10/2015.
  */
 public class SearchAdapter extends CursorAdapter {
 
-    List<ParseUser> userList;
+    List<User> userList;
 
     // text view for showing results
     @Bind(R.id.search_item)
     TextView textView;
 
 
-    public SearchAdapter(Context context, MatrixCursor cursor, List<ParseUser>
+    public SearchAdapter(Context context, MatrixCursor cursor, List<User>
             userList) {
         super(context, cursor, false);
 

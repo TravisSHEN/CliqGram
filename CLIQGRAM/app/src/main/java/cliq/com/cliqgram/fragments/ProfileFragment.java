@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.fragments;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,6 +32,7 @@ import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.UserRelationsService;
 import cliq.com.cliqgram.services.UserService;
+import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -136,7 +138,7 @@ public class ProfileFragment extends Fragment {
         profileAdapter = new ProfileAdapter(this.getActivity(), this.postList);
         profile_posts.setAdapter(profileAdapter);
 
-        if (userId.equals(ParseUser.getCurrentUser().getObjectId())) {
+        if (userId.equals(UserService.getCurrentUser().getObjectId())) {
             profile_follow_button.setVisibility(View.GONE);
         } else {
             profile_follow_button.setVisibility(View.VISIBLE);
@@ -145,8 +147,10 @@ public class ProfileFragment extends Fragment {
 
     private void initializeData(String userId) {
 
-        UserService.getUser(userId);
-        UserService.getUser(userId, new GetCallback<ParseUser>() {
+        // find such user and put its data onto profile
+        UserService.getUserById(userId);
+        // find such user in order to find his/her relations
+        UserService.getUserById(userId, new GetCallback<ParseUser>() {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
@@ -162,13 +166,29 @@ public class ProfileFragment extends Fragment {
 
     @Subscribe
     public void onUserGetEvent(UserGetEvent event) {
-        User user = event.getUser();
+        final User user = event.getUser();
 
         if (user == null) {
             return;
         }
 
-        profile_avatar.setImageBitmap(user.getAvatarBitmap(this.getActivity()));
+//        user.getAvatarData(new GetDataCallback() {
+//            @Override
+//            public void done(byte[] data, ParseException e) {
+//                Bitmap bitmap = user.getAvatarBitmap(getActivity(), data);
+//                Bitmap bitmap_resized = Util.resizeBitmap(getActivity(),
+//                        bitmap,
+//                        0.7f);
+//
+//                profile_avatar.setImageBitmap(bitmap_resized);
+//            }
+//        });
+
+        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable
+                (getActivity(), user.getAvatarData());
+        profile_avatar.setImageDrawable(Util.resizeBitmapDrawable(getActivity(),
+                bitmapDrawable, 0.7f));
+
         profile_posts_number.setText(
                 String.valueOf(user.getPostList().size()));
         profile_username.setText(user.getUsername());
@@ -185,8 +205,8 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-        List<ParseUser> followings = relation.getFollowings();
-        List<ParseUser> followers = relation.getFollowers();
+        List<User> followings = relation.getFollowings();
+        List<User> followers = relation.getFollowers();
 
         if (followings != null) {
             profile_followings.setText(String.valueOf(followings.size()));
@@ -197,7 +217,7 @@ public class ProfileFragment extends Fragment {
              * if current user already existing in follower list of such
              * user, then set profile_follow_button with "following" status.
              */
-            if (followers.contains(ParseUser.getCurrentUser())) {
+            if (followers.contains(UserService.getCurrentUser())) {
                 profile_follow_button.setText(R.string.profile_following);
             }
         }
@@ -209,14 +229,14 @@ public class ProfileFragment extends Fragment {
 
         switch (view.getId()){
             case R.id.profile_btn_follow:
-                if(userId.equals(ParseUser.getCurrentUser().getObjectId())){
+                if(userId.equals(UserService.getCurrentUser().getObjectId())){
                     return;
                 }
-                UserService.getUser(userId, new GetCallback<ParseUser>() {
+                UserService.getUserById(userId, new GetCallback<ParseUser>() {
                     @Override
                     public void done(ParseUser object, ParseException e) {
 
-                        if( e == null ) {
+                        if (e == null) {
 
                             UserRelationsService.follow(object.getUsername());
                             profile_follow_button.setText(R.string.profile_following);

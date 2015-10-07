@@ -14,14 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.parse.ParseUser;
-
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.SearchAdapter;
+import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserRelationsService;
 
 /**
@@ -37,7 +36,7 @@ public class SearchFragment extends Fragment {
     /**
      * user list storing all able suggesting users
      */
-    List<ParseUser> userList;
+    List<User> userList;
 
     /**
      * Use this factory method to create a new instance of

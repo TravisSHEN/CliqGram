@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.adapters.FeedAdapter;
 import cliq.com.cliqgram.adapters.FollowingActivityAdapter;
 
 /**

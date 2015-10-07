@@ -10,6 +10,7 @@ import com.parse.ParseUser;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 
 /**
@@ -20,6 +21,7 @@ public class ParseConnector {
     public static void initialize(Context context) {
         Parse.enableLocalDatastore(context);
 
+        ParseUser.registerSubclass(User.class);
         ParseObject.registerSubclass(Comment.class);
         ParseObject.registerSubclass(Post.class);
         ParseObject.registerSubclass(Like.class);

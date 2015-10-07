@@ -63,7 +63,7 @@ public class PostActivity extends AppCompatActivity {
 
             byte[] imageData = convertImageToByte(selectedImage);
             User user = UserService.getCurrentUser();
-            Post post = Post.createPost(imageData, user, "my new photo");
+            Post post = Post.createPost(user, imageData, "my new photo");
             PostService.post(post);
         }
     }
