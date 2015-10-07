@@ -71,11 +71,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                float brightness = calculateBrightnessValue(progress);
-                gpuImage.setFilter(new GPUImageBrightnessFilter(brightness));
-                //editedBitmap = resizeBitmap(originalBitmap);
-                editedBitmap = gpuImage.getBitmapWithFilterApplied();
-                imageView.setImageBitmap(editedBitmap);
+                Bitmap newBitmap = applyContrastAndBrightnessFilters();
+
+                // show image
+                imageView.setImageBitmap(newBitmap);
             }
 
             @Override
@@ -93,12 +92,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //TODO Apply contrast changes
-                float contrast = calculateContrastValue(progress);
-                gpuImage.setFilter(new GPUImageContrastFilter(contrast));
-                //editedBitmap = resizeBitmap(originalBitmap);
-                editedBitmap = gpuImage.getBitmapWithFilterApplied();
-                imageView.setImageBitmap(editedBitmap);
+                Bitmap newBitmap = applyContrastAndBrightnessFilters();
+
+                // show image
+                imageView.setImageBitmap(newBitmap);
             }
 
             @Override
@@ -223,5 +220,24 @@ public class ImageDisplayActivity extends AppCompatActivity {
     // seekbar is between 0 and 100
     private float calculateContrastValue(int c) {
         return c / (float) 25;
+    }
+
+    // apply contrast and brightness filters to originalBitmap
+    // returns new bitmap
+    private Bitmap applyContrastAndBrightnessFilters() {
+        // get the contrast and brightness values
+        float contrast = calculateContrastValue(contrastBar.getProgress());
+        float brightness = calculateBrightnessValue(brightnessBar.getProgress());
+
+        // apply contrast
+        gpuImage.setFilter(new GPUImageContrastFilter(contrast));
+        Bitmap intermediateBitmap = gpuImage.getBitmapWithFilterApplied(originalBitmap);
+
+        // apply brightness filter
+        gpuImage.setFilter(new GPUImageBrightnessFilter(brightness));
+        Bitmap editedBitmap = gpuImage.getBitmapWithFilterApplied(intermediateBitmap);
+
+        // return new bitmap
+        return editedBitmap;
     }
 }
