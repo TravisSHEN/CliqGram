@@ -20,9 +20,10 @@
     <string name="button_gallery">Gallery</string>
 
     <!-- gallery-->
-    <string name="action_upload">Upload Photo</string>
-    <string name="action_open_camera">Open Camera</string>
-    <string name="action_edit">Edit Photo</string>
+    <string name="action_upload">Upload</string>
+    <string name="action_crop">Crop</string>
+    <string name="action_apply_filter">Apply Filter</string>
+    <string name="action_brightness_and_contrast">Brightness and Contrast</string>
     <string name="action_share">Share Via Bluetooth</string>
 
     <!--navigation menu-->
