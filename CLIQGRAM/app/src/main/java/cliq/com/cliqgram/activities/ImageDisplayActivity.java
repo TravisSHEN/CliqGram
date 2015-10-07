@@ -27,6 +27,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
 
 public class ImageDisplayActivity extends AppCompatActivity {
     Bitmap originalBitmap;
+    Bitmap editedBitmap;
 
     // For image processing
     GPUImage gpuImage;
@@ -54,6 +55,9 @@ public class ImageDisplayActivity extends AppCompatActivity {
         // get image from intent when activity start and resize it
         originalBitmap = resizeBitmap(getImage());
 
+        // initialise editedBitmap to originalBitmap
+        editedBitmap = originalBitmap;
+
         // create the GPUImage
         gpuImage = new GPUImage(getBaseContext());
 
@@ -70,10 +74,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Bitmap newBitmap = applyContrastAndBrightnessFilters();
+                editedBitmap = applyContrastAndBrightnessFilters();
 
                 // show image
-                imageView.setImageBitmap(newBitmap);
+                imageView.setImageBitmap(editedBitmap);
             }
 
             @Override
@@ -91,10 +95,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Bitmap newBitmap = applyContrastAndBrightnessFilters();
+                editedBitmap = applyContrastAndBrightnessFilters();
 
                 // show image
-                imageView.setImageBitmap(newBitmap);
+                imageView.setImageBitmap(editedBitmap);
             }
 
             @Override
