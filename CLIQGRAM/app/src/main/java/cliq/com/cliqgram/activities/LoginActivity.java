@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Subscribe to login event in cluding LoginFailEvent and
+     * Subscribe to login event including LoginFailEvent and
      * LoginSuccessfulEvent
      *
      * @param baseEvent
