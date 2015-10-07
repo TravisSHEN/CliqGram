@@ -1,16 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
               android:minHeight="80dp"
               android:minWidth="100dp"
-              android:padding="20dp"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:orientation="vertical"
+              android:padding="20dp">
 
-    <TextView
-        android:id="@+id/search_item"
-        android:textSize="24sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/search_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/search_user_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/search_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"/>
+
+        <cliq.com.cliqgram.views.SquareImageView
+            android:id="@+id/search_post_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:background="#cccccc"/>
 
 </LinearLayout>

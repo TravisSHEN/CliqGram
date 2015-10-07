@@ -3,6 +3,8 @@ package cliq.com.cliqgram.services;
 import android.content.Context;
 
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 import cliq.com.cliqgram.R;
@@ -22,15 +24,39 @@ public class SignupService {
                               final String password,
                               final String email) {
 
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setEmail(email);
-
         // set default avatar
         byte[] avatarData = Util.convertBitmapToByte(Util.resizeDrawable(context, R.drawable
                 .icon_user, 0.7f).getBitmap());
-        user.setAvatarData(avatarData);
+
+        String avatarLabel = "img_" +
+                String.valueOf(Util.getCurrentDate().getTime()) + "" +
+                ".jpg";
+
+        // after avatar file stored successfully, then signup new user.
+        final ParseFile avatar = new ParseFile(avatarLabel, avatarData);
+        avatar.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+
+                if( e == null ) {
+
+                    User user = new User();
+                    user.setUsername(username);
+                    user.setPassword(password);
+                    user.setEmail(email);
+
+                    doSignup(user, avatar, username, password);
+                }
+            }
+        });
+    }
+
+    private static void doSignup(final User user,
+                                 ParseFile avatar,
+                                 final String username,
+                                 final String password) {
+
+        user.setAvatarData(avatar);
 
         // Log out current user to prevent session invalid when
         // user being manually deleted on cloud.
@@ -42,15 +68,14 @@ public class SignupService {
         user.signUpInBackground(new SignUpCallback() {
 
             public void done(ParseException e) {
-                if (e == null) {
+                if (e == null)
                     AppStarter.eventBus.post(new SignupSuccessEvent("Sign up was successful!",
                             username, password));
-                } else {
+                else {
                     AppStarter.eventBus.post(new SignupFailEvent("Sign up failed - " +
                             e.getMessage()));
                 }
             }
         });
-
     }
 }

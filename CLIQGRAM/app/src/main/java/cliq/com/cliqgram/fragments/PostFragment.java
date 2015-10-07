@@ -44,6 +44,8 @@ public class PostFragment extends Fragment {
 
     private List<Post> postList;
 
+    private List<User> followings = new ArrayList<>();
+
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
 
@@ -71,23 +73,33 @@ public class PostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // register with EventBus
+        AppStarter.eventBus.register(this);
+
         postList = new ArrayList<>();
         this.initializeData();
     }
 
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//        // register with EventBus
+//        AppStarter.eventBus.register(this);
+//
+//    }
+
+    //    @Override
+//    public void onStop() {
+//        AppStarter.eventBus.unregister(this);
+//        super.onStop();
+//    }
+
+
     @Override
-    public void onStart() {
-        super.onStart();
-
-        // register with EventBus
-        AppStarter.eventBus.register(this);
-
-    }
-
-    @Override
-    public void onStop() {
+    public void onDestroy() {
         AppStarter.eventBus.unregister(this);
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override
@@ -124,25 +136,28 @@ public class PostFragment extends Fragment {
 //        this.addFakeData();
 
         // followings list of currentUser
-        String currentUsername = UserService.getCurrentUser().getUsername();
+        final String currentUsername = UserService.getCurrentUser().getUsername();
+
+        // also put current user's posts
+        this.followings.add(UserService.getCurrentUser());
 
         UserRelationsService.getRelation(currentUsername, new GetCallback<UserRelation>() {
             @Override
             public void done(UserRelation relation, ParseException e) {
                 if (e == null) {
-                    List<User> followings = new ArrayList<>();
 
-                    if (relation != null) {
-                        followings.addAll(relation.getFollowings());
+                    if (relation != null && relation.getFollowings() != null) {
+                        PostFragment.this.followings.addAll(relation
+                                .getFollowings());
                     }
 
-                    // also put current user's posts
-                    followings.add(UserService.getCurrentUser());
-                    PostService.getPosts(followings);
                 } else {
-                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                    Toast.makeText(getActivity(), "No followings found for "
+                            + currentUsername, Toast
                             .LENGTH_SHORT).show();
                 }
+
+                PostService.getPosts(PostFragment.this.followings);
             }
         });
     }

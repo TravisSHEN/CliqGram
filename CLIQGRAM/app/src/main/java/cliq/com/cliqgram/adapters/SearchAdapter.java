@@ -3,13 +3,14 @@ package cliq.com.cliqgram.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.graphics.Bitmap;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,24 +19,34 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.views.SquareImageView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by litaoshen on 5/10/2015.
  */
 public class SearchAdapter extends CursorAdapter {
 
-    List<User> userList;
+    private FragmentManager fragmentManager;
+
+    private List<User> userList;
 
     // text view for showing results
-    @Bind(R.id.search_item)
-    TextView textView;
+    @Bind(R.id.search_result)
+    LinearLayout search_result;
+    @Bind(R.id.search_username)
+    TextView text_username;
+    @Bind(R.id.search_user_avatar)
+    CircleImageView search_avatar;
+    @Bind(R.id.search_post_image)
+    SquareImageView post_image;
 
 
     public SearchAdapter(Context context, MatrixCursor cursor, List<User>
             userList) {
         super(context, cursor, false);
 
-        if (userList == null ){
+        if (userList == null) {
             this.userList = new ArrayList<>();
         } else {
             this.userList = userList;
@@ -59,13 +70,70 @@ public class SearchAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
 
-        ParseUser user = userList.get(cursor.getPosition());
+        User user = userList.get(cursor.getPosition());
         if (user == null) {
             return;
         }
 
-        textView.setText(user.getUsername());
+        // set tag to text_username
+        text_username.setTag(user);
+
+        text_username.setText(user.getUsername());
+        Bitmap avatar = user.getAvatarBitmap();
+        search_avatar.setImageBitmap(avatar);
+
+//        List<Post> postList = user.getPostList();
+//
+//        if (postList == null || postList.isEmpty()) {
+//            return;
+//        }
+//
+//        Collections.sort(postList);
+//        final Post recent_post = postList.get(0);
+//        recent_post.getPhotoData(new GetDataCallback() {
+//            @Override
+//            public void done(byte[] data, ParseException e) {
+//                if (e == null) {
+//                    Bitmap bitmap = recent_post.getPhotoInBitmap(context, data);
+//                    Bitmap resized_bitmap = Util.resizeBitmap(context,
+//                            bitmap, 0.1f);
+//                    post_image.setImageBitmap(resized_bitmap);
+//                } else {
+//                    Toast.makeText(context, e.getMessage(), Toast
+//                            .LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+    }
+
+//    @OnClick(R.id.search_result)
+//    public void onClic() {
+//
+//        Log.e("SearchAdapter", "Clicked");
+//
+//        User selectedUser = (User) text_username.getTag();
+//        if(selectedUser == null ){
+//            return;
+//        }
+//
+//        String userId = selectedUser.getObjectId();
+//
+//        getFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.container_body, ProfileFragment.newInstance(userId),
+//                        userId + "ProfileFragment")
+//                .addToBackStack(null)
+//                .commit();
+//
+//    }
+
+    public FragmentManager getFragmentManager() {
+        return fragmentManager;
+    }
+
+    public void setFragmentManager(FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
     }
 }

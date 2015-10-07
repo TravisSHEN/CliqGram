@@ -6,13 +6,30 @@
              android:paddingTop="@dimen/abc_action_bar_default_height_material"
              tools:context="cliq.com.cliqgram.fragments.SearchFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/search_recycler_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:minHeight="200dp"
-        android:visibility="visible">
+        android:layout_height="match_parent">
 
-    </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:id="@+id/search_suggestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginBottom="30dp"
+            android:text="@string/search_suggest"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/search_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="200dp"
+            android:visibility="visible"
+            android:layout_below="@+id/search_suggestion"
+            android:layout_alignParentStart="true">
+
+        </android.support.v7.widget.RecyclerView>
+    </RelativeLayout>
 
 </FrameLayout>

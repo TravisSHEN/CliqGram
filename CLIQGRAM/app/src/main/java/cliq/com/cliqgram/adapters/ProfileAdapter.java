@@ -6,9 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -44,13 +41,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileViewHolder>{
 
         final Post post = postList.get(holder.getAdapterPosition());
 
-        post.getPhotoData(new GetDataCallback() {
-            @Override
-            public void done(byte[] data, ParseException e) {
-                holder.post_image.setImageBitmap(post.getPhotoInBitmap
-                        (context, data));
-            }
-        });
+        post.loadPhotoToView(context, holder.post_image);
     }
 
     @Override

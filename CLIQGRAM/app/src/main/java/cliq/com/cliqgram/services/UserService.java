@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.services;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -22,6 +23,16 @@ public class UserService {
 
     public static void logOut(){
         ParseUser.logOut();
+    }
+
+    public static void getAllUsers(FindCallback<User>
+            callback){
+
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
+        query.include("posts");
+
+        query.findInBackground(callback);
+
     }
 
     public static void getUserById(String userId){

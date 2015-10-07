@@ -6,6 +6,7 @@ import android.database.MatrixCursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -13,15 +14,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.SearchAdapter;
+import cliq.com.cliqgram.adapters.UserSuggestAdapter;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.services.UserRelationsService;
+import cliq.com.cliqgram.services.UserService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,10 +40,19 @@ public class SearchFragment extends Fragment {
     @Bind(R.id.search_recycler_view)
     RecyclerView search_recycler_view;
 
+    UserSuggestAdapter userSuggestAdapter;
+
     /**
      * user list storing all able suggesting users
      */
     List<User> userList;
+
+    List<User> suggestList;
+
+    /**
+     * check if userList is loaded
+     */
+    boolean isUserListReady;
 
     /**
      * Use this factory method to create a new instance of
@@ -59,13 +75,27 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
+
+        // retrieve all users at beginning for search
+        UserService.getAllUsers(new FindCallback<User>() {
+            @Override
+            public void done(List<User> userList, ParseException e) {
+                if (e == null) {
+
+                    SearchFragment.this.setUserList(userList);
+                    SearchFragment.this.setIsUserListReady(true);
+
+                } else {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                            .LENGTH_SHORT).show();
+
+                    SearchFragment.this.setIsUserListReady(false);
+                }
+            }
+        });
 
         // enable option menu
         setHasOptionsMenu(true);
-
-        userList = UserRelationsService.getRelation("jj", "followings");
     }
 
     @Override
@@ -76,6 +106,8 @@ public class SearchFragment extends Fragment {
         View root_view = inflater.inflate(R.layout.fragment_search, container, false);
 
         ButterKnife.bind(this, root_view);
+
+        initializeSuggestView();
 
         return root_view;
     }
@@ -95,6 +127,16 @@ public class SearchFragment extends Fragment {
 //        super.onStop();
 //    }
 
+
+    private void initializeSuggestView() {
+        LinearLayoutManager llm = new LinearLayoutManager(this.getActivity(),
+                LinearLayoutManager.VERTICAL, false);
+        search_recycler_view.setLayoutManager(llm);
+        search_recycler_view.setHasFixedSize(true);
+
+        userSuggestAdapter = new UserSuggestAdapter(getActivity(), suggestList);
+        search_recycler_view.setAdapter(userSuggestAdapter);
+    }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -123,6 +165,7 @@ public class SearchFragment extends Fragment {
 
             SearchView searchView = new SearchView(this.getActivity());
             searchItem.setActionView(searchView);
+            searchView.setIconifiedByDefault(true);
 
             SearchView action_search = (SearchView) searchItem.getActionView();
 
@@ -136,14 +179,18 @@ public class SearchFragment extends Fragment {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
 
-                    loadHistory(menu, query);
+                    if(SearchFragment.this.isUserListReady()) {
+                        doSearch(menu, query);
+                    }
                     return true;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String query) {
 
-                    loadHistory(menu, query);
+                    if(SearchFragment.this.isUserListReady()) {
+                        doSearch(menu, query);
+                    }
                     return true;
                 }
 
@@ -152,9 +199,21 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void loadHistory(Menu menu, String query) {
+    private void doSearch(Menu menu, String query) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+            // normalize query
+            String normalizedQuery = query.toLowerCase().trim();
+
+            // userList
+            List<User> userList = SearchFragment.this.getUserList();
+
+            // list of results
+            List<User> resultList = new ArrayList<>();
+
+            // current user
+            User currentUser = UserService.getCurrentUser();
 
             // Cursor
             String[] columns = new String[]{"_id", "text"};
@@ -162,13 +221,31 @@ public class SearchFragment extends Fragment {
 
             MatrixCursor cursor = new MatrixCursor(columns);
 
+            int index = 0;
             for (int i = 0; i < userList.size(); i++) {
 
-                temp[0] = i;
-                temp[1] = userList.get(i);
 
-                cursor.addRow(temp);
+                User user = userList.get(i);
 
+                if ( user == null ||
+                        user.getObjectId()
+                                .equals(currentUser.getObjectId())){
+                    break;
+                }
+
+                String normalizedUsername = user.getUsername()
+                        .toLowerCase()
+                        .trim();
+
+                if( normalizedUsername.contains(normalizedQuery) ) {
+
+                    temp[0] = index;
+                    temp[1] = user;
+                    cursor.addRow(temp);
+                    resultList.add(user);
+
+                    index ++;
+                }
             }
 
             // SearchView
@@ -181,9 +258,28 @@ public class SearchFragment extends Fragment {
                     .findItem(R.id.action_search)
                     .getActionView();
 
-            search.setSuggestionsAdapter(new SearchAdapter(this.getActivity(),
+            SearchAdapter searchAdapter = new SearchAdapter(this.getActivity(),
                     cursor,
-                    userList));
+                    resultList);
+            searchAdapter.setFragmentManager(getFragmentManager());
+
+            search.setSuggestionsAdapter(searchAdapter);
         }
+    }
+
+    public synchronized List<User> getUserList() {
+        return userList;
+    }
+
+    public synchronized void setUserList(List<User> userList) {
+        this.userList = userList;
+    }
+
+    public synchronized boolean isUserListReady() {
+        return isUserListReady;
+    }
+
+    public synchronized void setIsUserListReady(boolean isUserListReady) {
+        this.isUserListReady = isUserListReady;
     }
 }

@@ -84,6 +84,17 @@ public class Util {
                 res);
     }
 
+    public static Bitmap decodeStream(Context context, String imageName){
+        Bitmap bitmap = null;
+        try {
+             bitmap = BitmapFactory.decodeStream(context.openFileInput
+                    (imageName));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
     /**
      * resize drawable resource
      *
@@ -132,6 +143,7 @@ public class Util {
         return byteBuffer.toByteArray();
     }
     */
+
     public static byte[] convertImageToByte(Uri uri, ContentResolver cr) {
         byte[] data = null;
         try {
@@ -163,13 +175,11 @@ public class Util {
     }
 
     /**
-     * Return a bitmap drawable
-     *
-     * @param context
+     *  return bitmap
+     * @param imgData
      * @return
      */
-    public static BitmapDrawable convertByteToBitmapDrawable(Context context, byte[]
-            imgData) {
+    public static Bitmap convertByteToBitmap(byte[] imgData){
 
         if (imgData == null || imgData.length == 0) {
             return null;
@@ -178,7 +188,26 @@ public class Util {
         Bitmap bitmap = BitmapFactory.decodeByteArray(imgData, 0,
                 imgData.length);
 
-        return new BitmapDrawable(context.getResources(), bitmap);
+        return bitmap;
+    }
+    /**
+     * Return a bitmap drawable
+     *
+     * @param context
+     * @return
+     */
+    public static BitmapDrawable convertByteToBitmapDrawable(Context context, byte[]
+            imgData) {
+
+        Bitmap bitmap = Util.convertByteToBitmap(imgData);
+        BitmapDrawable bitmapDrawable = null;
+        if( bitmap != null ) {
+
+            bitmapDrawable = new BitmapDrawable(context
+                    .getResources(), bitmap);
+        }
+
+        return bitmapDrawable;
     }
 
     public static Date getCurrentDate() {

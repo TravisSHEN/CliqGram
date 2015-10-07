@@ -3,7 +3,6 @@ package cliq.com.cliqgram.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -13,15 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.OpenCommentEvent;
+import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.server.AppStarter;
@@ -67,20 +64,21 @@ public class PostAdapter extends RecyclerView
 
         final Post post = postList.get(position);
 
-//        Log.e("FeedAdapter", feed.toString());
+        // load to feed_photo
+        post.loadPhotoToView(context, feedViewHolder.feed_photo);
 
-        post.getPhotoData(new GetDataCallback() {
-            @Override
-            public void done(byte[] data, ParseException e) {
-                feedViewHolder.feed_photo.setImageBitmap(post
-                        .getPhotoInBitmap(context, data));
-            }
-        });
+        StringBuilder sb = new StringBuilder();
+        sb.append(post.getDescription() + "\n");
 
-        feedViewHolder.feed_comments.setText(post.getDescription());
+        if( post.getCommentList() != null && ! post.getCommentList().isEmpty()) {
 
-//        feedViewHolder.feed_comments.setText(post.getCommentList().get(0)
-//                .getContent());
+            Comment firstComment = post.getCommentList().get(0);
+            sb.append(firstComment.getOwner().getUsername() + ": " +
+                    firstComment.getContent());
+        }
+
+        feedViewHolder.feed_comments.setText(sb.toString());
+
 
         updateUserProfile(feedViewHolder);
         updateLikesCounter(feedViewHolder, false);
@@ -107,23 +105,8 @@ public class PostAdapter extends RecyclerView
         int position = feedViewHolder.getAdapterPosition();
 
         final Post post = postList.get(position);
-//
-//        post.getOwner().getAvatarData(new GetDataCallback() {
-//            @Override
-//            public void done(byte[] data, ParseException e) {
-//                Bitmap bitmap = post.getOwner()
-//                        .getAvatarBitmap(context, data);
-//                Bitmap bitmap_resized = Util.resizeBitmap(context,
-//                        bitmap,
-//                        0.7f);
-//
-//                feedViewHolder.feed_avatar.setImageBitmap(bitmap_resized);
-//            }
-//        });
 
-        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable
-                (context, post.getOwner().getAvatarData());
-        feedViewHolder.feed_avatar.setImageDrawable( bitmapDrawable );
+        post.getOwner().loadAvatartoView(context, feedViewHolder.feed_avatar);
 
         feedViewHolder.feed_user_name.setText(post.getOwner().getUsername());
         // TODO:

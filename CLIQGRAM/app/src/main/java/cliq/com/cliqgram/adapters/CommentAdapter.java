@@ -2,7 +2,6 @@ package cliq.com.cliqgram.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import java.util.List;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.model.Comment;
-import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.viewHolders.CommentViewHolder;
 
 /**
@@ -49,24 +47,9 @@ public class CommentAdapter extends RecyclerView
 
         runEnterAnimation(holder.itemView, position);
 
-        final Comment comment = commentList.get(position);
+        Comment comment = commentList.get(position);
 
-//        comment.getOwner().getAvatarData(new GetDataCallback() {
-//            @Override
-//            public void done(byte[] data, ParseException e) {
-//                Bitmap bitmap = comment.getOwner()
-//                        .getAvatarBitmap(context, data);
-//                Bitmap bitmap_resized = Util.resizeBitmap(context,
-//                        bitmap,
-//                        0.7f);
-//
-//                holder.comment_user_avatar.setImageBitmap(bitmap_resized);
-//            }
-//        });
-
-        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable(context, comment
-                .getOwner().getAvatarData());
-        holder.comment_user_avatar.setImageDrawable( bitmapDrawable );
+        comment.getOwner().loadAvatartoView(context, holder.comment_user_avatar);
 
         holder.comment_user_name.setText(comment.getOwner().getUsername());
         holder.comment_text.setText(comment.getContent());

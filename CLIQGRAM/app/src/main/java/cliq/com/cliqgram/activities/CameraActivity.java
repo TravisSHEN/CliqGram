@@ -41,6 +41,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -93,7 +94,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     private String mCameraId;
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
-    byte[] bytes;
+    byte[] photoBytes;
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
 
@@ -103,8 +104,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 //            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), folderPath));
 //            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()));
             ByteBuffer buffer = reader.acquireNextImage().getPlanes()[0].getBuffer();
-            bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
+            photoBytes = new byte[buffer.remaining()];
+            buffer.get(photoBytes);
 
 //            startDisplayActivity(reader.acquireNextImage());
         }
@@ -278,8 +279,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 //                        showToast("Image saved to " + filePath);
 //                    }
                     unlockFocus();
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    startImageDisplayActivity(bitmap);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+//                    startImageDisplayActivity(bitmap);
                 }
             };
 
@@ -623,8 +624,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 
     private class ImageInserter implements Runnable {
 
-        private final Image mImage;
-        private final String fileName;
+        private Image mImage;
+        private String fileName;
 
         public ImageInserter(Image mImage) {
             this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
@@ -641,7 +642,7 @@ public class CameraActivity extends Activity implements OnClickListener {
                     null);
 
             // start ImageDisplayActivity
-            startImageDisplayActivity( bitmap );
+            startImageDisplayActivity(bitmap);
         }
     }
 
@@ -695,7 +696,7 @@ public class CameraActivity extends Activity implements OnClickListener {
                         (getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
 
-                startImageDisplayActivity( bitmap );
+                startImageDisplayActivity(bitmap);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -707,13 +708,41 @@ public class CameraActivity extends Activity implements OnClickListener {
 
     /**
      * open ImageDisplayActivity and pass recent taken/selected image to it
+     *
      * @param bitmap
      */
     private void startImageDisplayActivity(Bitmap bitmap) {
 
-        byte[] imageData = Util.convertBitmapToByte(bitmap);
+        String fileName = savePhoto(bitmap);
+
+        if( fileName == null ){
+           Toast.makeText(this, "Photo is not taken successfully.", Toast
+                   .LENGTH_SHORT).show();
+            return;
+        }
+
         Intent intent = new Intent(CameraActivity.this, ImageDisplayActivity.class);
-        intent.putExtra("image", imageData);
+        intent.putExtra("image", fileName);
         startActivity(intent);
+    }
+
+    private String savePhoto(Bitmap bitmap) {
+        String fileName = String.valueOf(Util.getCurrentDate().getTime());
+        byte[] imageData = Util.convertBitmapToByte(bitmap);
+
+        try {
+
+            FileOutputStream fo = openFileOutput(fileName, Context.MODE_PRIVATE);
+            fo.write(imageData);
+            fo.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fileName = null;
+        }
+
+        return fileName;
     }
 }
