@@ -42,6 +42,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.google.android.gms:play-services-identity:7.3.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.3.0' // image processing
 }
 
 /* Uncomment if you enable ProGuard and you want to automatically upload symbols on build.
