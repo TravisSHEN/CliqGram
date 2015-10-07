@@ -93,6 +93,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     private String mCameraId;
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
+    byte[] bytes;
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
 
@@ -100,7 +101,11 @@ public class CameraActivity extends Activity implements OnClickListener {
         public void onImageAvailable(ImageReader reader) {
             // TODO
 //            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), folderPath));
-            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()));
+//            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()));
+            ByteBuffer buffer = reader.acquireNextImage().getPlanes()[0].getBuffer();
+            bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+
 //            startDisplayActivity(reader.acquireNextImage());
         }
 
@@ -268,11 +273,13 @@ public class CameraActivity extends Activity implements OnClickListener {
 
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    if (filePath != null) {
-                        Log.e(TAG, filePath);
-                        showToast("Image saved to " + filePath);
-                    }
+//                    if (filePath != null) {
+//                        Log.e(TAG, filePath);
+//                        showToast("Image saved to " + filePath);
+//                    }
                     unlockFocus();
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    startImageDisplayActivity(bitmap);
                 }
             };
 
@@ -300,6 +307,7 @@ public class CameraActivity extends Activity implements OnClickListener {
                     CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON);
+            System.out.println();
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
             // After this, the camera will go back to the normal state of preview.
