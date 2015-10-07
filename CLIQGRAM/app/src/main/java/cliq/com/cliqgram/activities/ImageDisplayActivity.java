@@ -2,13 +2,19 @@ package cliq.com.cliqgram.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
@@ -20,16 +26,22 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
     Bitmap bitmap;
 
+    @Bind(R.id.imageView)
+    ImageView imageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_display);
 
+        // bind this activity with ButterKnife
+        ButterKnife.bind(this);
+
         // get image from intent when activity start
         this.bitmap = getImage();
+
         // show image to view
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        imageView.setImageBitmap(this.bitmap);
+//        imageView.setImageBitmap(this.bitmap);
 
         // using this way to make a post after editing
         // PS: passing a byte[] into this function
@@ -47,7 +59,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
          * If post is created successfully, it will be shown on home page.
          */
         User owner = UserService.getCurrentUser();
-        Post.createPost(owner, Util.convertBitmapToByte(this.bitmap),"This is" +
+        Post.createPost(owner, Util.convertBitmapToByte(this.bitmap), "This is" +
                 " a " +
                 "good photo");
     }
@@ -89,18 +101,34 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
     /**
      * get image from intent passed from CameraActivity
+     *
      * @return image Bitmap (format)
      */
-    private Bitmap getImage(){
+    private Bitmap getImage() {
 
         Intent intent = this.getIntent();
-        byte[] imageData = intent.getByteArrayExtra("image");
+        String imageName = intent.getStringExtra("image");
 
-        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable(this, imageData);
-        Bitmap bitmap = null;
-        if(bitmapDrawable != null ){
-            bitmap = bitmapDrawable.getBitmap();
-        }
+        File imageFile = this.getFileStreamPath(imageName);
+
+        String value=null;
+        long Filesize=imageFile.length()/1024;//call function and convert
+        // bytes into Kb
+        if(Filesize>=1024)
+            value=Filesize/1024+" Mb";
+        else
+            value=Filesize+" Kb";
+
+        Log.e("ImageDisplay", value);
+
+
+        Picasso.with(this)
+                .load(imageFile)
+                .resize(600, 600)
+                .centerCrop()
+                .into(imageView);
+
+        Bitmap bitmap = Util.decodeStream(this, imageName);
 
         return bitmap;
     }

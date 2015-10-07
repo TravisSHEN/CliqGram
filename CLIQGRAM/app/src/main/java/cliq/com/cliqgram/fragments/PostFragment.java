@@ -73,23 +73,33 @@ public class PostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // register with EventBus
+        AppStarter.eventBus.register(this);
+
         postList = new ArrayList<>();
         this.initializeData();
     }
 
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//        // register with EventBus
+//        AppStarter.eventBus.register(this);
+//
+//    }
+
+    //    @Override
+//    public void onStop() {
+//        AppStarter.eventBus.unregister(this);
+//        super.onStop();
+//    }
+
+
     @Override
-    public void onStart() {
-        super.onStart();
-
-        // register with EventBus
-        AppStarter.eventBus.register(this);
-
-    }
-
-    @Override
-    public void onStop() {
+    public void onDestroy() {
         AppStarter.eventBus.unregister(this);
-        super.onStop();
+        super.onDestroy();
     }
 
     @Override
@@ -136,7 +146,7 @@ public class PostFragment extends Fragment {
             public void done(UserRelation relation, ParseException e) {
                 if (e == null) {
 
-                    if (relation != null) {
+                    if (relation != null && relation.getFollowings() != null) {
                         PostFragment.this.followings.addAll(relation
                                 .getFollowings());
                     }

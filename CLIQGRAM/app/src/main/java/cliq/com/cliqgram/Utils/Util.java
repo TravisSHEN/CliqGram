@@ -84,6 +84,17 @@ public class Util {
                 res);
     }
 
+    public static Bitmap decodeStream(Context context, String imageName){
+        Bitmap bitmap = null;
+        try {
+             bitmap = BitmapFactory.decodeStream(context.openFileInput
+                    (imageName));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
     /**
      * resize drawable resource
      *
