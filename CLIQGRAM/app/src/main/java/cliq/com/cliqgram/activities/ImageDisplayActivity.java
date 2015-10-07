@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 
 import com.squareup.picasso.Picasso;
 
@@ -22,11 +23,20 @@ import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 
 public class ImageDisplayActivity extends AppCompatActivity {
-    Bitmap bitmap;
+    Bitmap originalBitmap;
     Bitmap editedBitmap;
+
+    @Bind(R.id.brightnessBar)
+    SeekBar brightnessBar;
+
+    @Bind(R.id.contrastBar)
+    SeekBar contrastBar;
 
     @Bind(R.id.imageView)
     ImageView imageView;
+
+    private final int SCALED_WIDTH = 600;
+    private final int SCALED_HEIGHT = 600;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +46,54 @@ public class ImageDisplayActivity extends AppCompatActivity {
         // bind this activity with ButterKnife
         ButterKnife.bind(this);
 
-        // get image from intent when activity start
-        this.bitmap = getImage();
+        // get image from intent when activity start and resize it
+        this.originalBitmap = resizeBitmap(getImage());
 
-        // show image to view
-//        imageView.setImageBitmap(this.bitmap);
+        // show image to the view
+        imageView.setImageBitmap(this.originalBitmap);
+
+        // EDIT PHOTO
+
+        // brightness
+        brightnessBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //TODO Apply brightness changes
+                editedBitmap = resizeBitmap(originalBitmap);
+                imageView.setImageBitmap(editedBitmap);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        // contrast
+        contrastBar.setOnSeekBarChangeListener((new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //TODO Apply contrast changes
+                editedBitmap = resizeBitmap(originalBitmap);
+                imageView.setImageBitmap(editedBitmap);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        }));
 
         // using this way to make a post after editing
         // PS: passing a byte[] into this function
@@ -58,7 +111,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
          * If post is created successfully, it will be shown on home page.
          */
         User owner = UserService.getCurrentUser();
-        Post.createPost(owner, Util.convertBitmapToByte(this.bitmap), "This is" +
+        Post.createPost(owner, Util.convertBitmapToByte(this.originalBitmap), "This is" +
                 " a " +
                 "good photo");
     }
@@ -112,15 +165,16 @@ public class ImageDisplayActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         String imageName = intent.getStringExtra("image");
 
+        /*
         File imageFile = this.getFileStreamPath(imageName);
 
         String value=null;
-        long Filesize=imageFile.length()/1024;//call function and convert
+        long fileSize=imageFile.length()/1024;//call function and convert
         // bytes into Kb
-        if(Filesize>=1024)
-            value=Filesize/1024+" Mb";
+        if(fileSize>=1024)
+            value=fileSize/1024+" Mb";
         else
-            value=Filesize+" Kb";
+            value=fileSize+" Kb";
 
         Log.e("ImageDisplay", value);
 
@@ -130,9 +184,13 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 .resize(600, 600)
                 .centerCrop()
                 .into(imageView);
+        */
 
-        Bitmap bitmap = Util.decodeStream(this, imageName);
+        return Util.decodeStream(this, imageName);
+    }
 
-        return bitmap;
+    // scale any bitmap to correct size
+    private Bitmap resizeBitmap(Bitmap bitmap) {
+        return Bitmap.createScaledBitmap(bitmap, SCALED_WIDTH, SCALED_HEIGHT, false);
     }
 }
