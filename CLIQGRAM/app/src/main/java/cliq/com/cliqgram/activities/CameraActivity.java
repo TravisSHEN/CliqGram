@@ -280,7 +280,7 @@ public class CameraActivity extends Activity implements OnClickListener {
 //                    }
                     unlockFocus();
                     Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-//                    startImageDisplayActivity(bitmap);
+                    startImageDisplayActivity(bitmap);
                 }
             };
 
