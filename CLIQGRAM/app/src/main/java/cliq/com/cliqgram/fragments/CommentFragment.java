@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.CommentAdapter;
+import cliq.com.cliqgram.events.CommentFailEvent;
 import cliq.com.cliqgram.events.CommentSuccessEvent;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.helper.ProgressSpinner;
@@ -182,6 +183,11 @@ public class CommentFragment extends android.support.v4.app.Fragment {
 
         this.commentList.add(comment);
         commentAdapter.updateComments(this.commentList);
+    }
+
+    @Subscribe
+    public void onCommentFailedEvent( CommentFailEvent event ){
+        Toast.makeText(getActivity(), event.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.comment_send)
