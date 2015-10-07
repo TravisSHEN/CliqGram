@@ -21,10 +21,16 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
+import jp.co.cyberagent.android.gpuimage.GPUImage;
+import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
 
 public class ImageDisplayActivity extends AppCompatActivity {
     Bitmap originalBitmap;
     Bitmap editedBitmap;
+
+    // For image processing
+    GPUImage gpuImage;
 
     @Bind(R.id.brightnessBar)
     SeekBar brightnessBar;
@@ -35,7 +41,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     @Bind(R.id.imageView)
     ImageView imageView;
 
-    private final int SCALED_WIDTH = 600;
+    private final int SCALED_WIDTH  = 600;
     private final int SCALED_HEIGHT = 600;
 
     @Override
@@ -47,7 +53,13 @@ public class ImageDisplayActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         // get image from intent when activity start and resize it
-        this.originalBitmap = resizeBitmap(getImage());
+        originalBitmap = resizeBitmap(getImage());
+
+        // create the GPUImage
+        gpuImage = new GPUImage(getBaseContext());
+
+        // set the bitmap image for gpuImage
+        gpuImage.setImage(this.originalBitmap);
 
         // show image to the view
         imageView.setImageBitmap(this.originalBitmap);
@@ -59,8 +71,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //TODO Apply brightness changes
-                editedBitmap = resizeBitmap(originalBitmap);
+                float brightness = calculateBrightnessValue(progress);
+                gpuImage.setFilter(new GPUImageBrightnessFilter(brightness));
+                //editedBitmap = resizeBitmap(originalBitmap);
+                editedBitmap = gpuImage.getBitmapWithFilterApplied();
                 imageView.setImageBitmap(editedBitmap);
             }
 
@@ -80,7 +94,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //TODO Apply contrast changes
-                editedBitmap = resizeBitmap(originalBitmap);
+                float contrast = calculateContrastValue(progress);
+                gpuImage.setFilter(new GPUImageContrastFilter(contrast));
+                //editedBitmap = resizeBitmap(originalBitmap);
+                editedBitmap = gpuImage.getBitmapWithFilterApplied();
                 imageView.setImageBitmap(editedBitmap);
             }
 
@@ -192,5 +209,19 @@ public class ImageDisplayActivity extends AppCompatActivity {
     // scale any bitmap to correct size
     private Bitmap resizeBitmap(Bitmap bitmap) {
         return Bitmap.createScaledBitmap(bitmap, SCALED_WIDTH, SCALED_HEIGHT, false);
+    }
+
+    // convert brightnessBar value to brightness value
+    // value between -1.0 < v < 1.0
+    // seekbar is between 0 and 100
+    private float calculateBrightnessValue(int b) {
+        return (b / (float) 50) - 1.0f;
+    }
+
+    // convert contrastBar value to contrast value
+    // value between 0.0 < v < 4.0 (1 is average, set progress to 25)
+    // seekbar is between 0 and 100
+    private float calculateContrastValue(int c) {
+        return c / (float) 25;
     }
 }
