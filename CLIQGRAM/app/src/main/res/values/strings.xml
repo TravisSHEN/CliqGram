@@ -19,6 +19,9 @@
     <string name="button_grid_off">Grid Off</string>
     <string name="button_gallery">Gallery</string>
 
+    <!-- image display -->
+    <string name="new_photo">New Photo</string>
+
     <!-- gallery-->
     <string name="action_upload">Upload</string>
     <string name="action_crop">Crop</string>
