@@ -27,7 +27,6 @@ import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
 
 public class ImageDisplayActivity extends AppCompatActivity {
     Bitmap originalBitmap;
-    Bitmap editedBitmap;
 
     // For image processing
     GPUImage gpuImage;
