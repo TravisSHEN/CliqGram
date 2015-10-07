@@ -22,9 +22,8 @@ import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 
 public class ImageDisplayActivity extends AppCompatActivity {
-
-
     Bitmap bitmap;
+    Bitmap editedBitmap;
 
     @Bind(R.id.imageView)
     ImageView imageView;
@@ -80,20 +79,24 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_upload:
+            case (R.id.action_upload):
                 // TODO
                 finish();
                 break;
-            case R.id.action_edit:
+            case (R.id.action_crop):
                 // TODO
                 finish();
                 break;
-            case R.id.action_share:
+            case (R.id.action_apply_filter):
                 // TODO
                 finish();
                 break;
-            case R.id.action_open_camera:
+            case (R.id.action_brightness_and_contrast):
                 finish();
+                break;
+            case (R.id.action_share):
+                finish();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
