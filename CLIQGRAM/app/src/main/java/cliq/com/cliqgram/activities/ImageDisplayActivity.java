@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 
@@ -45,9 +46,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
          * created successfully.
          * If post is created successfully, it will be shown on home page.
          */
-        Post.createPost( Util.convertBitmapToByte(this.bitmap),
-                UserService
-                .getCurrentUser(), "This is a good photo");
+        User owner = UserService.getCurrentUser();
+        Post.createPost(owner, Util.convertBitmapToByte(this.bitmap),"This is" +
+                " a " +
+                "good photo");
     }
 
     @Override

@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,13 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.adapters.FeedAdapter;
+import cliq.com.cliqgram.adapters.PostAdapter;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.CommentService;
 import cliq.com.cliqgram.services.PostService;
@@ -34,12 +35,12 @@ import de.greenrobot.event.Subscribe;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FeedFragment#newInstance} factory method to
+ * Use the {@link PostFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FeedFragment extends Fragment {
+public class PostFragment extends Fragment {
 
-    private FeedAdapter feedAdapter;
+    private PostAdapter postAdapter;
 
     private List<Post> postList;
 
@@ -54,14 +55,14 @@ public class FeedFragment extends Fragment {
      * @return A new instance of fragment UserFeed.
      */
     // TODO: Rename and change types and number of parameters
-    public static FeedFragment newInstance() {
-        FeedFragment fragment = new FeedFragment();
+    public static PostFragment newInstance() {
+        PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public FeedFragment() {
+    public PostFragment() {
         // Required empty public constructor
     }
 
@@ -114,25 +115,36 @@ public class FeedFragment extends Fragment {
         feedView.setHasFixedSize(true);
 
 
-        feedAdapter = new FeedAdapter(this.getActivity(), postList);
-        feedView.setAdapter(feedAdapter);
+        postAdapter = new PostAdapter(this.getActivity(), postList);
+        feedView.setAdapter(postAdapter);
     }
 
     private void initializeData() {
 
 //        this.addFakeData();
 
-//        //this is for testing followings list
-        List<ParseUser> users = UserRelationsService.getRelation
-                (UserService.getCurrentUser().getUsername(),
-                        "followings");
-        users.add(ParseUser.getCurrentUser());
-        PostService.getPosts(users);
-        //this is for testing followers list
-//        List<ParseUser> followers =  UserRelationsService.getRelation
-//                ("litaos",
-//                "followers");
+        // followings list of currentUser
+        String currentUsername = UserService.getCurrentUser().getUsername();
 
+        UserRelationsService.getRelation(currentUsername, new GetCallback<UserRelation>() {
+            @Override
+            public void done(UserRelation relation, ParseException e) {
+                if (e == null) {
+                    List<User> followings = new ArrayList<>();
+
+                    if (relation != null) {
+                        followings.addAll(relation.getFollowings());
+                    }
+
+                    // also put current user's posts
+                    followings.add(UserService.getCurrentUser());
+                    PostService.getPosts(followings);
+                } else {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                            .LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Subscribe
@@ -140,7 +152,7 @@ public class FeedFragment extends Fragment {
 
         if (event.getPostList() != null) {
             postList = event.getPostList();
-            feedAdapter.updateFeedList(postList);
+            postAdapter.updateFeedList(postList);
         } else {
             Toast.makeText(this.getActivity(), event.getMessage(), Toast
                     .LENGTH_LONG).show();
@@ -149,20 +161,20 @@ public class FeedFragment extends Fragment {
     }
 
     @Subscribe
-    public void onPostSuccessEvent(PostSuccessEvent event){
+    public void onPostSuccessEvent(PostSuccessEvent event) {
         Post post = event.getPost();
-        if(post != null ){
+        if (post != null) {
             postList.add(post);
-            feedAdapter.updateFeedList(postList);
+            postAdapter.updateFeedList(postList);
         }
     }
 
 
-    public void addFakeData(){
+    public void addFakeData() {
         //
-        ParseUser currentUser = ParseUser.getCurrentUser();
+        User currentUser = UserService.getCurrentUser();
 
-        User user1 = UserService.getUserFromParseUser( currentUser );
+        User user1 = currentUser;
 
 ////        User user2 = User.userFactory("abc",
 ////                "abc@abc.com");

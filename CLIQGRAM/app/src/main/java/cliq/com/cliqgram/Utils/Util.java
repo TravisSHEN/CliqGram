@@ -23,6 +23,7 @@ public class Util {
 
     /**
      * resize bitmap
+     *
      * @param bitmap
      * @param newWidth
      * @param newHeight
@@ -33,18 +34,24 @@ public class Util {
     }
 
     /**
-     * return a bitmap from drawable resource id
+     *
      * @param context
-     * @param res
+     * @param bitmap
+     * @param scaleFactor
      * @return
      */
-    public static Bitmap decodeResource(Context context, @DrawableRes int res) {
-        return BitmapFactory.decodeResource(context.getResources(),
-                res);
+    public static Bitmap resizeBitmap(Context context, Bitmap bitmap, float
+            scaleFactor) {
+
+        int sizeX = Math.round(bitmap.getWidth() * scaleFactor);
+        int sizeY = Math.round(bitmap.getHeight() * scaleFactor);
+
+        return Bitmap.createScaledBitmap(bitmap, sizeX, sizeY, true);
     }
 
     /**
      * resize Bitmap drawable
+     *
      * @param context
      * @param bitmapDrawable
      * @param scaleFactor
@@ -52,8 +59,8 @@ public class Util {
      */
     public static BitmapDrawable resizeBitmapDrawable(Context context,
                                                       BitmapDrawable bitmapDrawable,
-                                                      float scaleFactor){
-        if(bitmapDrawable == null ){
+                                                      float scaleFactor) {
+        if (bitmapDrawable == null) {
             return null;
         }
         Bitmap bm = bitmapDrawable.getBitmap();
@@ -66,14 +73,27 @@ public class Util {
     }
 
     /**
+     * return a bitmap from drawable resource id
+     *
+     * @param context
+     * @param res
+     * @return
+     */
+    public static Bitmap decodeResource(Context context, @DrawableRes int res) {
+        return BitmapFactory.decodeResource(context.getResources(),
+                res);
+    }
+
+    /**
      * resize drawable resource
+     *
      * @param context
      * @param res
      * @param scaleFactor
      * @return
      */
     public static BitmapDrawable resizeDrawable(Context context, @DrawableRes
-    int res, float scaleFactor){
+    int res, float scaleFactor) {
 
         Bitmap bm = Util.decodeResource(context, res);
         int sizeX = Math.round(bm.getWidth() * scaleFactor);
@@ -86,6 +106,7 @@ public class Util {
 
     /**
      * get byte[] from uri
+     *
      * @param context
      * @param uri
      * @return
@@ -111,7 +132,7 @@ public class Util {
         return byteBuffer.toByteArray();
     }
     */
-    public static byte[] convertImageToByte(Uri uri, ContentResolver cr){
+    public static byte[] convertImageToByte(Uri uri, ContentResolver cr) {
         byte[] data = null;
         try {
             InputStream inputStream = cr.openInputStream(uri);
@@ -127,10 +148,11 @@ public class Util {
 
     /**
      * conver bitmap to byte[]
+     *
      * @param bitmap
      * @return
      */
-    public static byte[] convertBitmapToByte(Bitmap bitmap){
+    public static byte[] convertBitmapToByte(Bitmap bitmap) {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
@@ -142,14 +164,15 @@ public class Util {
 
     /**
      * Return a bitmap drawable
+     *
      * @param context
      * @return
      */
     public static BitmapDrawable convertByteToBitmapDrawable(Context context, byte[]
-            imgData){
+            imgData) {
 
-        if(imgData == null || imgData.length == 0 ){
-           return null;
+        if (imgData == null || imgData.length == 0) {
+            return null;
         }
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(imgData, 0,
@@ -158,7 +181,7 @@ public class Util {
         return new BitmapDrawable(context.getResources(), bitmap);
     }
 
-    public static Date getCurrentDate(){
+    public static Date getCurrentDate() {
 
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();

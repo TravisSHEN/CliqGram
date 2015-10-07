@@ -4,7 +4,7 @@
              android:layout_height="match_parent"
              android:layout_below="@+id/toolbar"
              android:paddingTop="@dimen/abc_action_bar_default_height_material"
-             tools:context="cliq.com.cliqgram.fragments.FeedFragment">
+             tools:context="cliq.com.cliqgram.fragments.PostFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/feed_recycler_view"

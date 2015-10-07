@@ -51,10 +51,23 @@ public class CommentAdapter extends RecyclerView
 
         final Comment comment = commentList.get(position);
 
-        BitmapDrawable bm_avatar = Util.resizeBitmapDrawable(context, comment
-                .getOwner().getAvatarInBitmapDrawable(context), 0.8f);
+//        comment.getOwner().getAvatarData(new GetDataCallback() {
+//            @Override
+//            public void done(byte[] data, ParseException e) {
+//                Bitmap bitmap = comment.getOwner()
+//                        .getAvatarBitmap(context, data);
+//                Bitmap bitmap_resized = Util.resizeBitmap(context,
+//                        bitmap,
+//                        0.7f);
+//
+//                holder.comment_user_avatar.setImageBitmap(bitmap_resized);
+//            }
+//        });
 
-        holder.comment_user_avatar.setImageDrawable(bm_avatar);
+        BitmapDrawable bitmapDrawable = Util.convertByteToBitmapDrawable(context, comment
+                .getOwner().getAvatarData());
+        holder.comment_user_avatar.setImageDrawable( bitmapDrawable );
+
         holder.comment_user_name.setText(comment.getOwner().getUsername());
         holder.comment_text.setText(comment.getContent());
     }

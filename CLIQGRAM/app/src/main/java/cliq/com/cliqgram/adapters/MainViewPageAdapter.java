@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cliq.com.cliqgram.fragments.ActivityFragment;
-import cliq.com.cliqgram.fragments.FeedFragment;
+import cliq.com.cliqgram.fragments.PostFragment;
 import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.fragments.SearchFragment;
 
@@ -31,10 +31,10 @@ public class MainViewPageAdapter extends FragmentStatePagerAdapter {
     }
 
     private void initializeFragments() {
-        tabItemList.add(new TabItem(FeedFragment.newInstance(), "Feed"));
+        tabItemList.add(new TabItem(PostFragment.newInstance(), "Feed"));
         tabItemList.add(new TabItem(SearchFragment.newInstance(), "Search"));
         // TODO: change this to CameraFragment
-        tabItemList.add(new TabItem(FeedFragment.newInstance(), "Camera"));
+        tabItemList.add(new TabItem(PostFragment.newInstance(), "Camera"));
         tabItemList.add(new TabItem(ActivityFragment.newInstance(), "Activity"));
         tabItemList.add(new TabItem(ProfileFragment.newInstance(ParseUser
                 .getCurrentUser().getObjectId()),
