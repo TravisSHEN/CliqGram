@@ -23,6 +23,7 @@
             android:id="@+id/search_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
             android:textSize="24sp"/>
 
         <cliq.com.cliqgram.views.SquareImageView
@@ -32,10 +33,10 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="bottom"
-        android:background="#cccccc"/>
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1dp"-->
+        <!--android:layout_gravity="bottom"-->
+        <!--android:background="#cccccc"/>-->
 
 </LinearLayout>

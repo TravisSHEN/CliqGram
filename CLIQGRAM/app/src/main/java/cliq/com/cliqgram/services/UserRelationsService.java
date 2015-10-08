@@ -60,7 +60,7 @@ public class UserRelationsService {
                     ParseObject userRelations;
 
                     if (objects == null || objects.size() == 0) {
-                        userRelations = new ParseObject(TABLE_NAME);
+                        userRelations = ParseObject.create( UserRelation.class );
                         // set acl
                         ParseACL acl = new ParseACL();
                         acl.setPublicReadAccess(true);

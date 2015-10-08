@@ -4,11 +4,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Bitmap;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,6 +22,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.fragments.ProfileFragment;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.views.SquareImageView;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -28,6 +33,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SearchAdapter extends CursorAdapter {
 
     private FragmentManager fragmentManager;
+    private SearchView searchView;
 
     private List<User> userList;
 
@@ -72,7 +78,7 @@ public class SearchAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
 
-        User user = userList.get(cursor.getPosition());
+        final User user = userList.get(cursor.getPosition());
         if (user == null) {
             return;
         }
@@ -80,54 +86,49 @@ public class SearchAdapter extends CursorAdapter {
         // set tag to text_username
         text_username.setTag(user);
 
+        search_result.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               click(user);
+            }
+        });
+
         text_username.setText(user.getUsername());
         Bitmap avatar = user.getAvatarBitmap();
         search_avatar.setImageBitmap(avatar);
-
-//        List<Post> postList = user.getPostList();
-//
-//        if (postList == null || postList.isEmpty()) {
-//            return;
-//        }
-//
-//        Collections.sort(postList);
-//        final Post recent_post = postList.get(0);
-//        recent_post.getPhotoData(new GetDataCallback() {
-//            @Override
-//            public void done(byte[] data, ParseException e) {
-//                if (e == null) {
-//                    Bitmap bitmap = recent_post.getPhotoInBitmap(context, data);
-//                    Bitmap resized_bitmap = Util.resizeBitmap(context,
-//                            bitmap, 0.1f);
-//                    post_image.setImageBitmap(resized_bitmap);
-//                } else {
-//                    Toast.makeText(context, e.getMessage(), Toast
-//                            .LENGTH_SHORT).show();
-//                }
-//            }
-//        });
     }
 
-//    @OnClick(R.id.search_result)
-//    public void onClic() {
-//
-//        Log.e("SearchAdapter", "Clicked");
-//
+//    @OnClick(R.id.search_username)
+    public void click(User user) {
+
+        Log.e("SearchAdapter", "Clicked");
+        User selectedUser = user;
+
 //        User selectedUser = (User) text_username.getTag();
-//        if(selectedUser == null ){
-//            return;
-//        }
-//
-//        String userId = selectedUser.getObjectId();
-//
-//        getFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.container_body, ProfileFragment.newInstance(userId),
-//                        userId + "ProfileFragment")
-//                .addToBackStack(null)
-//                .commit();
-//
-//    }
+        if(selectedUser == null ){
+            return;
+        }
+
+        String userId = selectedUser.getObjectId();
+
+        Fragment profileFragment = ProfileFragment.newInstance(userId);
+        View view = profileFragment.getView();
+        if(view != null){
+            FrameLayout layout = (FrameLayout) view.findViewById(R.id.fragment_profile);
+            layout.setPadding(0,0,0,0);
+        }
+
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.search_container, profileFragment,
+                        userId + "ProfileFragment")
+                .addToBackStack(null)
+                .commit();
+
+        getSearchView().clearFocus();
+
+    }
+
 
     public FragmentManager getFragmentManager() {
         return fragmentManager;
@@ -136,4 +137,13 @@ public class SearchAdapter extends CursorAdapter {
     public void setFragmentManager(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
     }
+
+    public SearchView getSearchView() {
+        return searchView;
+    }
+
+    public void setSearchView(SearchView searchView) {
+        this.searchView = searchView;
+    }
+
 }

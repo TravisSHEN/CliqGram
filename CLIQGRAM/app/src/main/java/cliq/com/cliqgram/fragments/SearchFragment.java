@@ -149,6 +149,7 @@ public class SearchFragment extends Fragment {
             searchItem.setIcon(R.drawable.icon_search);
 
             SearchView action_search = (SearchView) searchItem.getActionView();
+            action_search.setIconifiedByDefault(true);
 
             action_search.setSearchableInfo(manager.getSearchableInfo
                     (getActivity().getComponentName()));
@@ -233,7 +234,8 @@ public class SearchFragment extends Fragment {
             SearchAdapter searchAdapter = new SearchAdapter(this.getActivity(),
                     cursor,
                     resultList);
-//            searchAdapter.setFragmentManager(getFragmentManager());
+            searchAdapter.setFragmentManager(getFragmentManager());
+            searchAdapter.setSearchView( search );
 
             search.setSuggestionsAdapter(searchAdapter);
         }
