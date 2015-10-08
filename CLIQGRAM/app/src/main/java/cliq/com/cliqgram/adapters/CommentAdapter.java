@@ -49,7 +49,7 @@ public class CommentAdapter extends RecyclerView
 
         Comment comment = commentList.get(position);
 
-        comment.getOwner().loadAvatartoView(context, holder.comment_user_avatar);
+        comment.getOwner().loadAvatarToView(context, holder.comment_user_avatar);
 
         holder.comment_user_name.setText(comment.getOwner().getUsername());
         holder.comment_text.setText(comment.getContent());

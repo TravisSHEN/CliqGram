@@ -8,6 +8,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.DrawableRes;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -225,6 +228,23 @@ public class Util {
         String path = MediaStore.Images.Media.insertImage(context
                 .getContentResolver(), inImage, imageName, null);
         return Uri.parse(path);
+    }
+
+    /**
+     *
+     * @param context
+     * @param resid
+     * @param imageView
+     * @param width
+     * @param height
+     */
+    public static void loadResToView( Context context, @DrawableRes int resid,
+                                      ImageView imageView, int width, int height){
+        Picasso.with(context)
+                .load(resid)
+                .resize(width, height)
+                .centerCrop()
+                .into( imageView );
     }
 
 }

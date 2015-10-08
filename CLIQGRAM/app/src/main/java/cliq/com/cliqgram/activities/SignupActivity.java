@@ -20,12 +20,13 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
+import cliq.com.cliqgram.helper.KeyboardManager;
 import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.helper.ToolbarModel;
+import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.SignupService;
 import de.greenrobot.event.Subscribe;
-import cliq.com.cliqgram.server.AppStarter;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -153,6 +154,7 @@ public class SignupActivity extends AppCompatActivity {
                 break;
         }
 
+        KeyboardManager.closeKeyboard(this);
     }
 
 

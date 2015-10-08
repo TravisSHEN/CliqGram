@@ -22,6 +22,7 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.BaseEvent;
 import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
+import cliq.com.cliqgram.helper.KeyboardManager;
 import cliq.com.cliqgram.helper.NetworkConnection;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.helper.ToolbarModel;
@@ -163,6 +164,8 @@ public class LoginActivity extends AppCompatActivity {
             default:
                 Log.e("Login Activity", "Button cannot be found.");
         }
+
+        KeyboardManager.closeKeyboard(this);
     }
 
 

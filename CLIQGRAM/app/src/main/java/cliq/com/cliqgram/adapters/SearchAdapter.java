@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,10 +97,9 @@ public class SearchAdapter extends CursorAdapter {
         search_avatar.setImageBitmap(avatar);
     }
 
-//    @OnClick(R.id.search_username)
     public void click(User user) {
 
-        Log.e("SearchAdapter", "Clicked");
+//        Log.e("SearchAdapter", "Clicked");
         User selectedUser = user;
 
 //        User selectedUser = (User) text_username.getTag();
@@ -122,7 +120,7 @@ public class SearchAdapter extends CursorAdapter {
                 .beginTransaction()
                 .replace(R.id.search_container, profileFragment,
                         userId + "ProfileFragment")
-                .addToBackStack(null)
+                .addToBackStack(userId + "ProfileFragment")
                 .commit();
 
         getSearchView().clearFocus();

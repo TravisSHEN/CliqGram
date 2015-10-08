@@ -137,7 +137,7 @@ public class ProfileFragment extends Fragment {
         profile_posts.setAdapter(profileAdapter);
 
         if (userId.equals(UserService.getCurrentUser().getObjectId())) {
-            profile_follow_button.setVisibility(View.GONE);
+            profile_follow_button.setVisibility(View.INVISIBLE);
         } else {
             profile_follow_button.setVisibility(View.VISIBLE);
         }
@@ -170,7 +170,7 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-        user.loadAvatartoView(getActivity(), profile_avatar);
+        user.loadAvatarToView(getActivity(), profile_avatar);
 
         profile_posts_number.setText(
                 String.valueOf(user.getPostList().size()));

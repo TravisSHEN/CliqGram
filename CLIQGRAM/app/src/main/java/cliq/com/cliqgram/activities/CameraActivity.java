@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -78,22 +79,23 @@ public class CameraActivity extends Activity implements OnClickListener {
     @Bind(R.id.textureView_preview)
     AutoFitTextureView mTextureView;
     @Bind(R.id.view_grid)
-    View               myGridView;
+    View myGridView;
     @Bind(R.id.button_capture)
-    Button             buttonCapture;
+    FloatingActionButton buttonCapture;
+//    Button buttonCapture;
     @Bind(R.id.button_flash)
-    Button             buttonFlash;
+    Button buttonFlash;
     @Bind(R.id.button_grid)
-    Button             buttonGrid;
+    Button buttonGrid;
     @Bind(R.id.button_gallery)
-    Button             buttonGallery;
+    Button buttonGallery;
     private boolean flashOn = true;
-    private boolean gridOn  = false;
+    private boolean gridOn = false;
     private String filePath;
     private State mState = State.PREVIEW;
-    private String        mCameraId;
+    private String mCameraId;
     private HandlerThread mBackgroundThread;
-    private Handler       mBackgroundHandler;
+    private Handler mBackgroundHandler;
     byte[] photoBytes;
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
@@ -122,14 +124,14 @@ public class CameraActivity extends Activity implements OnClickListener {
 //        startActivity(intent);
 //    }
 
-    private Size                   mPreviewSize;
+    private Size mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
-    private CaptureRequest         mPreviewRequest;
-    private CameraDevice           mCameraDevice;
-    private CameraCaptureSession   mCaptureSession;
-    private ImageReader            mImageReader;
-    private final TextureView.SurfaceTextureListener   mSurfaceTextureListener
-                                                                        = new TextureView.SurfaceTextureListener() {
+    private CaptureRequest mPreviewRequest;
+    private CameraDevice mCameraDevice;
+    private CameraCaptureSession mCaptureSession;
+    private ImageReader mImageReader;
+    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+            = new TextureView.SurfaceTextureListener() {
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
@@ -151,7 +153,7 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
 
     };
-    private       CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+    private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
 
         private void process(CaptureResult result) {
             switch (mState) {
@@ -202,7 +204,7 @@ public class CameraActivity extends Activity implements OnClickListener {
             process(result);
         }
     };
-    private final CameraDevice.StateCallback           mStateCallback   = new CameraDevice.StateCallback() {
+    private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
             mCameraOpenCloseLock.release();
@@ -717,9 +719,9 @@ public class CameraActivity extends Activity implements OnClickListener {
 
         String fileName = savePhoto(bitmap);
 
-        if( fileName == null ){
-           Toast.makeText(this, "Photo is not taken successfully.", Toast
-                   .LENGTH_SHORT).show();
+        if (fileName == null) {
+            Toast.makeText(this, "Photo is not taken successfully.", Toast
+                    .LENGTH_SHORT).show();
             return;
         }
 

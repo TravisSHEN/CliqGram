@@ -23,6 +23,7 @@ import cliq.com.cliqgram.adapters.CommentAdapter;
 import cliq.com.cliqgram.events.CommentFailEvent;
 import cliq.com.cliqgram.events.CommentSuccessEvent;
 import cliq.com.cliqgram.events.GetPostEvent;
+import cliq.com.cliqgram.helper.KeyboardManager;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
@@ -201,6 +202,8 @@ public class CommentFragment extends android.support.v4.app.Fragment {
             Comment comment = Comment.createComment(UserService.getCurrentUser(), post,
                     content);
         }
+
+        KeyboardManager.closeKeyboard(this.getActivity());
     }
 
     private boolean validateComment(String content) {
