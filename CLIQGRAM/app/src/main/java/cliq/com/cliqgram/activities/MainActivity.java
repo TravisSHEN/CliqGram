@@ -14,7 +14,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -115,33 +114,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // initialize tab bar layout
         initializeTabLayout();
 
-        // Get the intent, verify the action and get the query
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
+    }
 
-            Log.e("MainActivity", query);
+    @Override
+    protected void onNewIntent(Intent intent) {
+
+        setIntent(intent);
+        // Get the intent, verify the action and get the query
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+
+            Bundle bundle = intent.getExtras();
+            final String query = bundle.get(SearchManager.USER_QUERY).toString();
 
             UserService.getUserByUsername(query, new GetCallback<ParseUser>() {
                 @Override
                 public void done(ParseUser user, ParseException e) {
-                    if (user != null) {
+                    if (e == null) {
 
                         String userId = user.getObjectId();
 
 
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.container_body, ProfileFragment.newInstance(userId),
-                                        userId + "ProfileFragment")
+                        fm.beginTransaction()
+                                .replace(R.id.container_body, ProfileFragment.newInstance(userId))
                                 .addToBackStack(null)
                                 .commit();
+                    } else {
+                        Toast.makeText(MainActivity.this, e.getMessage() + " " +
+                                "" + query, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }
     }
-
 
 
     @Override

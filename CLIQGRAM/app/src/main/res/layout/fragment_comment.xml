@@ -5,6 +5,7 @@
              android:layout_below="@+id/toolbar"
              android:background="#eeeeee"
              android:paddingTop="@dimen/abc_action_bar_default_height_material"
+             android:paddingBottom="@dimen/abc_action_bar_default_height_material"
              tools:context="cliq.com.cliqgram.fragments.CommentFragment">
 
     <RelativeLayout
