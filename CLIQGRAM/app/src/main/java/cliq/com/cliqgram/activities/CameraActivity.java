@@ -41,7 +41,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.callbacks.ImageSavedCallback;
 import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
@@ -90,8 +90,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     @Bind(R.id.button_gallery)
     Button buttonGallery;
     private boolean flashOn = true;
-    private boolean gridOn = false;
-    private String filePath;
+    private boolean gridOn  = false;
     private State mState = State.PREVIEW;
     private String mCameraId;
     private HandlerThread mBackgroundThread;
@@ -103,11 +102,9 @@ public class CameraActivity extends Activity implements OnClickListener {
         @Override
         public void onImageAvailable(ImageReader reader) {
             // TODO
-//            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), folderPath));
-//            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()));
-            ByteBuffer buffer = reader.acquireNextImage().getPlanes()[0].getBuffer();
-            photoBytes = new byte[buffer.remaining()];
-            buffer.get(photoBytes);
+            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mImageSavedCallback));
+//            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()), mImageSavedCallback);
+
 
 //            startDisplayActivity(reader.acquireNextImage());
         }
@@ -124,7 +121,15 @@ public class CameraActivity extends Activity implements OnClickListener {
 //        startActivity(intent);
 //    }
 
-    private Size mPreviewSize;
+    private ImageSavedCallback mImageSavedCallback = new ImageSavedCallback() {
+        @Override
+        public void onImageSaved(String fileName) {
+            Intent intent = new Intent(CameraActivity.this, ImageDisplayActivity.class);
+            intent.putExtra("image", fileName);
+            startActivity(intent);
+        }
+    };
+    private Size                   mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
     private CaptureRequest mPreviewRequest;
     private CameraDevice mCameraDevice;
@@ -308,17 +313,20 @@ public class CameraActivity extends Activity implements OnClickListener {
     private void unlockFocus() {
         try {
             // Reset the auto-focus trigger
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON);
-            System.out.println();
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
-            // After this, the camera will go back to the normal state of preview.
-            mState = State.PREVIEW;
-            mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
-                    mBackgroundHandler);
+            if (mPreviewRequestBuilder != null && mCaptureSession != null && mState != null) {
+                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                        CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                        CaptureRequest.CONTROL_AE_MODE_ON);
+                System.out.println();
+                mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
+                        mBackgroundHandler);
+                // After this, the camera will go back to the normal state of preview.
+                mState = State.PREVIEW;
+                mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
+                        mBackgroundHandler);
+            }
+
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -659,7 +667,7 @@ public class CameraActivity extends Activity implements OnClickListener {
             byte[] bytes = new byte[buffer.remaining()];
             buffer.get(bytes);
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            filePath = MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
+            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
                     null);
 
             // start ImageDisplayActivity
@@ -670,35 +678,36 @@ public class CameraActivity extends Activity implements OnClickListener {
     private class ImageSaver implements Runnable {
 
         private final Image mImage;
-        private final File mFile;
+        private ImageSavedCallback mImageSavedCallback;
 
-        public ImageSaver(Image image, String filePath) {
+        public ImageSaver(Image image, ImageSavedCallback imageSavedCallback) {
             mImage = image;
-            mFile = new File(filePath, "image_" + Long.toString(mImage.getTimestamp()) + ".jpg");
+            mImageSavedCallback = imageSavedCallback;
         }
 
         @Override
         public void run() {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            FileOutputStream output = null;
-            try {
-                output = new FileOutputStream(mFile);
-                output.write(bytes);
+            byte[] photoBytes = new byte[buffer.remaining()];
+            buffer.get(photoBytes);
+            String fileName = String.valueOf(Util.getCurrentDate().getTime());
+            Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+            byte[] imageData = Util.convertBitmapToByte(bitmap);
 
+            try {
+
+                FileOutputStream fo = openFileOutput(fileName, Context.MODE_PRIVATE);
+                fo.write(imageData);
+                fo.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                mImage.close();
-                if (null != output) {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                fileName = null;
             }
+
+            mImageSavedCallback.onImageSaved(fileName);
         }
 
     }
