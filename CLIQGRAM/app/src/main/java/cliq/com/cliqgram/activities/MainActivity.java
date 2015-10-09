@@ -1,29 +1,19 @@
 package cliq.com.cliqgram.activities;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseUser;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,18 +22,13 @@ import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.MainViewPageAdapter;
 import cliq.com.cliqgram.events.OpenCommentEvent;
-import cliq.com.cliqgram.fragments.ActivityFragment;
-import cliq.com.cliqgram.fragments.PostFragment;
-import cliq.com.cliqgram.fragments.ProfileFragment;
-import cliq.com.cliqgram.fragments.SearchFragment;
-import cliq.com.cliqgram.fragments.SettingFragment;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String NAVIGATION_ITEM_ID = "navigationItemID";
 
@@ -69,11 +54,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Bind(R.id.view_pager)
     ViewPager viewPager;
 
-    @Bind(R.id.mDrawer)
-    DrawerLayout mDrawerLayout;
+//    @Bind(R.id.mDrawer)
+//    DrawerLayout mDrawerLayout;
 
-    @Bind(R.id.navigation_view)
-    NavigationView navigationView;
+//    @Bind(R.id.navigation_view)
+//    NavigationView navigationView;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -106,42 +91,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        this.showInitialSelectedFragment(savedInstanceState);
 
         // set up the hamburger icon to open and close the drawer
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R
-                .string.drawer_open,
-                R.string.drawer_close);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
+//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R
+//                .string.drawer_open,
+//                R.string.drawer_close);
+//        mDrawerLayout.setDrawerListener(mDrawerToggle);
+//        mDrawerToggle.syncState();
 
         // initialize tab bar layout
         initializeTabLayout();
 
-        // Get the intent, verify the action and get the query
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-
-            Log.e("MainActivity", query);
-
-            UserService.getUserByUsername(query, new GetCallback<ParseUser>() {
-                @Override
-                public void done(ParseUser user, ParseException e) {
-                    if (user != null) {
-
-                        String userId = user.getObjectId();
-
-
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.container_body, ProfileFragment.newInstance(userId),
-                                        userId + "ProfileFragment")
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                }
-            });
-        }
     }
 
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//
+//        setIntent(intent);
+//        // Get the intent, verify the action and get the query
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//
+//            Bundle bundle = intent.getExtras();
+//            final String query = bundle.get(SearchManager.USER_QUERY).toString();
+//
+//            UserService.getUserByUsername(query, new GetCallback<ParseUser>() {
+//                @Override
+//                public void done(ParseUser user, ParseException e) {
+//                    if (e == null) {
+//
+//                        // TODO: open profile fragment of such user by adding
+//                        // new fragment to list in ViewPager
+////                        String userId = user.getObjectId();
+//
+//                    } else {
+//                        Toast.makeText(MainActivity.this, e.getMessage() + " " +
+//                                "" + query, Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            });
+//        }
+//    }
 
 
     @Override
@@ -157,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AppStarter.eventBus.unregister(this);
         super.onStop();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -212,13 +198,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         outState.putInt(NAVIGATION_ITEM_ID, mNavSelectedItemID);
     }
 
-    @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
+//    @Override
+//    public boolean onNavigationItemSelected(MenuItem menuItem) {
+//
+//        this.showFragment(menuItem);
 
-        this.showFragment(menuItem);
-
-        return true;
-    }
+//        return true;
+//    }
 
 
     void initializeTabLayout() {
@@ -239,97 +225,98 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .drawable.icon_user, scale_factor));
     }
 
-    //    @OnItemSelected( R.id.navigation_view )
-    void showFragment(MenuItem menuItem) {
-
-        // close drawer when select one item
-        mDrawerLayout.closeDrawers();
-
-        menuItem.setChecked(true);
-        // set current selected navigation item id
-        mNavSelectedItemID = menuItem.getItemId();
-
-        // open corresponding fragment
-        Fragment fragment = null;
-        String title = "";
-        String tag = "";
-
-        switch (menuItem.getItemId()) {
-            case R.id.navigation_item_home:
-
-                fragment = PostFragment.newInstance();
-                title = getString(R.string.navigation_item_home);
-                tag = TAG_FEED_FRAGMENT;
-
-                Snackbar.make(toolbar, "Home selected", Snackbar
-                        .LENGTH_SHORT)
-                        .show();
-                break;
-            case R.id.navigation_item_search:
-                fragment = SearchFragment.newInstance();
-                title = getString(R.string.navigation_item_search);
-                tag = TAG_SEARCH_FRAGMENT;
-
-                Snackbar.make(toolbar, "Search selected", Snackbar
-                        .LENGTH_SHORT)
-                        .show();
-                break;
-            case R.id.navigation_item_profile:
-
-                fragment = new ProfileFragment();
-                title = getString(R.string.navigation_item_profile);
-                tag = TAG_PROFILE_FRAGMENT;
-
-                Snackbar.make(toolbar, "Profile selected", Snackbar
-                        .LENGTH_SHORT)
-                        .show();
-                break;
-            case R.id.navigation_item_activity:
-
-                fragment = new ActivityFragment();
-                title = getString(R.string.navigation_item_activity);
-                tag = TAG_ACTIVITY_FRAGMENT;
-
-                Snackbar.make(toolbar, "Activity selected", Snackbar
-                        .LENGTH_SHORT)
-                        .show();
-                break;
-            case R.id.navigation_item_setting:
-
-                fragment = new SettingFragment();
-                title = getString(R.string.navigation_item_setting);
-
-                Snackbar.make(toolbar, "Setting selected", Snackbar.LENGTH_SHORT)
-                        .show();
-                break;
-
-            default:
-                break;
-        }
-
-        if (fragment != null) {
-
-            fm.beginTransaction()
-                    .replace(R.id.container_body, fragment, tag)
-                    .commit();
-
-            // set the toolbar title
-            getSupportActionBar().setTitle(title);
-        }
-    }
-
-    private void showInitialSelectedFragment(Bundle savedInstanceState) {
-
-        // if there is no pre-selected item,
-        // show home fragment
-        if (savedInstanceState == null) {
-            mNavSelectedItemID = R.id.navigation_item_home;
-        } else {
-            mNavSelectedItemID = savedInstanceState.getInt(NAVIGATION_ITEM_ID);
-        }
-        MenuItem menuItem = navigationView.getMenu().findItem(mNavSelectedItemID);
-        this.showFragment(menuItem);
-    }
+//    //    @OnItemSelected( R.id.navigation_view )
+//    void showFragment(MenuItem menuItem) {
+//
+//        // close drawer when select one item
+//        mDrawerLayout.closeDrawers();
+//
+//        menuItem.setChecked(true);
+//        // set current selected navigation item id
+//        mNavSelectedItemID = menuItem.getItemId();
+//
+//        // open corresponding fragment
+//        Fragment fragment = null;
+//        String title = "";
+//        String tag = "";
+//
+//        switch (menuItem.getItemId()) {
+//            case R.id.navigation_item_home:
+//
+//                fragment = PostFragment.newInstance();
+//                title = getString(R.string.navigation_item_home);
+//                tag = TAG_FEED_FRAGMENT;
+//
+//                Snackbar.make(toolbar, "Home selected", Snackbar
+//                        .LENGTH_SHORT)
+//                        .show();
+//                break;
+//            case R.id.navigation_item_search:
+//                fragment = SearchFragment.newInstance();
+//                title = getString(R.string.navigation_item_search);
+//                tag = TAG_SEARCH_FRAGMENT;
+//
+//                Snackbar.make(toolbar, "Search selected", Snackbar
+//                        .LENGTH_SHORT)
+//                        .show();
+//                break;
+//            case R.id.navigation_item_profile:
+//
+//                fragment = ProfileFragment.newInstance(UserService
+//                        .getCurrentUser().getObjectId());
+//                title = getString(R.string.navigation_item_profile);
+//                tag = TAG_PROFILE_FRAGMENT;
+//
+//                Snackbar.make(toolbar, "Profile selected", Snackbar
+//                        .LENGTH_SHORT)
+//                        .show();
+//                break;
+//            case R.id.navigation_item_activity:
+//
+//                fragment = ActivityFragment.newInstance();
+//                title = getString(R.string.navigation_item_activity);
+//                tag = TAG_ACTIVITY_FRAGMENT;
+//
+//                Snackbar.make(toolbar, "Activity selected", Snackbar
+//                        .LENGTH_SHORT)
+//                        .show();
+//                break;
+//            case R.id.navigation_item_setting:
+//
+//                fragment = new SettingFragment();
+//                title = getString(R.string.navigation_item_setting);
+//
+//                Snackbar.make(toolbar, "Setting selected", Snackbar.LENGTH_SHORT)
+//                        .show();
+//                break;
+//
+//            default:
+//                break;
+//        }
+//
+//        if (fragment != null) {
+//
+//            fm.beginTransaction()
+//                    .replace(R.id.container_body, fragment, tag)
+//                    .commit();
+//
+//            // set the toolbar title
+//            getSupportActionBar().setTitle(title);
+//        }
+//    }
+//
+//    private void showInitialSelectedFragment(Bundle savedInstanceState) {
+//
+//        // if there is no pre-selected item,
+//        // show home fragment
+//        if (savedInstanceState == null) {
+//            mNavSelectedItemID = R.id.navigation_item_home;
+//        } else {
+//            mNavSelectedItemID = savedInstanceState.getInt(NAVIGATION_ITEM_ID);
+//        }
+//        MenuItem menuItem = navigationView.getMenu().findItem(mNavSelectedItemID);
+//        this.showFragment(menuItem);
+//    }
 
     @OnLongClick(R.id.btn_float_action)
     boolean onLongClick(View view) {

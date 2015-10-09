@@ -15,13 +15,17 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.utils.Util;
 
 /**
  * Created by litaoshen on 2/09/2015.
  */
 @ParseClassName("_User")
-public class User extends ParseUser{
+public class User extends ParseUser {
+
+    public static final int AVATAR_WIDTH = 200;
+    public static final int AVATAR_HEIGHT = 200;
 
     public User() {
         super();
@@ -29,15 +33,14 @@ public class User extends ParseUser{
 
 
     /**
-     *
      * @param context
      * @return
      */
-    public BitmapDrawable getAvatarInBitmapDrawable(Context context){
+    public BitmapDrawable getAvatarInBitmapDrawable(Context context) {
         return Util.convertByteToBitmapDrawable(context, this.getAvatarData());
     }
 
-    public Bitmap getAvatarBitmap(){
+    public Bitmap getAvatarBitmap() {
         Bitmap bitmap = Util.convertByteToBitmap(this.getAvatarData());
         return bitmap;
     }
@@ -45,33 +48,43 @@ public class User extends ParseUser{
 
     public void getAvatarData(GetDataCallback callback) {
         ParseFile photo = this.getParseFile("photo");
-        if(photo != null){
+        if (photo != null) {
             photo.getDataInBackground(callback);
         }
     }
 
-    public Uri getAvatarUri(){
+    public Uri getAvatarUri() {
         ParseFile photoFile = this.getParseFile("avatar");
         Uri imageUri = null;
-        if( photoFile != null ) {
-             imageUri = Uri.parse(photoFile.getUrl());
+        if (photoFile != null) {
+            imageUri = Uri.parse(photoFile.getUrl());
         }
 
         return imageUri;
     }
 
-    public void loadAvatartoView( Context context, ImageView imageView){
-        if(this.getAvatarUri() == null ){
-            return;
+    public void loadAvatarToView(Context context, ImageView imageView) {
+        Uri avatarPath = this.getAvatarUri();
+
+        if (avatarPath == null) {
+
+            Picasso.with(context)
+                    .load(R.drawable.icon_avatar)
+                    .resize(AVATAR_WIDTH, AVATAR_HEIGHT)
+                    .centerCrop()
+                    .into(imageView);
+        } else {
+
+            Picasso.with(context)
+                    .load(avatarPath)
+                    .resize(AVATAR_WIDTH, AVATAR_HEIGHT)
+                    .centerCrop()
+                    .into(imageView);
         }
-        Picasso.with(context)
-                .load( this.getAvatarUri().toString() )
-                .resize(200, 200)
-                .centerCrop()
-                .into(imageView);
+
     }
 
-    public byte[] getAvatarData(){
+    public byte[] getAvatarData() {
         return this.getBytes("avatar");
     }
 
@@ -87,7 +100,7 @@ public class User extends ParseUser{
     public void setPostList(List<Post> postList) {
         List<Post> temp = new ArrayList<>();
 
-        if(postList != null ){
+        if (postList != null) {
             temp = postList;
         }
         this.put("posts", temp);

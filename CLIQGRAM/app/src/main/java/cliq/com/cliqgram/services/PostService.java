@@ -1,11 +1,13 @@
 package cliq.com.cliqgram.services;
 
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
@@ -88,9 +90,17 @@ public class PostService {
             return;
         }
 
+        Location loc = AppStarter.gpsTracker.getLocation();
+
+        ParseGeoPoint currentLocation = new ParseGeoPoint(loc.getLatitude(),
+                loc.getLongitude());
+
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.whereContainedIn("user", userList);
+        // order by createdAt
         query.orderByDescending("createdAt");
+        // order by location
+        query.whereNear("location", currentLocation);
         query.include("user");
         query.include("comments");
         query.include("likes");

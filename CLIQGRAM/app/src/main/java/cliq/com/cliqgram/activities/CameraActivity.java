@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -40,7 +41,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -79,21 +79,22 @@ public class CameraActivity extends Activity implements OnClickListener {
     @Bind(R.id.textureView_preview)
     AutoFitTextureView mTextureView;
     @Bind(R.id.view_grid)
-    View               myGridView;
+    View myGridView;
     @Bind(R.id.button_capture)
-    Button             buttonCapture;
+    FloatingActionButton buttonCapture;
+//    Button buttonCapture;
     @Bind(R.id.button_flash)
-    Button             buttonFlash;
+    Button buttonFlash;
     @Bind(R.id.button_grid)
-    Button             buttonGrid;
+    Button buttonGrid;
     @Bind(R.id.button_gallery)
-    Button             buttonGallery;
+    Button buttonGallery;
     private boolean flashOn = true;
     private boolean gridOn  = false;
     private State mState = State.PREVIEW;
-    private String        mCameraId;
+    private String mCameraId;
     private HandlerThread mBackgroundThread;
-    private Handler       mBackgroundHandler;
+    private Handler mBackgroundHandler;
     byte[] photoBytes;
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
@@ -130,12 +131,12 @@ public class CameraActivity extends Activity implements OnClickListener {
     };
     private Size                   mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
-    private CaptureRequest         mPreviewRequest;
-    private CameraDevice           mCameraDevice;
-    private CameraCaptureSession   mCaptureSession;
-    private ImageReader            mImageReader;
-    private final TextureView.SurfaceTextureListener   mSurfaceTextureListener
-                                                                        = new TextureView.SurfaceTextureListener() {
+    private CaptureRequest mPreviewRequest;
+    private CameraDevice mCameraDevice;
+    private CameraCaptureSession mCaptureSession;
+    private ImageReader mImageReader;
+    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+            = new TextureView.SurfaceTextureListener() {
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
@@ -157,7 +158,7 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
 
     };
-    private       CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+    private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
 
         private void process(CaptureResult result) {
             switch (mState) {
@@ -208,7 +209,7 @@ public class CameraActivity extends Activity implements OnClickListener {
             process(result);
         }
     };
-    private final CameraDevice.StateCallback           mStateCallback   = new CameraDevice.StateCallback() {
+    private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
             mCameraOpenCloseLock.release();
@@ -388,6 +389,15 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonFlash.setOnClickListener(this);
         buttonGrid.setOnClickListener(this);
         buttonGallery.setOnClickListener(this);
+
+        Util.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.3f );
+
+        Util.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.3f );
+
+        Util.loadResToView(this, R.drawable.icon_gallery,
+                            buttonGallery, 0.3f );
 
     }
 
@@ -572,10 +582,14 @@ public class CameraActivity extends Activity implements OnClickListener {
             case R.id.button_flash:
                 if (flashOn) {
                     flashOn = false;
-                    buttonFlash.setText(R.string.button_flash_off);
+//                    buttonFlash.setText(R.string.button_flash_off);
+                    Util.loadResToView(this, R.drawable.icon_flash_off,
+                            buttonFlash, 0.7f );
                 } else {
                     flashOn = true;
-                    buttonFlash.setText(R.string.button_flash_on);
+//                    buttonFlash.setText(R.string.button_flash_on);
+                    Util.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.7f );
                 }
                 break;
             case R.id.button_grid:
@@ -583,11 +597,15 @@ public class CameraActivity extends Activity implements OnClickListener {
                 if (gridOn) {
                     gridOn = false;
                     myGridView.setVisibility(View.INVISIBLE);
-                    buttonGrid.setText(R.string.button_grid_off);
+//                    buttonGrid.setText(R.string.button_grid_off);
+                    Util.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.7f );
                 } else {
                     gridOn = true;
                     myGridView.setVisibility(View.VISIBLE);
-                    buttonGrid.setText(R.string.button_grid_on);
+//                    buttonGrid.setText(R.string.button_grid_on);
+                    Util.loadResToView(this, R.drawable.icon_grid_on,
+                            buttonGrid, 0.7f );
                 }
                 break;
             case R.id.button_gallery:
@@ -727,9 +745,9 @@ public class CameraActivity extends Activity implements OnClickListener {
 
         String fileName = savePhoto(bitmap);
 
-        if( fileName == null ){
-           Toast.makeText(this, "Photo is not taken successfully.", Toast
-                   .LENGTH_SHORT).show();
+        if (fileName == null) {
+            Toast.makeText(this, "Photo is not taken successfully.", Toast
+                    .LENGTH_SHORT).show();
             return;
         }
 

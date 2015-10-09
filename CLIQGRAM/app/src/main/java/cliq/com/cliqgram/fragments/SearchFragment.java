@@ -112,21 +112,6 @@ public class SearchFragment extends Fragment {
         return root_view;
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//
-//        // register with EventBus
-//        AppStarter.eventBus.register(this);
-//
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        AppStarter.eventBus.unregister(this);
-//        super.onStop();
-//    }
-
 
     private void initializeSuggestView() {
         LinearLayoutManager llm = new LinearLayoutManager(this.getActivity(),
@@ -163,13 +148,8 @@ public class SearchFragment extends Fragment {
             searchItem.setVisible(true);
             searchItem.setIcon(R.drawable.icon_search);
 
-            SearchView searchView = new SearchView(this.getActivity());
-            searchItem.setActionView(searchView);
-            searchView.setIconifiedByDefault(true);
-
             SearchView action_search = (SearchView) searchItem.getActionView();
-
-            action_search.setVisibility(View.VISIBLE);
+            action_search.setIconifiedByDefault(true);
 
             action_search.setSearchableInfo(manager.getSearchableInfo
                     (getActivity().getComponentName()));
@@ -188,12 +168,11 @@ public class SearchFragment extends Fragment {
                 @Override
                 public boolean onQueryTextChange(String query) {
 
-                    if(SearchFragment.this.isUserListReady()) {
+                    if (SearchFragment.this.isUserListReady()) {
                         doSearch(menu, query);
                     }
                     return true;
                 }
-
             });
 
         }
@@ -248,12 +227,6 @@ public class SearchFragment extends Fragment {
                 }
             }
 
-            // SearchView
-            SearchManager manager = (SearchManager)
-                    getActivity()
-                    .getSystemService(Context
-                            .SEARCH_SERVICE);
-
             final SearchView search = (SearchView) menu
                     .findItem(R.id.action_search)
                     .getActionView();
@@ -262,6 +235,7 @@ public class SearchFragment extends Fragment {
                     cursor,
                     resultList);
             searchAdapter.setFragmentManager(getFragmentManager());
+            searchAdapter.setSearchView( search );
 
             search.setSuggestionsAdapter(searchAdapter);
         }

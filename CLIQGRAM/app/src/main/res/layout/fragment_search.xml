@@ -4,6 +4,7 @@
              android:layout_height="match_parent"
              android:layout_below="@+id/toolbar"
              android:paddingTop="@dimen/abc_action_bar_default_height_material"
+             android:paddingBottom="@dimen/abc_action_bar_default_height_material"
              tools:context="cliq.com.cliqgram.fragments.SearchFragment">
 
     <RelativeLayout
@@ -32,4 +33,11 @@
         </android.support.v7.widget.RecyclerView>
     </RelativeLayout>
 
+
+    <!-- contains fragments -->
+    <FrameLayout
+        android:id="@+id/search_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 </FrameLayout>

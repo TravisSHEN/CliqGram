@@ -106,7 +106,7 @@ public class PostAdapter extends RecyclerView
 
         final Post post = postList.get(position);
 
-        post.getOwner().loadAvatartoView(context, feedViewHolder.feed_avatar);
+        post.getOwner().loadAvatarToView(context, feedViewHolder.feed_avatar);
 
         feedViewHolder.feed_user_name.setText(post.getOwner().getUsername());
         // TODO:
