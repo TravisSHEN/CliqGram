@@ -39,6 +39,7 @@ Temporary Items
 /.idea
 .idea
 *.iml
+app/*.iml
 out
 gen
 
