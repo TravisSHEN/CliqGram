@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.DrawableRes;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -234,17 +235,17 @@ public class Util {
      *
      * @param context
      * @param resid
-     * @param imageView
-     * @param width
-     * @param height
+     * @param view
+     * @param scaleRate
      */
     public static void loadResToView( Context context, @DrawableRes int resid,
-                                      ImageView imageView, int width, int height){
-        Picasso.with(context)
-                .load(resid)
-                .resize(width, height)
-                .centerCrop()
-                .into( imageView );
+                                      View view, float scaleRate){
+
+        BitmapDrawable bitmapDrawable = Util.resizeDrawable(context, resid,
+                scaleRate);
+
+        view.setBackground( bitmapDrawable );
+
     }
 
 }

@@ -382,6 +382,15 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonGrid.setOnClickListener(this);
         buttonGallery.setOnClickListener(this);
 
+        Util.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.3f );
+
+        Util.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.3f );
+
+        Util.loadResToView(this, R.drawable.icon_gallery,
+                            buttonGallery, 0.3f );
+
     }
 
     @Override
@@ -565,10 +574,14 @@ public class CameraActivity extends Activity implements OnClickListener {
             case R.id.button_flash:
                 if (flashOn) {
                     flashOn = false;
-                    buttonFlash.setText(R.string.button_flash_off);
+//                    buttonFlash.setText(R.string.button_flash_off);
+                    Util.loadResToView(this, R.drawable.icon_flash_off,
+                            buttonFlash, 0.7f );
                 } else {
                     flashOn = true;
-                    buttonFlash.setText(R.string.button_flash_on);
+//                    buttonFlash.setText(R.string.button_flash_on);
+                    Util.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.7f );
                 }
                 break;
             case R.id.button_grid:
@@ -576,11 +589,15 @@ public class CameraActivity extends Activity implements OnClickListener {
                 if (gridOn) {
                     gridOn = false;
                     myGridView.setVisibility(View.INVISIBLE);
-                    buttonGrid.setText(R.string.button_grid_off);
+//                    buttonGrid.setText(R.string.button_grid_off);
+                    Util.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.7f );
                 } else {
                     gridOn = true;
                     myGridView.setVisibility(View.VISIBLE);
-                    buttonGrid.setText(R.string.button_grid_on);
+//                    buttonGrid.setText(R.string.button_grid_on);
+                    Util.loadResToView(this, R.drawable.icon_grid_on,
+                            buttonGrid, 0.7f );
                 }
                 break;
             case R.id.button_gallery:
