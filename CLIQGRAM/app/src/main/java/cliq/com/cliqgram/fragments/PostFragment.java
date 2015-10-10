@@ -77,22 +77,6 @@ public class PostFragment extends Fragment {
         this.initializeData();
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//
-//        // register with EventBus
-//        AppStarter.eventBus.register(this);
-//
-//    }
-
-    //    @Override
-//    public void onStop() {
-//        AppStarter.eventBus.unregister(this);
-//        super.onStop();
-//    }
-
-
     @Override
     public void onDestroy() {
         AppStarter.eventBus.unregister(this);
@@ -165,6 +149,12 @@ public class PostFragment extends Fragment {
         if (event.getPostList() != null) {
             postList = event.getPostList();
             postAdapter.updateFeedList(postList);
+        } else if (event.getPost() != null) {
+            Post post = event.getPost();
+            if (post != null) {
+                postList.add(post);
+                postAdapter.updateFeedList(postList);
+            }
         } else {
             Toast.makeText(this.getActivity(), event.getMessage(), Toast
                     .LENGTH_LONG).show();
@@ -183,9 +173,10 @@ public class PostFragment extends Fragment {
 
     /**
      * add post to PostFragment
+     *
      * @param postId
      */
-    public void addPost(String postId){
+    public void addPost(String postId) {
 
         PostService.getPost(postId);
 
