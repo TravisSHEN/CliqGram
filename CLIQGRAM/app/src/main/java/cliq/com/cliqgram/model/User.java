@@ -68,6 +68,7 @@ public class User extends ParseUser {
 
         if (avatarPath == null) {
 
+            // show default avatar
             Picasso.with(context)
                     .load(R.drawable.icon_avatar)
                     .resize(AVATAR_WIDTH, AVATAR_HEIGHT)

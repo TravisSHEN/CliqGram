@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,6 +77,14 @@ public class SearchFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // enable option menu
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onStart() {
+
+        super.onStart();
         // retrieve all users at beginning for search
         UserService.getAllUsers(new FindCallback<User>() {
             @Override
@@ -93,9 +102,6 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
-
-        // enable option menu
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -205,6 +211,8 @@ public class SearchFragment extends Fragment {
 
 
                 User user = userList.get(i);
+
+                Log.e("User Searchable", user.getUsername());
 
                 if ( user == null ||
                         user.getObjectId()
