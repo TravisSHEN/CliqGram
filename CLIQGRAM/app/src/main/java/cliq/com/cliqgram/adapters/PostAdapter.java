@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.OpenCommentEvent;
+import cliq.com.cliqgram.listeners.OnSwipeTouchListener;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
@@ -87,7 +89,8 @@ public class PostAdapter extends RecyclerView
         feedViewHolder.feed_btn_like.setTag(feedViewHolder);
         feedViewHolder.feed_btn_more.setTag(position);
         feedViewHolder.feed_btn_comments.setTag(post);
-        feedViewHolder.feed_photo.setTag(feedViewHolder);
+        feedViewHolder.feed_photo.setTag(post);
+        feedViewHolder.cv.setTag(post);
 
         this.bindClickListener(feedViewHolder, this.onClickListener, this.onTouchListener);
     }
@@ -244,6 +247,18 @@ public class PostAdapter extends RecyclerView
         }
     };
 
+    OnSwipeTouchListener onSwipeTouchListener = new OnSwipeTouchListener
+            (context){
+
+        @Override
+        public void onSwipeRight(View v) {
+            Post post = (Post) v.getTag();
+            Log.e("Swipe Touch", post.getObjectId());
+            Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
+        }
+
+    };
+
     /**
      * @param feedViewHolder
      * @param onClickListener
@@ -257,7 +272,9 @@ public class PostAdapter extends RecyclerView
 
         feedViewHolder.feed_btn_comments.setTag(postList.get(feedViewHolder.getAdapterPosition()));
 
-        feedViewHolder.feed_photo.setOnTouchListener(onTouchListener);
+        feedViewHolder.feed_photo.setOnTouchListener(onSwipeTouchListener);
+
+//        feedViewHolder.cv.setOnTouchListener(onSwipeTouchListener);
 
     }
 
