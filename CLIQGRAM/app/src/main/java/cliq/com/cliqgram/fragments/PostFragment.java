@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +21,10 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.PostAdapter;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
-import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.services.CommentService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserRelationsService;
 import cliq.com.cliqgram.services.UserService;
@@ -184,46 +181,14 @@ public class PostFragment extends Fragment {
         }
     }
 
+    /**
+     * add post to PostFragment
+     * @param postId
+     */
+    public void addPost(String postId){
 
-    public void addFakeData() {
-        //
-        User currentUser = UserService.getCurrentUser();
+        PostService.getPost(postId);
 
-        User user1 = currentUser;
-
-////        User user2 = User.userFactory("abc",
-////                "abc@abc.com");
-//
-//        Post post1 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
-//                .lavery, 1f), user1, "good");
-//        post1.setOwner( user1 );
-////        post1.saveInBackground();
-////
-//////        Post post2 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
-//////                .lavery, 1f), user2, "yes");
-//
-//        Post post3 = Post.createPost(Util.resizeDrawable(getActivity(), R.drawable
-//                .lavery, 1f), user1, "no");
-//        post3.setOwner(user1);
-//
-//        feedList.add(post1);
-//////        feedList.add(post2);
-//        feedList.add(post3);
-
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-
-        Comment comment = null;
-        try {
-            Post post = query.get("GKodyBu9mj");
-            comment = Comment.createComment(user1, post,
-                    "It's Good");
-            CommentService.comment(post, comment);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-
-//        //this is for testing follow operation
-//        UserRelationsService.follow("litaos");
     }
+
 }
