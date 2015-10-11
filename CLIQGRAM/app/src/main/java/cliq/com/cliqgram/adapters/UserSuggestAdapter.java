@@ -56,4 +56,10 @@ public class UserSuggestAdapter extends RecyclerView.Adapter<UserSuggestViewHold
         return (userSuggestList == null || userSuggestList.isEmpty()) ?  0:
                 userSuggestList.size();
     }
+
+    public void updateSuggestList(List<User> userSuggestList){
+        this.userSuggestList = userSuggestList;
+
+        this.notifyDataSetChanged();
+    }
 }

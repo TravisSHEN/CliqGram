@@ -28,8 +28,11 @@ import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.SearchAdapter;
 import cliq.com.cliqgram.adapters.UserSuggestAdapter;
+import cliq.com.cliqgram.events.UserSuggestionRetrieved;
 import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.UserService;
+import de.greenrobot.event.Subscribe;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -85,6 +88,9 @@ public class SearchFragment extends Fragment {
     public void onStart() {
 
         super.onStart();
+
+        AppStarter.eventBus.register(this);
+
         // retrieve all users at beginning for search
         UserService.getAllUsers(new FindCallback<User>() {
             @Override
@@ -102,6 +108,15 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
+
+        // retrieve all suggested users
+        UserService.getSuggestUsers();
+    }
+
+    @Override
+    public void onStop() {
+        AppStarter.eventBus.unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -127,6 +142,19 @@ public class SearchFragment extends Fragment {
 
         userSuggestAdapter = new UserSuggestAdapter(getActivity(), suggestList);
         search_recycler_view.setAdapter(userSuggestAdapter);
+    }
+
+    @Subscribe
+    public void userSuggestionRetrieved( UserSuggestionRetrieved event){
+        this.suggestList = event.getUserSuggestionList();
+        if(this.suggestList == null ){
+            return;
+        }
+
+        for( User user : suggestList ){
+           Log.e("SearchFragment-Suggest", user.getUsername());
+        }
+        userSuggestAdapter.updateSuggestList( this.suggestList );
     }
 
     @Override
@@ -165,7 +193,7 @@ public class SearchFragment extends Fragment {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
 
-                    if(SearchFragment.this.isUserListReady()) {
+                    if (SearchFragment.this.isUserListReady()) {
                         doSearch(menu, query);
                     }
                     return true;
@@ -214,9 +242,9 @@ public class SearchFragment extends Fragment {
 
                 Log.e("User Searchable", user.getUsername());
 
-                if ( user == null ||
+                if (user == null ||
                         user.getObjectId()
-                                .equals(currentUser.getObjectId())){
+                                .equals(currentUser.getObjectId())) {
                     break;
                 }
 
@@ -224,14 +252,14 @@ public class SearchFragment extends Fragment {
                         .toLowerCase()
                         .trim();
 
-                if( normalizedUsername.contains(normalizedQuery) ) {
+                if (normalizedUsername.contains(normalizedQuery)) {
 
                     temp[0] = index;
                     temp[1] = user;
                     cursor.addRow(temp);
                     resultList.add(user);
 
-                    index ++;
+                    index++;
                 }
             }
 
@@ -243,7 +271,7 @@ public class SearchFragment extends Fragment {
                     cursor,
                     resultList);
             searchAdapter.setFragmentManager(getFragmentManager());
-            searchAdapter.setSearchView( search );
+            searchAdapter.setSearchView(search);
 
             search.setSuggestionsAdapter(searchAdapter);
         }

@@ -114,8 +114,6 @@ public class PostFragment extends Fragment {
 
     private void initializeData() {
 
-//        this.addFakeData();
-
         // followings list of currentUser
         final String currentUsername = UserService.getCurrentUser().getUsername();
 

@@ -69,8 +69,20 @@ public class PostAdapter extends RecyclerView
         // load to feed_photo
         post.loadPhotoToView(context, feedViewHolder.feed_photo);
 
+        List<Like> likeList = post.getLikeList();
+
+
         StringBuilder sb = new StringBuilder();
-        sb.append(post.getDescription() + "\n");
+
+        sb.append("Likes: ");
+
+        if( likeList != null && likeList.size() > 0){
+            for(Like like: likeList){
+                sb.append(like.getUser().getUsername() + ", ");
+            }
+        }
+
+        sb.append("\n\n" + post.getDescription() + "\n\n");
 
         if( post.getCommentList() != null && ! post.getCommentList().isEmpty()) {
 

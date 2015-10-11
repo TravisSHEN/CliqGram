@@ -102,35 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//
-//        setIntent(intent);
-//        // Get the intent, verify the action and get the query
-//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-//
-//            Bundle bundle = intent.getExtras();
-//            final String query = bundle.get(SearchManager.USER_QUERY).toString();
-//
-//            UserService.getUserByUsername(query, new GetCallback<ParseUser>() {
-//                @Override
-//                public void done(ParseUser user, ParseException e) {
-//                    if (e == null) {
-//
-//                        // TODO: open profile fragment of such user by adding
-//                        // new fragment to list in ViewPager
-////                        String userId = user.getObjectId();
-//
-//                    } else {
-//                        Toast.makeText(MainActivity.this, e.getMessage() + " " +
-//                                "" + query, Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
-//        }
-//    }
-
-
     @Override
     protected void onStart() {
         super.onStart();
