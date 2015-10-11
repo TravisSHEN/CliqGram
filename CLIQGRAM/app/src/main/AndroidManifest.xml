@@ -59,7 +59,7 @@
         <activity
             android:name=".activities.CameraActivity2"
             android:label="@string/title_activity_camera"
-            android:screenOrientation="landscape">
+            android:screenOrientation="sensorPortrait">
         </activity>
         <activity
             android:name=".activities.CommentActivity"
@@ -71,6 +71,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
+
     </application>
 
 </manifest>

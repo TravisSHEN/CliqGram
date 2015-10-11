@@ -4,8 +4,11 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import java.io.IOException;
+
+import cliq.com.cliqgram.views.PhotoGridView;
 
 /**
  * Created by ilkan on 11/10/2015.
@@ -68,4 +71,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             //Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
+
 }

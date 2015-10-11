@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.security.Policy;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -86,6 +87,24 @@ public class CameraManager {
             mCamera.release();        // release the camera for other applications
             mCamera = null;
         }
+    }
+
+    public static void flashOn(Camera mCamera, Context context){
+        if(context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)){
+
+            Camera.Parameters parameters = mCamera.getParameters();
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            mCamera.setParameters(parameters);
+            mCamera.startPreview();
+
+        }else{
+            flashOff(mCamera);
+        }
+    }
+
+    public static void flashOff(Camera mCamera){
+        mCamera.stopPreview();
+        mCamera.release();
     }
 
 }

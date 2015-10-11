@@ -3,6 +3,7 @@ package cliq.com.cliqgram.activities;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -12,8 +13,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import butterknife.Bind;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.helper.CameraManager;
+import cliq.com.cliqgram.views.PhotoGridView;
+
+import static cliq.com.cliqgram.R.*;
 
 /**
  * Created by ilkan on 11/10/2015.
@@ -23,38 +28,38 @@ public class CameraActivity2 extends Activity {
     private Camera mCamera;
     private CameraPreview mPreview;
     private Button captureButton;
+    private boolean gridOn;
+    //@Bind(R.id.view_grid)
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(CameraManager.checkCameraHardware(this)){
-            setContentView(R.layout.activity_camera2);
+            setContentView(layout.activity_camera2);
 
             // Create an instance of Camera
             mCamera = CameraManager.getCameraInstance();
 
             // Create our Preview view and set it as the content of our activity.
             mPreview = new CameraPreview(this, mCamera);
-            FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+            FrameLayout preview = (FrameLayout) findViewById(id.camera_preview);
             preview.addView(mPreview);
-            captureButton = (Button) findViewById(R.id.button_capture);
+            captureButton = (Button) findViewById(id.button_capture);
             captureButton.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // get an image from the camera
                             mCamera.takePicture(null, null, mPicture);
+                            PhotoGridView gridView = (PhotoGridView) findViewById(R.id.view_grid);
+                            PhotoGridView.setVisible(gridView);
                             CameraManager.releaseCamera(mCamera);
                         }
                     }
             );
         }
     }
-
-    // Add a listener to the Capture button
-
-
-
 
 
 

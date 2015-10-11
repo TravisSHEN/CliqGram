@@ -1,21 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
     android:layout_height="fill_parent"
-    >
+    android:layout_below="@+id/camera_preview"
+    android:layout_toEndOf="@+id/linearLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/background_dark"
+    android:weightSum="3">
+
     <FrameLayout
         android:id="@+id/camera_preview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        />
-
-    <Button
-        android:id="@+id/button_capture"
-        android:text="Capture"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        />
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <cliq.com.cliqgram.views.AutoFitTextureView
+            android:id="@+id/textureView_preview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:visibility="invisible"/>
+
+        <cliq.com.cliqgram.views.PhotoGridView
+            android:id="@+id/view_grid"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignBottom="@+id/textureView_preview"
+            android:layout_alignLeft="@+id/textureView_preview"
+            android:layout_alignRight="@+id/textureView_preview"
+            android:layout_alignTop="@+id/textureView_preview"
+            android:visibility="invisible"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="fill_horizontal"
+        android:background="@android:color/background_dark"
+        android:weightSum="3">
+
+        <Button
+            android:text="Gallery"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:textSize="17dp"
+            android:textColor="@android:color/white"
+            style="?android:attr/borderlessButtonStyle"
+            />
+
+        <Button
+            android:id="@+id/button_capture"
+            android:background="@drawable/icon_camera_flat6"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/avatar_size"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button
+            android:text="Video"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:textSize="17dp"
+            android:textColor="@android:color/white"
+            style="?android:attr/borderlessButtonStyle"
+            />
+
+    </LinearLayout>
 </LinearLayout>
