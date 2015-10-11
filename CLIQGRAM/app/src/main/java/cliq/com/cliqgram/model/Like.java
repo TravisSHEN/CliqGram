@@ -20,6 +20,7 @@ public class Like extends ParseObject{
 
         like.saveInBackground();
         LikeService.like(post, like);
+        Activity.createActivity(user, "like", post.getObjectId());
         return like;
     }
 

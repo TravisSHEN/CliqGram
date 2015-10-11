@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btn_float_action)
     void onClick(View view) {
 
-        Intent intent = new Intent(this, CameraActivity.class);
+        Intent intent = new Intent(this, CameraActivity2.class);
         startActivity(intent);
 //        StarterApplication.BUS.post(new FABClickEvent());
         Toast.makeText(this, "Short click", Toast.LENGTH_SHORT)

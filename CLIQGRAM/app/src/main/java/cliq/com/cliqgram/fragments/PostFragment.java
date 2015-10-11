@@ -22,6 +22,7 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.PostAdapter;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
+import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
@@ -147,8 +148,11 @@ public class PostFragment extends Fragment {
                 if (e == null) {
 
                     if (relation != null && relation.getFollowings() != null) {
+
                         PostFragment.this.followings.addAll(relation
                                 .getFollowings());
+                        PostService.getPosts(PostFragment.this.followings);
+
                     }
 
                 } else {
@@ -156,8 +160,6 @@ public class PostFragment extends Fragment {
                             + currentUsername, Toast
                             .LENGTH_SHORT).show();
                 }
-
-                PostService.getPosts(PostFragment.this.followings);
             }
         });
     }
@@ -214,10 +216,11 @@ public class PostFragment extends Fragment {
 
         Comment comment = null;
         try {
-            Post post = query.get("GKodyBu9mj");
+            Post post = query.get("GKodyBu9mj");//TODO change this
             comment = Comment.createComment(user1, post,
-                    "It's Good");
+                    "It's Good");//TODO change this
             CommentService.comment(post, comment);
+            Activity.createActivity(currentUser, "comment", post.getObjectId());
         } catch (ParseException e) {
             e.printStackTrace();
         }

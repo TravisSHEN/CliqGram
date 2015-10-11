@@ -57,6 +57,7 @@ public class Post extends ParseObject implements Comparable<Post> {
 
         post.saveInBackground();
         PostService.post(post);
+        Activity.createActivity(owner, "post", post.getObjectId());
         return post;
     }
 

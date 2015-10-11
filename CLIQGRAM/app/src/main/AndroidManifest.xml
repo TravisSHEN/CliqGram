@@ -57,7 +57,7 @@
 
         </activity>
         <activity
-            android:name=".activities.CameraActivity"
+            android:name=".activities.CameraActivity2"
             android:label="@string/title_activity_camera"
             android:screenOrientation="landscape">
         </activity>

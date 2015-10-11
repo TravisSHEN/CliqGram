@@ -24,7 +24,7 @@ public class CommentService {
      * @param post
      * @param comment
      */
-    public static void comment(Post post, final Comment comment){
+    public static void comment(final Post post, final Comment comment){
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
@@ -51,6 +51,7 @@ public class CommentService {
                             }
                         }
                     });
+
                 }else{
                     AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
                             e.getMessage()));

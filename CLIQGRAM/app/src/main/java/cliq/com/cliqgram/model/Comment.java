@@ -20,6 +20,7 @@ public class Comment extends ParseObject implements Comparable<Comment> {
 
         comment.saveInBackground();
         CommentService.comment(post, comment);
+        Activity.createActivity(owner, "comment", post.getObjectId());
         return comment;
     }
 

@@ -89,12 +89,16 @@ public class PostService {
         if (userList == null || userList.size() <= 0) {
             return;
         }
-
         Location loc = AppStarter.gpsTracker.getLocation();
+        ParseGeoPoint currentLocation;
+        try{
 
-        ParseGeoPoint currentLocation = new ParseGeoPoint(loc.getLatitude(),
-                loc.getLongitude());
-
+            currentLocation = new ParseGeoPoint(loc.getLatitude(),
+                    loc.getLongitude());
+        }catch(Exception e){
+            //TODO write the error in log
+            currentLocation = null;
+        }
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.whereContainedIn("user", userList);
         // order by createdAt
@@ -119,6 +123,8 @@ public class PostService {
                 }
             }
         });
+
+
 
     }
 }
