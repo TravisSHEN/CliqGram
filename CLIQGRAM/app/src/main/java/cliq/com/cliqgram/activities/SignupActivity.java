@@ -162,9 +162,9 @@ public class SignupActivity extends AppCompatActivity {
 
         if (NetworkConnection.isNetworkConnected(this)) {
             // assign values to attributes of instance of model
-            String email = emailText.getText().toString();
-            String username = usernameText.getText().toString();
-            String password = passwordText.getText().toString();
+            String email = emailText.getText().toString().trim();
+            String username = usernameText.getText().toString().trim();
+            String password = passwordText.getText().toString().trim();
 
             ProgressSpinner.getInstance().showSpinner(this, "Registering...");
             SignupService.signup(this, username, password, email);

@@ -140,6 +140,10 @@ public class UserService {
             @Override
             public void done(UserRelation relation, ParseException e) {
 
+                if( relation == null ){
+                    return;
+                }
+
                 List<User> followings = relation.getFollowings();
 
                 getSuggestUsers( followings );
@@ -197,19 +201,20 @@ public class UserService {
                 // sort according to creation time
                 Collections.sort(allLatestPosts);
 
+                // TODO : uncomment it when there is enough data
                 // trim all posts that are old more than TIME_THRESHOLD
-                int cut_index = 0;
-                for (int i = 0; i < allLatestPosts.size(); i++) {
-                    Post post = allLatestPosts.get(i);
-
-                    if (Math.abs(post.getCreatedAt().getTime() - currentTime)
-                            <= TIME_THRESHOLD) {
-                        cut_index = i;
-                    }
-                }
-
-                // get most recent posts
-                allLatestPosts = allLatestPosts.subList(0, cut_index);
+//                int cut_index = 0;
+//                for (int i = 0; i < allLatestPosts.size(); i++) {
+//                    Post post = allLatestPosts.get(i);
+//
+//                    if (Math.abs(post.getCreatedAt().getTime() - currentTime)
+//                            <= TIME_THRESHOLD) {
+//                        cut_index = i;
+//                    }
+//                }
+//
+//                 get most recent posts
+//                allLatestPosts = allLatestPosts.subList(0, cut_index);
 
                 // sort these posts by location
                 Collections.sort(allLatestPosts, new Comparator<Post>() {

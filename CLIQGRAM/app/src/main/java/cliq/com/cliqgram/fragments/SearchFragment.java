@@ -141,11 +141,13 @@ public class SearchFragment extends Fragment {
         search_recycler_view.setHasFixedSize(true);
 
         userSuggestAdapter = new UserSuggestAdapter(getActivity(), suggestList);
+        userSuggestAdapter.setFragmentManager( getFragmentManager() );
         search_recycler_view.setAdapter(userSuggestAdapter);
     }
 
     @Subscribe
     public void userSuggestionRetrieved( UserSuggestionRetrieved event){
+
         this.suggestList = event.getUserSuggestionList();
         if(this.suggestList == null ){
             return;
