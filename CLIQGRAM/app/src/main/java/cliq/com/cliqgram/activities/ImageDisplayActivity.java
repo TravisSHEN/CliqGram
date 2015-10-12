@@ -145,7 +145,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                  */
 
                 User owner = UserService.getCurrentUser();
-                Post.createPost(UserService.getCurrentUser(),
+                Post.createPost(owner,
                         Util.convertBitmapToByte(editedBitmap),
                         "This is a great photo now!");
                 finish();
@@ -161,7 +161,8 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 GPUImageFilterTools.showDialog(this, new GPUImageFilterTools.OnGpuImageFilterChosenListener() {
                     @Override
                     public void onGpuImageFilterChosenListener(GPUImageFilter filter) {
-                        switchFilterTo(filter);
+                        editedBitmap = switchFilterTo(filter);
+                        imageView.setImageBitmap( editedBitmap );
                     }
                 });
 
@@ -188,26 +189,17 @@ public class ImageDisplayActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         String imageName = intent.getStringExtra("image");
 
-        /*
-        File imageFile = this.getFileStreamPath(imageName);
+//        File imageFile = this.getFileStreamPath(imageName);
+//        String value=null;
+//        long fileSize=imageFile.length()/1024;//call function and convert
+//        // bytes into Kb
+//        if(fileSize>=1024)
+//            value=fileSize/1024+" Mb";
+//        else
+//            value=fileSize+" Kb";
+//
+//        Log.e("ImageDisplay", value);
 
-        String value=null;
-        long fileSize=imageFile.length()/1024;//call function and convert
-        // bytes into Kb
-        if(fileSize>=1024)
-            value=fileSize/1024+" Mb";
-        else
-            value=fileSize+" Kb";
-
-        Log.e("ImageDisplay", value);
-
-
-        Picasso.with(this)
-                .load(imageFile)
-                .resize(600, 600)
-                .centerCrop()
-                .into(imageView);
-        */
 
         return Util.decodeStream(this, imageName);
     }
@@ -250,12 +242,17 @@ public class ImageDisplayActivity extends AppCompatActivity {
         return editedBitmap;
     }
 
-    private void switchFilterTo(final GPUImageFilter filter) {
+    private Bitmap switchFilterTo(final GPUImageFilter filter) {
+        Bitmap editedBitMap = null;
         if (mFilter == null
                 || (filter != null && !mFilter.getClass().equals(filter.getClass()))) {
             mFilter = filter;
             gpuImage.setFilter(mFilter);
             mFilterAdjuster = new GPUImageFilterTools.FilterAdjuster(mFilter);
+            editedBitMap = gpuImage.getBitmapWithFilterApplied();
+
         }
+
+        return editedBitMap;
     }
 }
