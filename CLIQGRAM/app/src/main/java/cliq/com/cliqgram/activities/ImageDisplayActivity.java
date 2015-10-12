@@ -6,8 +6,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -17,10 +21,7 @@ import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.GPUImageFilterTools;
 import cliq.com.cliqgram.utils.Util;
-import jp.co.cyberagent.android.gpuimage.GPUImage;
-import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.*;
 
 public class ImageDisplayActivity extends AppCompatActivity {
     Bitmap originalBitmap;
@@ -40,7 +41,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
     @Bind(R.id.imageView)
     ImageView imageView;
 
-    private final int SCALED_WIDTH = 600;
+    @Bind(R.id.filter_spinner)
+    Spinner spinner;
+
+    private final int SCALED_WIDTH  = 600;
     private final int SCALED_HEIGHT = 600;
 
     @Override
@@ -66,6 +70,20 @@ public class ImageDisplayActivity extends AppCompatActivity {
         // show image to the view
         imageView.setImageBitmap(this.originalBitmap);
 
+        // set the filter_spinner
+//        Spinner spinner = (Spinner) findViewById(R.id.filter_spinner);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.filters_array, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+
         // EDIT PHOTO
 
         // brightness
@@ -73,7 +91,8 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                editedBitmap = applyContrastAndBrightnessFilters();
+                //editedBitmap = applyContrastAndBrightnessFilters();
+                editedBitmap = applyAllFilters();
 
                 // show image
                 imageView.setImageBitmap(editedBitmap);
@@ -89,11 +108,12 @@ public class ImageDisplayActivity extends AppCompatActivity {
         });
 
         // contrast
-        contrastBar.setOnSeekBarChangeListener((new SeekBar.OnSeekBarChangeListener() {
+        contrastBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                editedBitmap = applyContrastAndBrightnessFilters();
+                //editedBitmap = applyContrastAndBrightnessFilters();
+                editedBitmap = applyAllFilters();
 
                 // show image
                 imageView.setImageBitmap(editedBitmap);
@@ -104,9 +124,26 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        // image filtering
+        spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // apply all filters
+                editedBitmap = applyAllFilters();
+
+                // show image
+                imageView.setImageBitmap(editedBitmap);
             }
-        }));
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @Override
@@ -152,22 +189,6 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 break;
             case (R.id.action_crop):
                 // TODO
-                finish();
-                break;
-            case (R.id.action_apply_filter):
-                // TODO
-
-                // TODO: test GPUImage
-                GPUImageFilterTools.showDialog(this, new GPUImageFilterTools.OnGpuImageFilterChosenListener() {
-                    @Override
-                    public void onGpuImageFilterChosenListener(GPUImageFilter filter) {
-                        switchFilterTo(filter);
-                    }
-                });
-
-//                finish();
-                break;
-            case (R.id.action_brightness_and_contrast):
                 finish();
                 break;
             case (R.id.action_share):
@@ -250,12 +271,105 @@ public class ImageDisplayActivity extends AppCompatActivity {
         return editedBitmap;
     }
 
-    private void switchFilterTo(final GPUImageFilter filter) {
-        if (mFilter == null
-                || (filter != null && !mFilter.getClass().equals(filter.getClass()))) {
-            mFilter = filter;
-            gpuImage.setFilter(mFilter);
-            mFilterAdjuster = new GPUImageFilterTools.FilterAdjuster(mFilter);
+    // applies an image filter (e.g. Sepia, Grayscale etc.)
+    // returns new bitmap
+    private Bitmap applyImageFilter(String filterName) {
+        // GPUImage Filter
+        GPUImageFilter filter;
+
+        // determine filter
+        switch(filterName){
+            case "No Filter":
+                return editedBitmap;
+            case "Sepia":
+                filter = new GPUImageSepiaFilter();
+                break;
+            case "Gaussian Blur":
+                filter = new GPUImageGaussianBlurFilter();
+                break;
+            case "Grayscale":
+                filter = new GPUImageGrayscaleFilter();
+                break;
+            case "Emboss":
+                filter = new GPUImageEmbossFilter();
+                break;
+            case "Pixelation":
+                filter = new GPUImagePixelationFilter();
+                break;
+            default: // apply no filter
+                return editedBitmap;
         }
+
+        gpuImage.setFilter(filter);
+        Bitmap editedBitmap = gpuImage.getBitmapWithFilterApplied();
+
+        // return edited bitmap
+        return editedBitmap;
+    }
+
+    // apply all filters
+    // brightness, contrast, and filter
+    private Bitmap applyAllFilters() {
+        // get the contrast, brightness, and filter values
+        float contrast = calculateContrastValue(contrastBar.getProgress());
+        float brightness           = calculateBrightnessValue(brightnessBar.getProgress());
+        GPUImageFilter imageFilter = parseFilterFromString(spinner.getSelectedItem().toString());
+
+        // apply contrast
+        gpuImage.setFilter(new GPUImageContrastFilter(contrast));
+        Bitmap afterContrastBitmap = gpuImage.getBitmapWithFilterApplied(originalBitmap);
+
+        // apply brightness filter
+        gpuImage.setFilter(new GPUImageBrightnessFilter(brightness));
+        Bitmap afterBrightnessBitmap = gpuImage.getBitmapWithFilterApplied(afterContrastBitmap);
+
+        // apply other filter
+
+        // if no filter selected, return here
+        if (imageFilter == null) {
+            return afterBrightnessBitmap;
+        }
+
+        // otherwise apply the filter
+        gpuImage.setFilter(imageFilter);
+        Bitmap finalBitmap = gpuImage.getBitmapWithFilterApplied(afterBrightnessBitmap);
+
+        // return new bitmap
+        return finalBitmap;
+    }
+
+    private GPUImageFilter parseFilterFromString(String filterName) {
+        // GPUImage Filter
+        GPUImageFilter filter;
+
+        // determine filter
+        switch(filterName){
+            case "No Filter":
+                filter = null; // does nothing
+                break;
+            case "Sepia":
+                filter = new GPUImageSepiaFilter();
+                break;
+            case "Gaussian Blur":
+                filter = new GPUImageGaussianBlurFilter();
+                break;
+            case "Grayscale":
+                filter = new GPUImageGrayscaleFilter();
+                break;
+            case "Emboss":
+                filter = new GPUImageEmbossFilter();
+                break;
+            case "Gamma":
+                filter = new GPUImageGammaFilter();
+                break;
+            case "Glass Sphere":
+                filter = new GPUImageGlassSphereFilter();
+                break;
+            default: // apply no filter
+                filter = null;
+                break;
+        }
+
+        return filter;
     }
 }
