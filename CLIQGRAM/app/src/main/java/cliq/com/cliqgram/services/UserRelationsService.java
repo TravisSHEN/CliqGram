@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cliq.com.cliqgram.events.RelationGetEvent;
+import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
@@ -34,14 +35,16 @@ public class UserRelationsService {
         final User currentUser = UserService.getCurrentUser();
         followGenericAction(userName, "followers", currentUser);
 
-        //
-        UserService.getUserByUsername(userName, new GetCallback<ParseUser>() {
+        UserService.getUserByUsername(userName, new GetCallback<User>() {
             @Override
-            public void done(ParseUser otherUser, ParseException e) {
+            public void done(User otherUser, ParseException e) {
                 followGenericAction(currentUser.getUsername(),
                         "followings", otherUser);
+                //currentUser is currentUser,  otherUser is targetUser
+                Activity.createActivity(currentUser, "follow", null, otherUser);
             }
         });
+
     }
 
     /**
@@ -49,7 +52,7 @@ public class UserRelationsService {
      * @param operationName
      * @param user
      */
-    private static void followGenericAction(final String userName, final String operationName, final ParseUser user) {
+    private static void followGenericAction(final String userName, final String operationName, final User user) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);
@@ -138,6 +141,18 @@ public class UserRelationsService {
 
     }
 
+    public static void getParticularRelation(String username, String relation,
+                                   GetCallback<UserRelation> callback) {
+        ParseQuery<UserRelation> query =
+                ParseQuery.getQuery(UserRelation.class);
+
+        query.whereEqualTo("username", username);
+        query.include(relation);
+
+        query.getFirstInBackground(callback);
+
+    }
+
 
 
     /**
@@ -145,6 +160,7 @@ public class UserRelationsService {
      * @param relation
      * @return
      */
+/*
     public static List<User> getRelation(String userName, String relation) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);
@@ -170,7 +186,7 @@ public class UserRelationsService {
         }
 
     }
-
+*/
     public static boolean isInList(List<ParseUser> parseUsers, ParseUser
             parseUser) {
 

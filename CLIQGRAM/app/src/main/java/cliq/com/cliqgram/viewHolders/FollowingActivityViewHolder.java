@@ -18,13 +18,13 @@ public class FollowingActivityViewHolder extends RecyclerView.ViewHolder {
     private Context context;
 
     @Bind(R.id.followingactivity_user_avatar)
-    CircleImageView user_avatar;
+    public CircleImageView user_avatar;
     @Bind(R.id.followingactivity_user_name)
-    TextView user_name;
+    public TextView user_name;
     @Bind(R.id.followingactivity_text)
-    TextView text;
+    public TextView text;
     @Bind(R.id.followingactivity_iamge)
-    ImageView image;
+    public ImageView image;
 
 
     public FollowingActivityViewHolder(Context context, View itemView) {

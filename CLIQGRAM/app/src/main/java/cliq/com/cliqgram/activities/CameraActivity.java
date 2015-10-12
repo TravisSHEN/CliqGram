@@ -285,7 +285,7 @@ public class CameraActivity extends Activity implements OnClickListener {
 //                        Log.e(TAG, filePath);
 //                        showToast("Image saved to " + filePath);
 //                    }
-                    unlockFocus();
+                    //unlockFocus();
                     if (photoBytes != null) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
                         startImageDisplayActivity(bitmap);

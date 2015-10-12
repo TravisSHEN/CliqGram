@@ -8,10 +8,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FollowingActivityAdapter;
+import cliq.com.cliqgram.helper.ProgressSpinner;
+import cliq.com.cliqgram.model.Activity;
+import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.model.UserRelation;
+import cliq.com.cliqgram.services.ActivityService;
+import cliq.com.cliqgram.services.PostService;
+import cliq.com.cliqgram.services.UserRelationsService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,14 +37,10 @@ import cliq.com.cliqgram.adapters.FollowingActivityAdapter;
  * create an instance of this fragment.
  */
 public class FollowingFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_USERNAME = "userName";
+    //List<Activity> activityList = new ArrayList<>();
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    String userName;
 
     @Bind(R.id.activity_following_recycler_view)
     RecyclerView recyclerView;
@@ -45,11 +56,11 @@ public class FollowingFragment extends Fragment {
      * @return A new instance of fragment Following.
      */
     // TODO: Rename and change types and number of parameters
-    public static FollowingFragment newInstance() {
+    public static FollowingFragment newInstance(String userName) {
         FollowingFragment fragment = new FollowingFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_USERNAME, userName);
+        userName = userName;
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,10 +72,41 @@ public class FollowingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        initializeData();
+
+        //List<User> relation = UserRelationsService.getParticularRelation()
+
+        /*ActivityService.pullActivity(newe Findijlk(){
+            this.activityList = dataGet;
+            followingActivityAdapter.updateData( this.activityList );
+        })*/
+    }
+
+    private void initializeData() {
+
+        // TODO: find post by id via post service
+        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(), "followings", new GetCallback<UserRelation>() {
+            @Override
+            public void done(UserRelation object, ParseException e) {
+                List<User> followings = object.getFollowings();
+                ActivityService.pullActivity(followings, new FindCallback<Activity>() {
+                    @Override
+                    public void done(List<Activity> objects, ParseException e) {
+                        followingActivityAdapter.updateData(objects);
+                    }
+                });
+            }
+        });
+        //PostService.getPost(userName);
+//        PostService.getPost("X8f2UlSJIc");
+        //ProgressSpinner.getInstance().showSpinner(this.getActivity(), "Loading...");
     }
 
     @Override

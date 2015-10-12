@@ -21,11 +21,11 @@ public class ActivityViewPageAdapter extends FragmentStatePagerAdapter{
     List<TabItem> tabItems;
 
 
-    public ActivityViewPageAdapter(Context context, FragmentManager fm) {
+    public ActivityViewPageAdapter(Context context, FragmentManager fm, String userName) {
         super(fm);
 
         tabItems = new ArrayList<>();
-        tabItems.add(new TabItem(FollowingFragment.newInstance(), "FOLLOWING"));
+        tabItems.add(new TabItem(FollowingFragment.newInstance(userName), "FOLLOWING"));
         tabItems.add(new TabItem(YouFragment.newInstance(), "YOU"));
     }
 

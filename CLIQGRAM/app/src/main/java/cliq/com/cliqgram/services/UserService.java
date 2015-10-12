@@ -100,10 +100,10 @@ public class UserService {
      * @param callback
      */
     public static void getUserByUsername( String username,
-                                         GetCallback<ParseUser> callback
+                                         GetCallback<User> callback
     ) {
 
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
         query.whereEqualTo("username", username);
 
         query.getFirstInBackground(callback);
