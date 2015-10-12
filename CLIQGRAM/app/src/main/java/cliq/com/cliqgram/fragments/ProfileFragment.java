@@ -97,7 +97,6 @@ public class ProfileFragment extends Fragment {
         }
 
         postList = new ArrayList<>();
-        this.initializeData(userId);
     }
 
     @Override
@@ -116,6 +115,9 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        // initialize data
+        this.initializeData(userId);
 
         // register with EventBus
         AppStarter.eventBus.register(this);
@@ -143,7 +145,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void initializeData(String userId) {
+    public void initializeData(String userId) {
 
         // find such user and put its data onto profile
         UserService.getUserById(userId);

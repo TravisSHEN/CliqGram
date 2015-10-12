@@ -4,15 +4,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -20,10 +15,12 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserService;
+import cliq.com.cliqgram.utils.GPUImageFilterTools;
 import cliq.com.cliqgram.utils.Util;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 
 public class ImageDisplayActivity extends AppCompatActivity {
     Bitmap originalBitmap;
@@ -31,6 +28,8 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
     // For image processing
     GPUImage gpuImage;
+    private GPUImageFilter mFilter;
+    private GPUImageFilterTools.FilterAdjuster mFilterAdjuster;
 
     @Bind(R.id.brightnessBar)
     SeekBar brightnessBar;
@@ -41,7 +40,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     @Bind(R.id.imageView)
     ImageView imageView;
 
-    private final int SCALED_WIDTH  = 600;
+    private final int SCALED_WIDTH = 600;
     private final int SCALED_HEIGHT = 600;
 
     @Override
@@ -81,10 +80,12 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         // contrast
@@ -99,10 +100,12 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         }));
     }
 
@@ -153,7 +156,16 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 break;
             case (R.id.action_apply_filter):
                 // TODO
-                finish();
+
+                // TODO: test GPUImage
+                GPUImageFilterTools.showDialog(this, new GPUImageFilterTools.OnGpuImageFilterChosenListener() {
+                    @Override
+                    public void onGpuImageFilterChosenListener(GPUImageFilter filter) {
+                        switchFilterTo(filter);
+                    }
+                });
+
+//                finish();
                 break;
             case (R.id.action_brightness_and_contrast):
                 finish();
@@ -236,5 +248,14 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
         // return new bitmap
         return editedBitmap;
+    }
+
+    private void switchFilterTo(final GPUImageFilter filter) {
+        if (mFilter == null
+                || (filter != null && !mFilter.getClass().equals(filter.getClass()))) {
+            mFilter = filter;
+            gpuImage.setFilter(mFilter);
+            mFilterAdjuster = new GPUImageFilterTools.FilterAdjuster(mFilter);
+        }
     }
 }

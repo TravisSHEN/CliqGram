@@ -68,6 +68,7 @@ public class User extends ParseUser {
 
         if (avatarPath == null) {
 
+            // show default avatar
             Picasso.with(context)
                     .load(R.drawable.icon_avatar)
                     .resize(AVATAR_WIDTH, AVATAR_HEIGHT)
@@ -106,4 +107,18 @@ public class User extends ParseUser {
         this.put("posts", temp);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Username: " + this.getUsername();
+    }
 }
