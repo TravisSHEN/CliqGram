@@ -69,10 +69,12 @@
 
     <!-- Filters -->
     <string-array name="filters_array">
-        <item>Sepia</item>
-        <item>Gaussian Blur</item>
-        <item>Grayscale</item>
+        <item>No Filter</item>
         <item>Emboss</item>
-        <item>Pixelation</item>
+        <item>Gamma</item>
+        <item>Gaussian Blur</item>
+        <item>Glass Sphere</item>
+        <item>Grayscale</item>
+        <item>Sepia</item>
     </string-array>
 </resources>
