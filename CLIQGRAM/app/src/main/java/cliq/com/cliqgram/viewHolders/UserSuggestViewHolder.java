@@ -25,8 +25,13 @@ public class UserSuggestViewHolder extends RecyclerView.ViewHolder {
     public TextView username;
     @Bind(R.id.suggest_user_avatar)
     public CircleImageView avatar;
-    @Bind(R.id.suggest_image)
-    public SquareImageView image;
+    @Bind(R.id.suggest_image1)
+    public SquareImageView image1;
+    @Bind(R.id.suggest_image2)
+    public SquareImageView image2;
+    @Bind(R.id.suggest_image3)
+    public SquareImageView image3;
+
 
     public UserSuggestViewHolder(Context context, View itemView) {
         super(itemView);

@@ -47,14 +47,14 @@ public class UserSuggestAdapter extends RecyclerView.Adapter<UserSuggestViewHold
 
         final User user = userSuggestList.get(position);
 
-        user.loadAvatarToView( context, holder.avatar);
+        user.loadAvatarToView(context, holder.avatar);
         holder.username.setText(user.getUsername());
 
         holder.suggest_user.setTag(user);
         holder.suggest_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                click( user );
+                click(user);
             }
         });
 
@@ -62,30 +62,40 @@ public class UserSuggestAdapter extends RecyclerView.Adapter<UserSuggestViewHold
 //        holder.image.setImageBitmap(photo);
         List<Post> postList = user.getPostList();
         int size = postList.size();
-        Post post = postList.get( size -1 );
-        post.loadPhotoToView( context, holder.image);
+        Post post1 = postList.get(size - 1);
+        if (post1 != null) {
+            post1.loadPhotoToView(context, holder.image1);
+        }
+        Post post2 = postList.get(size - 2);
+        if (post2 != null) {
+            post2.loadPhotoToView(context, holder.image2);
+        }
+//        Post post3 = postList.get(size - 3);
+//        if (post3 != null) {
+//            post3.loadPhotoToView(context, holder.image3);
+//        }
 
     }
 
     @Override
     public int getItemCount() {
-        return (userSuggestList == null || userSuggestList.isEmpty()) ?  0:
+        return (userSuggestList == null || userSuggestList.isEmpty()) ? 0 :
                 userSuggestList.size();
     }
 
-    public void updateSuggestList(List<User> userSuggestList){
+    public void updateSuggestList(List<User> userSuggestList) {
         this.userSuggestList = userSuggestList;
 
         this.notifyDataSetChanged();
     }
 
-        public void click(User user) {
+    public void click(User user) {
 
 //        Log.e("SearchAdapter", "Clicked");
         User selectedUser = user;
 
 //        User selectedUser = (User) text_username.getTag();
-        if(selectedUser == null ){
+        if (selectedUser == null) {
             return;
         }
 
@@ -93,9 +103,9 @@ public class UserSuggestAdapter extends RecyclerView.Adapter<UserSuggestViewHold
 
         Fragment profileFragment = ProfileFragment.newInstance(userId);
         View view = profileFragment.getView();
-        if(view != null){
+        if (view != null) {
             FrameLayout layout = (FrameLayout) view.findViewById(R.id.fragment_profile);
-            layout.setPadding(0,0,0,0);
+            layout.setPadding(0, 0, 0, 0);
         }
 
         getFragmentManager()
