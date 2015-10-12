@@ -7,8 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 
 import com.squareup.picasso.Picasso;
 
@@ -67,6 +71,20 @@ public class ImageDisplayActivity extends AppCompatActivity {
         // show image to the view
         imageView.setImageBitmap(this.originalBitmap);
 
+        // set the filter_spinner
+        Spinner spinner = (Spinner) findViewById(R.id.filter_spinner);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.filters_array, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+
         // EDIT PHOTO
 
         // brightness
@@ -88,7 +106,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
         });
 
         // contrast
-        contrastBar.setOnSeekBarChangeListener((new SeekBar.OnSeekBarChangeListener() {
+        contrastBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -103,7 +121,25 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
-        }));
+        });
+
+        // other filter
+        /*
+        spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch(position) {
+                    case(0):
+                        editedBitmap
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });*/
     }
 
     @Override

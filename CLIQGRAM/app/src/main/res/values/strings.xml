@@ -66,4 +66,13 @@
     <string name="profile_unfollow">unfollow</string>
     <string name="search">search</string>
     <string name="search_suggest">Suggested Users</string>
+
+    <!-- Filters -->
+    <string-array name="filters_array">
+        <item>Sepia</item>
+        <item>Gaussian Blur</item>
+        <item>Grayscale</item>
+        <item>Emboss</item>
+        <item>Pixelation</item>
+    </string-array>
 </resources>
