@@ -14,6 +14,7 @@ import cliq.com.cliqgram.callbacks.IdReceivedCallback;
 import cliq.com.cliqgram.exceptions.BluetoothNotSupportedException;
 import cliq.com.cliqgram.exceptions.BluetoothOffException;
 import cliq.com.cliqgram.helper.BluetoothHandler;
+import cliq.com.cliqgram.helper.BluetoothHelper;
 
 public class TestActivity extends ActionBarActivity {
     @Bind(R.id.button_test_send)
@@ -25,7 +26,7 @@ public class TestActivity extends ActionBarActivity {
     @Bind(R.id.button_test_cancel)
     Button buttonCancel;
 
-    private BluetoothHandler mBluetoothHandle;
+
     private IdReceivedCallback mIdReceivedCallback = new IdReceivedCallback() {
         @Override
         public synchronized void onIdReceived(String id) {
@@ -33,21 +34,21 @@ public class TestActivity extends ActionBarActivity {
         }
     };
 
+    private BluetoothHelper mBluetoothHelper = new BluetoothHelper(this, mIdReceivedCallback);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
         ButterKnife.bind(this);
-        mBluetoothHandle = new BluetoothHandler(this, mIdReceivedCallback);
+
     }
 
     @OnClick(R.id.button_test_receive)
     public void receive () {
         try {
-            mBluetoothHandle.enableDiscoverability();
-        } catch (BluetoothNotSupportedException e) {
-            e.printStackTrace();
+            mBluetoothHelper.startBluetooth();
         } catch (BluetoothOffException e) {
             e.printStackTrace();
         }
@@ -55,18 +56,11 @@ public class TestActivity extends ActionBarActivity {
 
     @OnClick(R.id.button_test_cancel)
     public void cancel() {
-        mBluetoothHandle.cancelInProgressConnetions();
     }
 
     @OnClick(R.id.button_test_send)
     public void send() {
-        try {
-            mBluetoothHandle.sendMessage("test");
-        } catch (BluetoothNotSupportedException e) {
-            e.printStackTrace();
-        } catch (BluetoothOffException e) {
-            e.printStackTrace();
-        }
+        mBluetoothHelper.sendMessage("test");
     }
 
 
