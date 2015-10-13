@@ -155,6 +155,10 @@ public class Post extends ParseObject implements Comparable<Post> {
         photo.getDataInBackground(callback);
     }
 
+    public ParseFile getPhotoDataAsParseFile() {
+        return this.getParseFile("photo");
+    }
+
     public Uri getPhotoUri(){
         ParseFile photoFile = this.getParseFile("photo");
         Uri imageUri = Uri.parse(photoFile.getUrl());
