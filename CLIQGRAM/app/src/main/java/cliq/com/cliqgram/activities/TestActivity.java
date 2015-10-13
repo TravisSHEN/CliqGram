@@ -28,7 +28,7 @@ public class TestActivity extends ActionBarActivity {
     private BluetoothHandler mBluetoothHandle;
     private IdReceivedCallback mIdReceivedCallback = new IdReceivedCallback() {
         @Override
-        public void onIdReceived(String id) {
+        public synchronized void onIdReceived(String id) {
             textView.setText(id);
         }
     };

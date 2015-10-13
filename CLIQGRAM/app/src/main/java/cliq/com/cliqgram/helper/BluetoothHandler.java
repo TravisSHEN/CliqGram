@@ -24,8 +24,8 @@ import java.util.UUID;
  * Created by Benjamin on 15/10/10.
  */
 public class BluetoothHandler {
-    private final UUID MY_UUID = UUID.fromString("5753723d-fa31-4b00-8206-2d5a318f6382");
-    private final String NAME = "CLIQGRAM";
+    public static final UUID MY_UUID = UUID.fromString("5753723d-fa31-4b00-8206-2d5a318f6382");
+    public static final String NAME = "CLIQGRAM";
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private List<String> deviceList = new ArrayList<>();
     private Context mContext;
@@ -38,13 +38,6 @@ public class BluetoothHandler {
         public void onSocketSetup(BluetoothSocket socket) {
             Thread serverThread = new ConnectedThread(socket, mIdReceivedCallback);
             serverThread.start();
-        }
-    };
-    private SocketSetupCallback clientSetupCallback = new SocketSetupCallback() {
-        @Override
-        public void onSocketSetup(BluetoothSocket socket) {
-            ConnectedThread clientThread = new ConnectedThread(socket, null);
-            clientThread.write(message.getBytes());
         }
     };
 
@@ -61,6 +54,13 @@ public class BluetoothHandler {
         if (deviceList.size() > 0) {
             for (String deviceInfo : deviceList) {
                 BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceInfo.split("\\n")[1]);
+                SocketSetupCallback clientSetupCallback = new SocketSetupCallback() {
+                    @Override
+                    public void onSocketSetup(BluetoothSocket socket) {
+                        ConnectedThread clientThread = new ConnectedThread(socket, null);
+                        clientThread.write(message.getBytes());
+                    }
+                };
                 ConnectThread connectThread = new ConnectThread(device, clientSetupCallback);
                 connectThread.start();
                 connectThreadList.add(connectThread);
@@ -213,7 +213,7 @@ public class BluetoothHandler {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    break;
+//                    break;
                 }
             }
         }
@@ -243,7 +243,7 @@ public class BluetoothHandler {
             // Get a BluetoothSocket to connect with the given BluetoothDevice
             try {
                 // MY_UUID is the app's UUID string, also used by the server code
-                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+                tmp = mmDevice.createRfcommSocketToServiceRecord(MY_UUID);
             } catch (IOException e) {
             }
             mmSocket = tmp;
