@@ -57,7 +57,11 @@ public class CommentAdapter extends RecyclerView
 
     @Override
     public int getItemCount() {
-        return commentList.size();
+        int size = 0;
+        if(commentList != null ){
+           size = commentList.size();
+        }
+        return size;
     }
 
     private void runEnterAnimation(View view, int position) {
