@@ -105,7 +105,6 @@ public class CameraActivity extends Activity implements OnClickListener {
             mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mImageSavedCallback));
 //            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()), mImageSavedCallback);
 
-
 //            startDisplayActivity(reader.acquireNextImage());
         }
 
