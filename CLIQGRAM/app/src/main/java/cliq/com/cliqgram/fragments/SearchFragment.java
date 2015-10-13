@@ -97,6 +97,7 @@ public class SearchFragment extends Fragment {
         UserService.getAllUsers(new FindCallback<User>() {
             @Override
             public void done(List<User> userList, ParseException e) {
+                Log.e("userList:", userList.toString());
                 if (e == null) {
 
                     SearchFragment.this.setUserList(userList);
@@ -240,17 +241,18 @@ public class SearchFragment extends Fragment {
             MatrixCursor cursor = new MatrixCursor(columns);
 
             int index = 0;
-            for (int i = 0; i < userList.size(); i++) {
 
+            for (int i = 0; i < userList.size(); i++) {
 
                 User user = userList.get(i);
 
                 Log.e("User Searchable", user.getUsername());
 
+                // if this is currentUser, don't add to search list
                 if (user == null ||
                         user.getObjectId()
                                 .equals(currentUser.getObjectId())) {
-                    break;
+                    continue;
                 }
 
                 String normalizedUsername = user.getUsername()
