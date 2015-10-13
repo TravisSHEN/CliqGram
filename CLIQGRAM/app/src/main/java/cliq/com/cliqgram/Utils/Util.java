@@ -162,6 +162,12 @@ public class Util {
         return data;
     }
 
+    // convert Uri to Bitmap
+    public static Bitmap convertUriToBitmap(Uri uri, ContentResolver cr) {
+        byte[] bytes = convertImageToByte(uri, cr);
+        return convertByteToBitmap(bytes);
+    }
+
     /**
      * conver bitmap to byte[]
      *
@@ -222,8 +228,7 @@ public class Util {
         return date;
     }
 
-    public static Uri getImageUri(Context context, Bitmap inImage, String
-            imageName) {
+    public static Uri getImageUri(Context context, Bitmap inImage, String imageName) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(context
