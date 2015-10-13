@@ -191,10 +191,6 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 Uri original = Util.getImageUri(this.getBaseContext(), originalBitmap, imageName);
                 beginCrop(original);
                 break;
-
-            case (R.id.action_share):
-                finish();
-                break;
         }
 
         return super.onOptionsItemSelected(item);
