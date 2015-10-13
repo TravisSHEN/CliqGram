@@ -153,8 +153,11 @@ public class PostFragment extends Fragment {
         } else if (event.getPost() != null) {
             Post post = event.getPost();
             if (post != null) {
+
+                Toast.makeText(getActivity(), "Received Post - " + post
+                        .getObjectId(), Toast.LENGTH_SHORT).show();
                 postList.add(post);
-                postAdapter.updateFeedList(postList);
+                postAdapter.addToFeedList(post);
             }
         } else {
             Toast.makeText(this.getActivity(), event.getMessage(), Toast

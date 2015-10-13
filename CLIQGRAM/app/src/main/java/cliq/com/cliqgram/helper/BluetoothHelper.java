@@ -157,7 +157,7 @@ public class BluetoothHelper {
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
-                    break;
+//                    break;
                 }
 
             }

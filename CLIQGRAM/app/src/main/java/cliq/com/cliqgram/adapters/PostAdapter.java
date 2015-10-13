@@ -78,15 +78,15 @@ public class PostAdapter extends RecyclerView
 
         sb.append("Likes: ");
 
-        if( likeList != null && likeList.size() > 0){
-            for(Like like: likeList){
+        if (likeList != null && likeList.size() > 0) {
+            for (Like like : likeList) {
                 sb.append(like.getUser().getUsername() + ", ");
             }
         }
 
         sb.append("\n\n" + post.getDescription() + "\n\n");
 
-        if( post.getCommentList() != null && ! post.getCommentList().isEmpty()) {
+        if (post.getCommentList() != null && !post.getCommentList().isEmpty()) {
 
             Comment firstComment = post.getCommentList().get(0);
             sb.append(firstComment.getOwner().getUsername() + ": " +
@@ -167,8 +167,8 @@ public class PostAdapter extends RecyclerView
         FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
         Post post = postList.get(feedViewHolder.getAdapterPosition());
 
-        if(LikeService.isAlreadyLiked(UserService.getCurrentUser(), post.getLikeList
-                ())){
+        if (LikeService.isAlreadyLiked(UserService.getCurrentUser(), post.getLikeList
+                ())) {
             post.unlike();
             setHeartButtonUnLiked(feedViewHolder);
         } else {
@@ -180,7 +180,7 @@ public class PostAdapter extends RecyclerView
     }
 
 
-    private void setHeartButtonLiked(FeedViewHolder feedViewHolder){
+    private void setHeartButtonLiked(FeedViewHolder feedViewHolder) {
 
         Bitmap bm_btn_like = ImageUtil.decodeResource(context,
                 R.drawable.ic_heart_red);
@@ -189,7 +189,7 @@ public class PostAdapter extends RecyclerView
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
 
-    private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder){
+    private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder) {
 
         Bitmap bm_btn_like = ImageUtil.decodeResource(context,
                 R.drawable.ic_heart_outline_grey);
@@ -197,6 +197,7 @@ public class PostAdapter extends RecyclerView
                 FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
+
     /**
      *
      */
@@ -262,14 +263,14 @@ public class PostAdapter extends RecyclerView
     };
 
     OnSwipeTouchListener onSwipeTouchListener = new OnSwipeTouchListener
-            (context){
+            (context) {
 
         @Override
         public void onSwipeRight(View v) {
             Post post = (Post) v.getTag();
             Log.e("Swipe Touch", post.getObjectId());
             // send post id to another phone
-            getmBluetoothHelper().sendMessage( post.getObjectId() );
+            getmBluetoothHelper().sendMessage(post.getObjectId());
             Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
         }
 
@@ -314,6 +315,11 @@ public class PostAdapter extends RecyclerView
         }
     }
 
+    public void addToFeedList(Post post) {
+        this.postList.add(0, post);
+
+        this.notifyDataSetChanged();
+    }
 
     public void updateFeedList(List<Post> feedList) {
         this.postList = feedList;
