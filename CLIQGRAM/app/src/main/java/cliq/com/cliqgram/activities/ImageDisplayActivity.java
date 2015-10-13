@@ -240,14 +240,16 @@ public class ImageDisplayActivity extends AppCompatActivity {
     // value between -1.0 < v < 1.0
     // seekbar is between 0 and 100
     private float calculateBrightnessValue(int b) {
-        return (b / (float) 50) - 1.0f;
+        //return (b / (float) 50) - 1.0f;
+        float divisor = 100.0f / 1.5f;
+        return (b / divisor) - 0.75f;
     }
 
     // convert contrastBar value to contrast value
     // value between 0.0 < v < 4.0 (1 is average, set progress to 25)
     // seekbar is between 0 and 100
     private float calculateContrastValue(int c) {
-        return c / (float) 25;
+        return (c / (float) 40) + 0.5f;
     }
 
     // apply all filters
