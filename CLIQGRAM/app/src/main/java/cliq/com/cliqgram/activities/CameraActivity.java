@@ -57,7 +57,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.callbacks.ImageSavedCallback;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -82,7 +82,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     View myGridView;
     @Bind(R.id.button_capture)
     FloatingActionButton buttonCapture;
-//    Button buttonCapture;
+    //    Button buttonCapture;
     @Bind(R.id.button_flash)
     Button buttonFlash;
     @Bind(R.id.button_grid)
@@ -90,7 +90,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     @Bind(R.id.button_gallery)
     Button buttonGallery;
     private boolean flashOn = true;
-    private boolean gridOn  = false;
+    private boolean gridOn = false;
     private State mState = State.PREVIEW;
     private String mCameraId;
     private HandlerThread mBackgroundThread;
@@ -129,7 +129,7 @@ public class CameraActivity extends Activity implements OnClickListener {
             startActivity(intent);
         }
     };
-    private Size                   mPreviewSize;
+    private Size mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
     private CaptureRequest mPreviewRequest;
     private CameraDevice mCameraDevice;
@@ -390,14 +390,14 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonGrid.setOnClickListener(this);
         buttonGallery.setOnClickListener(this);
 
-        Util.loadResToView(this, R.drawable.icon_flash_on,
-                            buttonFlash, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                buttonFlash, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_grid_off,
-                            buttonGrid, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                buttonGrid, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_gallery,
-                            buttonGallery, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_gallery,
+                buttonGallery, 0.3f);
 
     }
 
@@ -583,13 +583,13 @@ public class CameraActivity extends Activity implements OnClickListener {
                 if (flashOn) {
                     flashOn = false;
 //                    buttonFlash.setText(R.string.button_flash_off);
-                    Util.loadResToView(this, R.drawable.icon_flash_off,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_off,
+                            buttonFlash, 0.7f);
                 } else {
                     flashOn = true;
 //                    buttonFlash.setText(R.string.button_flash_on);
-                    Util.loadResToView(this, R.drawable.icon_flash_on,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.7f);
                 }
                 break;
             case R.id.button_grid:
@@ -598,14 +598,14 @@ public class CameraActivity extends Activity implements OnClickListener {
                     gridOn = false;
                     myGridView.setVisibility(View.INVISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_off);
-                    Util.loadResToView(this, R.drawable.icon_grid_off,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.7f);
                 } else {
                     gridOn = true;
                     myGridView.setVisibility(View.VISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_on);
-                    Util.loadResToView(this, R.drawable.icon_grid_on,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_on,
+                            buttonGrid, 0.7f);
                 }
                 break;
             case R.id.button_gallery:
@@ -690,9 +690,9 @@ public class CameraActivity extends Activity implements OnClickListener {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] photoBytes = new byte[buffer.remaining()];
             buffer.get(photoBytes);
-            String fileName = String.valueOf(Util.getCurrentDate().getTime());
+            String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
             Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-            byte[] imageData = Util.convertBitmapToByte(bitmap);
+            byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
             try {
 
@@ -719,6 +719,21 @@ public class CameraActivity extends Activity implements OnClickListener {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
+            // using this way to make a post after editing
+            // PS: passing a byte[] into this function
+            // PS: there is convert function in utils.Util
+            // PS: Geo location is taken care in Post model when post create
+            /**
+             * @param imageDate byte[]
+             * @param currentUser User
+             * @param description String
+             * @return post Post
+             * Note: Any data in post object may not be able to
+             * get before post.saveInBackground() in finished.
+             * So, check the database (table "Post") on Parse to see if post is
+             * created successfully.
+             * If post is created successfully, it will be shown on home page.
+             */
             Uri uri = data.getData();
 
             try {
@@ -757,8 +772,8 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private String savePhoto(Bitmap bitmap) {
-        String fileName = String.valueOf(Util.getCurrentDate().getTime());
-        byte[] imageData = Util.convertBitmapToByte(bitmap);
+        String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
+        byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
         try {
 

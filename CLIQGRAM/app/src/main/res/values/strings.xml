@@ -65,6 +65,18 @@
     <string name="profile_following">following</string>
     <string name="profile_unfollow">unfollow</string>
     <string name="search">search</string>
+
     <string name="search_suggest">User Suggestions</string>
     <string name="title_activity_search_results">SearchResult</string>
+
+    <!-- Filters -->
+    <string-array name="filters_array">
+        <item>No Filter</item>
+        <item>Emboss</item>
+        <item>Gamma</item>
+        <item>Gaussian Blur</item>
+        <item>Glass Sphere</item>
+        <item>Grayscale</item>
+        <item>Sepia</item>
+    </string-array>
 </resources>
