@@ -21,7 +21,7 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 
 /**
  * Created by litaoshen on 30/09/2015.
@@ -100,10 +100,10 @@ public class UserService {
      * @param callback
      */
     public static void getUserByUsername( String username,
-                                         GetCallback<ParseUser> callback
+                                         GetCallback<User> callback
     ) {
 
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
         query.whereEqualTo("username", username);
 
         query.getFirstInBackground(callback);
@@ -131,6 +131,13 @@ public class UserService {
             return (User) parseUser;
         }
     }
+/*
+    public static void searchUser(String userName, GetCallback<User> callback){
+        List<User> userList = new ArrayList<User>();
+        ParseQuery<User> query = User.getQuery();
+        query.whereContains("userName", userName);
+        query.findInBackground(callback);
+    }*/
 
     public static void getSuggestUsers(){
 
@@ -140,6 +147,7 @@ public class UserService {
             @Override
             public void done(UserRelation relation, ParseException e) {
 
+
                 if( relation == null ){
                     return;
                 }
@@ -147,10 +155,41 @@ public class UserService {
                 List<User> followings = relation.getFollowings();
 
                 getSuggestUsers( followings );
+
+               /* if( relation == null ){
+
+
+                    getSuggestUsers( null );
+                }else{
+                    List<User> followings = relation.getFollowings();
+
+                    getSuggestUsers( followings );
+                }*/
+
+
             }
         });
     }
+/*
+    private static void getSuggestedUserList(List<User> relationList){
+        List<User> sugUserList = new ArrayList<User>();
+        if(relationList == null){
+            //find most popular users - 100
+            //find most popular users nearby - 100
+            //find people nearby -
+        }else{
+            //find followings followings
+            //find most popular users
+            //find people nearby
+        }
+    }
 
+    private static void getMostPopularUsers(){
+        List<User> sugUserList = new ArrayList<User>();
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
+        query.orderByDescending("followers");
+    }
+*/
      private static void getSuggestUsers(List<User> userList) {
 
         List<String> usernameList = new ArrayList<>();
@@ -197,7 +236,7 @@ public class UserService {
                     allLatestPosts.add(post);
                 }
 
-                long currentTime = Util.getCurrentDate().getTime();
+                long currentTime = ImageUtil.getCurrentDate().getTime();
                 // sort according to creation time
                 Collections.sort(allLatestPosts);
 

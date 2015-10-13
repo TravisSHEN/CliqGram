@@ -6,6 +6,7 @@ import android.database.MatrixCursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -82,6 +83,7 @@ public class SearchFragment extends Fragment {
 
         // enable option menu
         setHasOptionsMenu(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Search");
     }
 
     @Override
@@ -90,6 +92,7 @@ public class SearchFragment extends Fragment {
         super.onStart();
 
         AppStarter.eventBus.register(this);
+
 
         // retrieve all users at beginning for search
         UserService.getAllUsers(new FindCallback<User>() {
@@ -108,6 +111,7 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
+
 
         // retrieve all suggested users
         UserService.getSuggestUsers();
@@ -156,7 +160,7 @@ public class SearchFragment extends Fragment {
         for( User user : suggestList ){
            Log.e("SearchFragment-Suggest", user.getUsername());
         }
-        userSuggestAdapter.updateSuggestList( this.suggestList );
+        userSuggestAdapter.updateSuggestList(this.suggestList);
     }
 
     @Override

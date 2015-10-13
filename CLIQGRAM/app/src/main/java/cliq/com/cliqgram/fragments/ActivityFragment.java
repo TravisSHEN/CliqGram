@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class ActivityFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ACTIONBAR = "actionbar";
+    private static final String ARG_USERNAME = "userName";
 
     private FragmentManager fm;
 
@@ -46,10 +48,11 @@ public class ActivityFragment extends Fragment {
      * @return A new instance of fragment ActivityFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ActivityFragment newInstance() {
+    public static ActivityFragment newInstance(String userName) {
         ActivityFragment fragment = new ActivityFragment();
         Bundle args = new Bundle();
 //        args.putSerializable(ARG_ACTIONBAR, (Serializable) actionBar);
+        args.putString(ARG_USERNAME, userName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +68,8 @@ public class ActivityFragment extends Fragment {
         }
 
         fm = getFragmentManager();
+
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Activity");
     }
 
     @Override
@@ -82,7 +87,7 @@ public class ActivityFragment extends Fragment {
 //        activity_tabLayout.addTab(activity_tabLayout.newTab().setText
 //                ("YOU"));
         ActivityViewPageAdapter pageAdapter = new ActivityViewPageAdapter
-                (this.getActivity(), fm);
+                (this.getActivity(), fm, this.getArguments().get(ARG_USERNAME).toString());
         viewPager.setAdapter(pageAdapter);
         activity_tabLayout.setupWithViewPager(viewPager);
 

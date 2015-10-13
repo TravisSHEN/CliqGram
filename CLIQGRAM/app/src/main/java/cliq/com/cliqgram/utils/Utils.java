@@ -1,8 +1,13 @@
-package cliq.com.cliqgram.helper;
+package cliq.com.cliqgram.utils;
+
+import android.content.Context;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import cliq.com.cliqgram.model.Activity;
+import cliq.com.cliqgram.services.UserService;
 
 /**
  * Created by ilkan on 27/09/2015.
@@ -20,8 +25,6 @@ public class Utils {
         long weeks = lapse/(1000*60*60*24*7);
         long months = lapse/(1000*60*60*24*30);
 
-        //StringBuilder lapseMsg = new StringBuilder("Elapsed time since ").append(new Date(initial)).append(" to " + new Date(finalTime)).append(":\r\n");
-        //lapseMsg.append(days).append(" Days, ").append(hrs).append(" Hours, ").append(mins).append(" Minutes, ").append(secs).append(" seconds");
         StringBuilder lapseMsg = new StringBuilder();
         if(months >= 1){
             lapseMsg.append(Math.round(months)+"mth");
@@ -38,7 +41,6 @@ public class Utils {
         return msg;
     }
 
-    /*just used to get any date to test.*/
     public static long getTime(String date) {
         DateFormat format = Utils.dateFormat;
         try {
@@ -46,5 +48,38 @@ public class Utils {
         } catch (ParseException e) {
             throw new RuntimeException();
         }
+    }
+    public static String activityStringBuilder(Activity activity, Context context){
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(activity.getUser().getUsername());
+        if(activity.getActivityType().equals("follow")){
+            sb.append(" started following ");
+        }else if(activity.getActivityType().equals("like")){
+            sb.append(" liked ");
+        }else if(activity.getActivityType().equals("comment")){
+            sb.append(" commented ");
+        }
+        boolean isCurUser = activity.getTargetUser().equals(UserService.getCurrentUser());
+        if(isCurUser){
+            sb.append("you");
+        }else {
+            sb.append(activity.getTargetUser().getUsername());
+        }
+        if(activity.getEventId()!= null && !activity.getEventId().equals("") ){
+            if(isCurUser){
+                sb.append("r post. ");
+            }else{
+                sb.append("'s post. ");
+            }
+
+        }else{
+            sb.append(". ");
+        }
+        long initial = ImageUtil.getCurrentDate().getTime();
+        long finalTime = activity.getCreatedAt().getTime();
+        String s = printElapsedTime(finalTime, initial);
+        sb.append(s);
+        return sb.toString();
     }
 }

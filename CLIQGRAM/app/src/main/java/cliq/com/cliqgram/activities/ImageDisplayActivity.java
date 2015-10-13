@@ -222,7 +222,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
             croppedBitmap = Util.convertUriToBitmap(Crop.getOutput(result),
-                                                    this.getContentResolver());
+                    this.getContentResolver());
         } else {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
         }
