@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class PostFragment extends Fragment {
         @Override
         public void onIdReceived(String id) {
 
+            Log.e("PostFragment", "Received postId - " + id);
             // get post when received from bluetooth
             PostService.getPost(id);
         }
