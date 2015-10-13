@@ -94,6 +94,10 @@ public class User extends ParseUser {
 //        this.put("avatar", avatarData);
     }
 
+    public void setAvatarFromPost(Post post) {
+        this.put("avatar", post.getPhotoDataAsParseFile());
+    }
+
     public List<Post> getPostList() {
         return this.getList("posts");
     }

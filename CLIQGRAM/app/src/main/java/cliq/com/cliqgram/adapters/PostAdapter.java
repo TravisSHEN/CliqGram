@@ -3,20 +3,29 @@ package cliq.com.cliqgram.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import com.parse.Parse;
+import com.parse.ParseUser;
 
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.Bind;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.helper.BluetoothHelper;
@@ -24,6 +33,7 @@ import cliq.com.cliqgram.listeners.OnSwipeTouchListener;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
+import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.UserService;
@@ -37,11 +47,14 @@ public class PostAdapter extends RecyclerView
         .Adapter<FeedViewHolder> {
 
     private static final int ANIMATED_ITEMS_COUNT = 2;
-    private int lastAnimatedPosition = -1;
+    private              int lastAnimatedPosition = -1;
 
 
-    private Context context;
+    private Context    context;
     private List<Post> postList;
+    
+    @Bind(R.id.feed_btn_more)
+    ImageButton moreButton;
 
     private BluetoothHelper mBluetoothHelper;
 
@@ -78,15 +91,15 @@ public class PostAdapter extends RecyclerView
 
         sb.append("Likes: ");
 
-        if( likeList != null && likeList.size() > 0){
-            for(Like like: likeList){
+        if (likeList != null && likeList.size() > 0) {
+            for (Like like : likeList) {
                 sb.append(like.getUser().getUsername() + ", ");
             }
         }
 
         sb.append("\n\n" + post.getDescription() + "\n\n");
 
-        if( post.getCommentList() != null && ! post.getCommentList().isEmpty()) {
+        if (post.getCommentList() != null && !post.getCommentList().isEmpty()) {
 
             Comment firstComment = post.getCommentList().get(0);
             sb.append(firstComment.getOwner().getUsername() + ": " +
@@ -101,7 +114,7 @@ public class PostAdapter extends RecyclerView
 
         // add tag to btn
         feedViewHolder.feed_btn_like.setTag(feedViewHolder);
-        feedViewHolder.feed_btn_more.setTag(position);
+        feedViewHolder.feed_btn_more.setTag(post);
         feedViewHolder.feed_btn_comments.setTag(post);
         feedViewHolder.feed_photo.setTag(post);
         feedViewHolder.cv.setTag(post);
@@ -167,8 +180,8 @@ public class PostAdapter extends RecyclerView
         FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
         Post post = postList.get(feedViewHolder.getAdapterPosition());
 
-        if(LikeService.isAlreadyLiked(UserService.getCurrentUser(), post.getLikeList
-                ())){
+        if (LikeService.isAlreadyLiked(UserService.getCurrentUser(), post.getLikeList
+                ())) {
             post.unlike();
             setHeartButtonUnLiked(feedViewHolder);
         } else {
@@ -180,7 +193,7 @@ public class PostAdapter extends RecyclerView
     }
 
 
-    private void setHeartButtonLiked(FeedViewHolder feedViewHolder){
+    private void setHeartButtonLiked(FeedViewHolder feedViewHolder) {
 
         Bitmap bm_btn_like = ImageUtil.decodeResource(context,
                 R.drawable.ic_heart_red);
@@ -189,7 +202,7 @@ public class PostAdapter extends RecyclerView
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
 
-    private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder){
+    private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder) {
 
         Bitmap bm_btn_like = ImageUtil.decodeResource(context,
                 R.drawable.ic_heart_outline_grey);
@@ -197,13 +210,15 @@ public class PostAdapter extends RecyclerView
                 FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
+
     /**
      *
      */
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
-        public void onClick(View view) {
-            int id = view.getId();
+        public void onClick(final View view) {
+            int        id          = view.getId();
+            final Post currentPost = (Post) view.getTag();
 
             switch (id) {
                 case R.id.feed_btn_like:
@@ -211,11 +226,41 @@ public class PostAdapter extends RecyclerView
                     updateLikes(view);
                     break;
                 case R.id.feed_btn_comments:
-
-                    AppStarter.eventBus.post(new OpenCommentEvent((Post) view.getTag()));
+                    AppStarter.eventBus.post(new OpenCommentEvent(currentPost));
                     break;
 
                 case R.id.feed_btn_more:
+                    // create instance of popup menu
+                    View menuItemView = ((AppCompatActivity) context).findViewById(R.id.feed_btn_more);
+                    PopupMenu popup = new PopupMenu(context, menuItemView);
+
+                    // inflate the popup menu
+                    popup.getMenuInflater().inflate(R.menu.popup_more_options, popup.getMenu());
+
+                    // register popup with OnMenuClickItemListener
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int popupSelectId = item.getItemId();
+
+                            switch (popupSelectId) {
+                                case R.id.share_bluetooth:
+//                                    BluetoothHelper.getInstance().sendMessage(currentPost.getObjectId());
+                                    break;
+                                case R.id.download:
+                                    break;
+                                case R.id.set_as_profile:
+                                    User currentUser = UserService.getCurrentUser();
+                                    currentUser.setAvatarFromPost(currentPost);
+                                    break;
+                            }
+
+                            return true;
+                        }
+                    });
+
+                    // show the popup menu
+                    popup.show();
 
                     break;
 
@@ -262,14 +307,14 @@ public class PostAdapter extends RecyclerView
     };
 
     OnSwipeTouchListener onSwipeTouchListener = new OnSwipeTouchListener
-            (context){
+            (context) {
 
         @Override
         public void onSwipeRight(View v) {
             Post post = (Post) v.getTag();
             Log.e("Swipe Touch", post.getObjectId());
             // send post id to another phone
-            getmBluetoothHelper().sendMessage( post.getObjectId() );
+            getmBluetoothHelper().sendMessage(post.getObjectId());
             Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
         }
 
@@ -314,6 +359,11 @@ public class PostAdapter extends RecyclerView
         }
     }
 
+    public void addToFeedList(Post post) {
+        this.postList.add(0, post);
+
+        this.notifyDataSetChanged();
+    }
 
     public void updateFeedList(List<Post> feedList) {
         this.postList = feedList;

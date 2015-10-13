@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +21,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.MainViewPageAdapter;
+import cliq.com.cliqgram.callbacks.IdReceivedCallback;
 import cliq.com.cliqgram.events.OpenCommentEvent;
+import cliq.com.cliqgram.exceptions.BluetoothOffException;
+import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.ImageUtil;
 import de.greenrobot.event.Subscribe;
@@ -45,6 +50,18 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG_PROFILE_FRAGMENT = "TAG_ProfileFragment";
     public static final String TAG_CAMERA_FRAGMENT = "TAG_CameraFragment";
 
+    private IdReceivedCallback mIdReceivedCallback = new IdReceivedCallback() {
+        @Override
+        public void onIdReceived(String id) {
+
+            Log.e("PostFragment", "Received postId - " + id);
+            // get post when received from bluetooth
+            PostService.getPost(id);
+        }
+    };
+
+    BluetoothHelper mBluetoothHelper = BluetoothHelper.newInstance
+            (this, mIdReceivedCallback);
 
     FragmentManager fm = getSupportFragmentManager();
 
@@ -78,6 +95,14 @@ public class MainActivity extends AppCompatActivity {
 
         // initialize tab bar layout
         initializeTabLayout();
+
+        // start bluetooth
+
+        try {
+            mBluetoothHelper.startBluetooth();
+        } catch (BluetoothOffException e) {
+            e.printStackTrace();
+        }
 
     }
 
