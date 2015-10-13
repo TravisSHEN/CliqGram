@@ -18,7 +18,6 @@ import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnLongClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.MainViewPageAdapter;
 import cliq.com.cliqgram.events.OpenCommentEvent;
@@ -54,12 +53,6 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.view_pager)
     ViewPager viewPager;
 
-//    @Bind(R.id.mDrawer)
-//    DrawerLayout mDrawerLayout;
-
-//    @Bind(R.id.navigation_view)
-//    NavigationView navigationView;
-
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
@@ -82,20 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         // setup toolbar
         ToolbarModel.setupToolbar(this);
-
-        // TODO: uncomment these if don't need tab bar on bottom
-        // set click listener to navigation view
-//        navigationView.setNavigationItemSelectedListener(this);
-
-        // initialize showing fragment
-//        this.showInitialSelectedFragment(savedInstanceState);
-
-        // set up the hamburger icon to open and close the drawer
-//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R
-//                .string.drawer_open,
-//                R.string.drawer_close);
-//        mDrawerLayout.setDrawerListener(mDrawerToggle);
-//        mDrawerToggle.syncState();
 
         // initialize tab bar layout
         initializeTabLayout();
@@ -169,18 +148,10 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt(NAVIGATION_ITEM_ID, mNavSelectedItemID);
     }
 
-//    @Override
-//    public boolean onNavigationItemSelected(MenuItem menuItem) {
-//
-//        this.showFragment(menuItem);
-
-//        return true;
-//    }
-
-
     void initializeTabLayout() {
         MainViewPageAdapter mainViewPageAdapter = new MainViewPageAdapter(this, fm);
         viewPager.setAdapter(mainViewPageAdapter);
+
         tabLayout.setupWithViewPager(viewPager);
 
         float scale_factor = 0.7f;
@@ -194,108 +165,6 @@ public class MainActivity extends AppCompatActivity {
                 .drawable.icon_star, scale_factor));
         tabLayout.getTabAt(TAB_PROFILE).setIcon(ImageUtil.resizeDrawable(this, R
                 .drawable.icon_user, scale_factor));
-    }
-
-//    //    @OnItemSelected( R.id.navigation_view )
-//    void showFragment(MenuItem menuItem) {
-//
-//        // close drawer when select one item
-//        mDrawerLayout.closeDrawers();
-//
-//        menuItem.setChecked(true);
-//        // set current selected navigation item id
-//        mNavSelectedItemID = menuItem.getItemId();
-//
-//        // open corresponding fragment
-//        Fragment fragment = null;
-//        String title = "";
-//        String tag = "";
-//
-//        switch (menuItem.getItemId()) {
-//            case R.id.navigation_item_home:
-//
-//                fragment = PostFragment.newInstance();
-//                title = getString(R.string.navigation_item_home);
-//                tag = TAG_FEED_FRAGMENT;
-//
-//                Snackbar.make(toolbar, "Home selected", Snackbar
-//                        .LENGTH_SHORT)
-//                        .show();
-//                break;
-//            case R.id.navigation_item_search:
-//                fragment = SearchFragment.newInstance();
-//                title = getString(R.string.navigation_item_search);
-//                tag = TAG_SEARCH_FRAGMENT;
-//
-//                Snackbar.make(toolbar, "Search selected", Snackbar
-//                        .LENGTH_SHORT)
-//                        .show();
-//                break;
-//            case R.id.navigation_item_profile:
-//
-//                fragment = ProfileFragment.newInstance(UserService
-//                        .getCurrentUser().getObjectId());
-//                title = getString(R.string.navigation_item_profile);
-//                tag = TAG_PROFILE_FRAGMENT;
-//
-//                Snackbar.make(toolbar, "Profile selected", Snackbar
-//                        .LENGTH_SHORT)
-//                        .show();
-//                break;
-//            case R.id.navigation_item_activity:
-//
-//                fragment = ActivityFragment.newInstance();
-//                title = getString(R.string.navigation_item_activity);
-//                tag = TAG_ACTIVITY_FRAGMENT;
-//
-//                Snackbar.make(toolbar, "Activity selected", Snackbar
-//                        .LENGTH_SHORT)
-//                        .show();
-//                break;
-//            case R.id.navigation_item_setting:
-//
-//                fragment = new SettingFragment();
-//                title = getString(R.string.navigation_item_setting);
-//
-//                Snackbar.make(toolbar, "Setting selected", Snackbar.LENGTH_SHORT)
-//                        .show();
-//                break;
-//
-//            default:
-//                break;
-//        }
-//
-//        if (fragment != null) {
-//
-//            fm.beginTransaction()
-//                    .replace(R.id.container_body, fragment, tag)
-//                    .commit();
-//
-//            // set the toolbar title
-//            getSupportActionBar().setTitle(title);
-//        }
-//    }
-//
-//    private void showInitialSelectedFragment(Bundle savedInstanceState) {
-//
-//        // if there is no pre-selected item,
-//        // show home fragment
-//        if (savedInstanceState == null) {
-//            mNavSelectedItemID = R.id.navigation_item_home;
-//        } else {
-//            mNavSelectedItemID = savedInstanceState.getInt(NAVIGATION_ITEM_ID);
-//        }
-//        MenuItem menuItem = navigationView.getMenu().findItem(mNavSelectedItemID);
-//        this.showFragment(menuItem);
-//    }
-
-    @OnLongClick(R.id.btn_float_action)
-    boolean onLongClick(View view) {
-
-//        StarterApplication.BUS.post(new FABLongClickEvent());
-        Toast.makeText(this, "Long click", Toast.LENGTH_SHORT)
-                .show();
-        return true;
     }
 
     @OnClick(R.id.btn_float_action)

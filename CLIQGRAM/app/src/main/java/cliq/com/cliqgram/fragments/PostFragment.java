@@ -2,9 +2,9 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +20,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.PostAdapter;
+import cliq.com.cliqgram.callbacks.IdReceivedCallback;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
+import cliq.com.cliqgram.exceptions.BluetoothOffException;
+import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
@@ -46,6 +49,18 @@ public class PostFragment extends Fragment {
 
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
+
+    private BluetoothHelper mBluetoothHelper;
+
+    private IdReceivedCallback mIdReceivedCallback = new IdReceivedCallback() {
+        @Override
+        public void onIdReceived(String id) {
+
+            Log.e("PostFragment", "Received postId - " + id);
+            // get post when received from bluetooth
+            PostService.getPost(id);
+        }
+    };
 
 
     /**
@@ -76,8 +91,6 @@ public class PostFragment extends Fragment {
 
         postList = new ArrayList<>();
         this.initializeData();
-
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Posts");
     }
 
     @Override
@@ -97,6 +110,14 @@ public class PostFragment extends Fragment {
 
         this.initializeFeedView();
 
+        mBluetoothHelper = new BluetoothHelper(getActivity(),
+                mIdReceivedCallback);
+        try {
+            mBluetoothHelper.startBluetooth();
+        } catch (BluetoothOffException e) {
+            e.printStackTrace();
+        }
+
         return view;
     }
 
@@ -112,6 +133,7 @@ public class PostFragment extends Fragment {
 
 
         postAdapter = new PostAdapter(this.getActivity(), postList);
+        postAdapter.setmBluetoothHelper(mBluetoothHelper);
         feedView.setAdapter(postAdapter);
     }
 

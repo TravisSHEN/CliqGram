@@ -28,10 +28,9 @@ import cliq.com.cliqgram.utils.ImageUtil;
  */
 public class UserService {
 
-    public  static final long TIME_THRESHOLD = 4 * 60 * 60000;
+    public static final long TIME_THRESHOLD = 4 * 60 * 60000;
 
     /**
-     *
      * @return
      */
     public static User getCurrentUser() {
@@ -41,16 +40,15 @@ public class UserService {
     /**
      *
      */
-    public static void logOut(){
+    public static void logOut() {
         ParseUser.logOut();
     }
 
     /**
-     *
      * @param callback
      */
     public static void getAllUsers(FindCallback<User>
-            callback){
+                                           callback) {
 
         ParseQuery<User> query = ParseQuery.getQuery(User.class);
         query.include("posts");
@@ -60,10 +58,9 @@ public class UserService {
     }
 
     /**
-     *
      * @param userId
      */
-    public static void getUserById(String userId){
+    public static void getUserById(String userId) {
 
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.include("posts");
@@ -83,7 +80,6 @@ public class UserService {
     }
 
     /**
-     *
      * @param userId
      * @param callback
      */
@@ -95,7 +91,6 @@ public class UserService {
     }
 
     /**
-     *
      * @param username
      * @param callback
      */
@@ -110,36 +105,27 @@ public class UserService {
     }
 
     /**
-     *
      * @param userName
      * @return
      */
-    public static User findParseUserByName(String userName){
+    public static User findParseUserByName(String userName) {
         ParseQuery<ParseUser> query = User.getQuery();
         ParseUser parseUser = null;
         query.whereEqualTo("username", userName);
         try {
             List<ParseUser> userList = query.find();
-            if (userList != null && userList.size() == 1){
+            if (userList != null && userList.size() == 1) {
                 parseUser = userList.get(0);
             }
 
-        }catch (ParseException e){
+        } catch (ParseException e) {
             //TODO exception
-        }
-        finally {
+        } finally {
             return (User) parseUser;
         }
     }
-/*
-    public static void searchUser(String userName, GetCallback<User> callback){
-        List<User> userList = new ArrayList<User>();
-        ParseQuery<User> query = User.getQuery();
-        query.whereContains("userName", userName);
-        query.findInBackground(callback);
-    }*/
 
-    public static void getSuggestUsers(){
+    public static void getSuggestUsers() {
 
         User currentUser = UserService.getCurrentUser();
 
@@ -147,50 +133,18 @@ public class UserService {
             @Override
             public void done(UserRelation relation, ParseException e) {
 
-
-                if( relation == null ){
+                if (relation == null) {
                     return;
                 }
 
                 List<User> followings = relation.getFollowings();
 
-                getSuggestUsers( followings );
-
-               /* if( relation == null ){
-
-
-                    getSuggestUsers( null );
-                }else{
-                    List<User> followings = relation.getFollowings();
-
-                    getSuggestUsers( followings );
-                }*/
-
-
+                getSuggestUsers(followings);
             }
         });
     }
-/*
-    private static void getSuggestedUserList(List<User> relationList){
-        List<User> sugUserList = new ArrayList<User>();
-        if(relationList == null){
-            //find most popular users - 100
-            //find most popular users nearby - 100
-            //find people nearby -
-        }else{
-            //find followings followings
-            //find most popular users
-            //find people nearby
-        }
-    }
 
-    private static void getMostPopularUsers(){
-        List<User> sugUserList = new ArrayList<User>();
-        ParseQuery<User> query = ParseQuery.getQuery(User.class);
-        query.orderByDescending("followers");
-    }
-*/
-     private static void getSuggestUsers(List<User> userList) {
+    private static void getSuggestUsers(List<User> userList) {
 
         List<String> usernameList = new ArrayList<>();
 
@@ -214,6 +168,7 @@ public class UserService {
 
         // include Objects in following column
         query.include("followings");
+//        query.include("followers");
 
         query.findInBackground(new FindCallback<UserRelation>() {
             @Override
@@ -286,25 +241,25 @@ public class UserService {
         });
     }
 
-    private static List<User> getFollowingUsers( List<UserRelation>
-                                                    userRelationList){
+    private static List<User> getFollowingUsers(List<UserRelation>
+                                                        userRelationList) {
 
         List<User> userList = new ArrayList<>();
 
-        if( userRelationList == null ){
+        if (userRelationList == null) {
             return userList;
         }
 
-        for( UserRelation userRelation: userRelationList ){
+        for (UserRelation userRelation : userRelationList) {
             List<User> followings = userRelation.getFollowings();
 
-            if( followings == null || followings.isEmpty()){
+            if (followings == null || followings.isEmpty()) {
                 break;
             }
 
-            for( User user: followings){
-                if( user != null && ! userList.contains( user )){
-                    userList.add( user );
+            for (User user : followings) {
+                if (user != null && !userList.contains(user)) {
+                    userList.add(user);
                 }
             }
         }
