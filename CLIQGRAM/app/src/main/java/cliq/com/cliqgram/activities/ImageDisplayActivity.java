@@ -10,10 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundcloud.android.crop.Crop;
@@ -36,7 +38,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
     // For image processing
     GPUImage gpuImage;
-    private GPUImageFilter mFilter;
+    private GPUImageFilter                     mFilter;
     private GPUImageFilterTools.FilterAdjuster mFilterAdjuster;
 
     @Bind(R.id.brightnessBar)
@@ -50,6 +52,9 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
     @Bind(R.id.filter_spinner)
     Spinner spinner;
+
+    @Bind(R.id.postDescription)
+    EditText postDescription;
 
     private final int SCALED_WIDTH  = 600;
     private final int SCALED_HEIGHT = 600;
@@ -168,9 +173,14 @@ public class ImageDisplayActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case (R.id.action_upload):
+                String description = postDescription.getText().toString();
+                if (description == "" || description == null) {
+                    description = "I love Cliqgram!";
+                }
+
                 Post.createPost(UserService.getCurrentUser(),
                         Util.convertBitmapToByte(editedBitmap),
-                        "This is a great photo now!");
+                        description);
                 finish();
                 break;
 
