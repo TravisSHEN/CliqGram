@@ -13,7 +13,12 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import cliq.com.cliqgram.events.UserGetEvent;
 import cliq.com.cliqgram.events.UserSuggestionRetrieved;
@@ -131,13 +136,12 @@ public class UserService {
             return (User) parseUser;
         }
     }
-/*
-    public static void searchUser(String userName, GetCallback<User> callback){
-        List<User> userList = new ArrayList<User>();
-        ParseQuery<User> query = User.getQuery();
+
+    public static void searchUser(String userName, FindCallback<User> callback){
+        ParseQuery<User> query = ParseQuery.getQuery("User");
         query.whereContains("userName", userName);
         query.findInBackground(callback);
-    }*/
+    }
 
     public static void getSuggestUsers(){
 
@@ -148,13 +152,13 @@ public class UserService {
             public void done(UserRelation relation, ParseException e) {
 
 
-                if( relation == null ){
+                if (relation == null) {
                     return;
                 }
 
                 List<User> followings = relation.getFollowings();
 
-                getSuggestUsers( followings );
+                getSuggestUsers(followings);
 
                /* if( relation == null ){
 
@@ -169,6 +173,94 @@ public class UserService {
 
             }
         });
+    }
+
+    public static void getSuggestedUserList(List<User> relationList){
+
+        Location currentLocation = AppStarter.gpsTracker.getLocation();
+        getPeopleNearBy(currentLocation, new FindCallback<User>() {
+            @Override
+            public void done(final List<User> sugList, ParseException e) {
+                getMostPopularPeople(new FindCallback<UserRelation>() {
+                    @Override
+                    public void done(List<UserRelation> objects, ParseException e) {
+                        if (e == null) {
+                            final HashMap<User, Integer> hashMap = new HashMap<User, Integer>();
+                            for (UserRelation relation : objects) {
+                                hashMap.put(findParseUserByName(relation.getUsername()), relation.getFollowers().size());
+                            }
+                            LinkedHashMap lMap = sortHashMapByValuesD(hashMap);
+                            List<User> keySet = new ArrayList(lMap.keySet());
+                            List<User> userList = new ArrayList<User>();
+                            for (int i = 0; i <= 100; i++) {
+                                if (keySet.get(i) != null) {
+                                    userList.add(keySet.get(i));
+                                } else {
+                                    break;
+                                }
+                            }
+                            sugList.addAll(userList);
+                            Set<User> hs = new HashSet<>();
+                            hs.addAll(sugList);
+                            sugList.clear();
+                            sugList.addAll(hs);
+                            AppStarter.eventBus.post(new UserSuggestionRetrieved(sugList));
+                        } else {
+
+                        }
+                    }
+                });
+            }
+        });
+
+
+
+    }
+    public static void getMostPopularPeople(FindCallback<UserRelation> callback){
+
+        ParseQuery<UserRelation> query = ParseQuery.getQuery(UserRelation.class);
+        query.findInBackground(callback);
+    }
+
+    public static LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
+        List mapKeys = new ArrayList(passedMap.keySet());
+        List mapValues = new ArrayList(passedMap.values());
+        Collections.sort(mapValues);
+        Collections.sort(mapKeys);
+
+        LinkedHashMap sortedMap = new LinkedHashMap();
+
+        Iterator valueIt = mapValues.iterator();
+        while (valueIt.hasNext()) {
+            Object val = valueIt.next();
+            Iterator keyIt = mapKeys.iterator();
+
+            while (keyIt.hasNext()) {
+                Object key = keyIt.next();
+                Integer comp1 = (Integer)passedMap.get(key);
+                Integer comp2 = (Integer)val;
+
+                if (comp1.equals(comp2)){
+                    passedMap.remove(key);
+                    mapKeys.remove(key);
+                    sortedMap.put((String)key, (Double)val);
+                    break;
+                }
+
+            }
+
+        }
+        return sortedMap;
+    }
+
+    public static void getPeopleNearBy(Location currentLocation, FindCallback<User> callback){
+        ParseQuery<Post> innerQuery = ParseQuery.getQuery(Post.class);
+        ParseGeoPoint geoPoint = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
+        innerQuery.whereWithinMiles("location", geoPoint, 100);
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
+        query.whereMatchesQuery("posts", innerQuery);
+        query.findInBackground(callback);
+
     }
 /*
     private static void getSuggestedUserList(List<User> relationList){

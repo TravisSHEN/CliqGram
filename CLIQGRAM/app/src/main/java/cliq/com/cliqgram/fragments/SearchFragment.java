@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -115,6 +114,21 @@ public class SearchFragment extends Fragment {
 
         // retrieve all suggested users
         UserService.getSuggestUsers();
+        //
+        // UserService.getSuggestedUserList(null);
+    }
+
+
+    @Subscribe
+    public void onUserSuggestionRetrieved(UserSuggestionRetrieved event) {
+        List<User> sugList = event.getUserSuggestionList();
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //UserService.getSuggestedUserList(null);
     }
 
     @Override
@@ -218,69 +232,28 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void doSearch(Menu menu, String query) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-
-            // normalize query
-            String normalizedQuery = query.toLowerCase().trim();
-
-            // userList
-            List<User> userList = SearchFragment.this.getUserList();
-
-            // list of results
-            List<User> resultList = new ArrayList<>();
-
-            // current user
-            User currentUser = UserService.getCurrentUser();
-
-            // Cursor
-            String[] columns = new String[]{"_id", "text"};
-            Object[] temp = new Object[]{0, "default"};
-
-            MatrixCursor cursor = new MatrixCursor(columns);
-
-            int index = 0;
-            for (int i = 0; i < userList.size(); i++) {
+    private void doSearch(final Menu menu, String query) {
 
 
-                User user = userList.get(i);
+        UserService.searchUser(query, new FindCallback<User>() {
+            @Override
+            public void done(List<User> objects, ParseException e) {
+                String[] columns = new String[]{"_id", "text"};
+                Object[] temp = new Object[]{0, "default"};
+                MatrixCursor cursor = new MatrixCursor(columns);
+                SearchAdapter searchAdapter = new SearchAdapter(getActivity(),
+                        cursor,
+                        objects);
+                searchAdapter.setFragmentManager(getFragmentManager());
+                SearchView search = (SearchView)menu
+                        .findItem(R.id.action_search)
+                        .getActionView();
+                searchAdapter.setSearchView(search);
 
-                Log.e("User Searchable", user.getUsername());
-
-                if (user == null ||
-                        user.getObjectId()
-                                .equals(currentUser.getObjectId())) {
-                    break;
-                }
-
-                String normalizedUsername = user.getUsername()
-                        .toLowerCase()
-                        .trim();
-
-                if (normalizedUsername.contains(normalizedQuery)) {
-
-                    temp[0] = index;
-                    temp[1] = user;
-                    cursor.addRow(temp);
-                    resultList.add(user);
-
-                    index++;
-                }
+                search.setSuggestionsAdapter(searchAdapter);
             }
+        });
 
-            final SearchView search = (SearchView) menu
-                    .findItem(R.id.action_search)
-                    .getActionView();
-
-            SearchAdapter searchAdapter = new SearchAdapter(this.getActivity(),
-                    cursor,
-                    resultList);
-            searchAdapter.setFragmentManager(getFragmentManager());
-            searchAdapter.setSearchView(search);
-
-            search.setSuggestionsAdapter(searchAdapter);
-        }
     }
 
     public synchronized List<User> getUserList() {
