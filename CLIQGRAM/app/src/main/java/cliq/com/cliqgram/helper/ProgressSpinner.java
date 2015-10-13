@@ -3,7 +3,6 @@ package cliq.com.cliqgram.helper;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
-import android.widget.Toast;
 
 /**
  * Created by litaoshen on 4/09/2015.
@@ -49,7 +48,7 @@ public class ProgressSpinner {
             public void run() {
                 progressDialog.dismiss();
 
-                Toast.makeText(ctx, "Log in timeout.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ctx, "timeout.", Toast.LENGTH_SHORT).show();
 
             }
         }, time);

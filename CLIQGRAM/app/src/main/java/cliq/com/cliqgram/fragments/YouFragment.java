@@ -8,22 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.adapters.FeedAdapter;
-import cliq.com.cliqgram.model.Comment;
-import cliq.com.cliqgram.model.Feed;
+import cliq.com.cliqgram.adapters.FollowingActivityAdapter;
+import cliq.com.cliqgram.adapters.YouActivityAdapter;
+import cliq.com.cliqgram.viewHolders.YouActivityViewHolder;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FeedFragment#newInstance} factory method to
+ * Activities that contain this fragment must implement the
+ * {@link YouFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link YouFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FeedFragment extends Fragment {
+public class YouFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -33,13 +33,10 @@ public class FeedFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private FeedAdapter feedAdapter;
+    @Bind(R.id.activity_you_recycler_view)
+    RecyclerView recyclerView;
 
-    private List<Feed> feedList;
-
-    @Bind(R.id.feed_recycler_view)
-    RecyclerView feedView;
-
+    YouActivityAdapter youActivityAdapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -47,22 +44,19 @@ public class FeedFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment UserFeed.
+     * @return A new instance of fragment YouFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static FeedFragment newInstance() {
-        FeedFragment fragment = new FeedFragment();
+    public static YouFragment newInstance() {
+        YouFragment fragment = new YouFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public FeedFragment() {
+    public YouFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,8 +65,6 @@ public class FeedFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        feedList = new ArrayList<>();
     }
 
     @Override
@@ -80,38 +72,33 @@ public class FeedFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_feed, container, false);
+        View root_view = inflater.inflate(R.layout.fragment_you, container, false);
 
-        ButterKnife.bind(this, view);
+        // Bind view to ButterKnife
+        ButterKnife.bind(this, root_view);
 
-        this.initializeFeedView();
-        this.initializeData();
+        this.initializeRecyclerView();
 
-        return view;
+        return root_view;
     }
+
 
     /**
      * initialize adapter for recycler view
      */
-    private void initializeFeedView() {
+    private void initializeRecyclerView() {
 
         LinearLayoutManager llm = new LinearLayoutManager(this.getActivity(),
                 LinearLayoutManager.VERTICAL, false);
-        feedView.setLayoutManager(llm);
-        feedView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(llm);
+        recyclerView.setHasFixedSize(true);
 
-        feedAdapter = new FeedAdapter(feedList, this.getActivity());
-        feedView.setAdapter(feedAdapter);
+
+         youActivityAdapter = new YouActivityAdapter(this
+                .getActivity());
+        recyclerView.setAdapter(youActivityAdapter);
     }
 
-    private void initializeData() {
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedList.add(new Feed(12, R.drawable.lavery, new Comment
-                ("good")));
-        feedAdapter.notifyDataSetChanged();
-    }
+
 
 }

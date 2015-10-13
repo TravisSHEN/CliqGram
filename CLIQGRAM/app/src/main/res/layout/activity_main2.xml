@@ -1,67 +1,89 @@
-<android.support.v4.widget.DrawerLayout
-    android:id="@+id/mDrawer"
+<!--<android.support.v4.widget.DrawerLayout-->
+<!--android:id="@+id/mDrawer"-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:tools="http://schemas.android.com/tools"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="match_parent"-->
+<!--tools:context=".MainActivity">-->
+
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" 
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+     android:layout_width="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <include
+            layout="@layout/toolbar"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <cliq.com.cliqgram.views.NoSwipeableViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_above="@+id/tab_layout"
+        android:layout_weight="0"/>
 
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
-
-            <include
-                layout="@layout/toolbar"/>
-
-        </android.support.design.widget.AppBarLayout>
-
-        <!--<android.support.v4.widget.NestedScrollView-->
-        <!--android:id="@+id/scroll_content"-->
+    <!--<android.support.v4.view.ViewPager-->
+        <!--android:id="@+id/view_pager"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"-->
-        <!--android:layout_below="@id/toolbar"-->
-        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+        <!--android:layout_above="@+id/tab_layout"-->
+        <!--android:layout_weight="0"/>-->
 
-            <!-- contains fragments -->
-            <FrameLayout
-                android:id="@+id/container_body"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorPrimary"
+        android:padding="2dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        app:tabGravity="fill"/>
+    <!--android:layout_marginTop="200dp"-->
 
-        <!--</android.support.v4.widget.NestedScrollView>-->
+    <!-- contains fragments -->
+    <FrameLayout
+        android:id="@+id/container_body"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btn_float_action"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="@dimen/btn_fab_margins"
-            android:layout_marginRight="@dimen/btn_fab_margins"
-            android:src="@drawable/ic_instagram_white"
-            app:borderWidth="0dp"
-            app:elevation="6dp"
-            app:pressedTranslationZ="12dp"/>
-    </android.support.design.widget.CoordinatorLayout>
-
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navigation_view"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_float_action"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:headerLayout="@layout/navigation_header"
-        app:itemBackground="@drawable/navigation_view_item"
-        app:menu="@menu/menu_drawer"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="@dimen/btn_fab_margins"
+        android:layout_marginRight="@dimen/btn_fab_margins"
+        android:src="@drawable/ic_instagram_white"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"/>
+</android.support.design.widget.CoordinatorLayout>
+
+    <!--<android.support.design.widget.NavigationView-->
+    <!--android:id="@+id/navigation_view"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_gravity="start"-->
+    <!--app:headerLayout="@layout/navigation_header"-->
+    <!--app:itemBackground="@drawable/navigation_view_item"-->
+    <!--app:menu="@menu/menu_drawer"/>-->
     <!--app:itemIconTint="@drawable/navigation_view_item"-->
     <!--app:itemTextColor="@drawable/navigation_view_item"-->
     <!--app:itemBackground="@drawable/navigation_view_item"/>-->
-</android.support.v4.widget.DrawerLayout>
+    <!--</android.support.v4.widget.DrawerLayout>-->
 
 

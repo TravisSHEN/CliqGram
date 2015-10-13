@@ -1,0 +1,19 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_below="@+id/toolbar"
+             android:paddingTop="@dimen/abc_action_bar_default_height_material"
+             android:paddingBottom="@dimen/abc_action_bar_default_height_material"
+             tools:context="cliq.com.cliqgram.fragments.FollowingFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/activity_following_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="200dp"
+        android:visibility="visible">
+
+    </android.support.v7.widget.RecyclerView>
+
+</FrameLayout>
