@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
     void initializeTabLayout() {
         MainViewPageAdapter mainViewPageAdapter = new MainViewPageAdapter(this, fm);
         viewPager.setAdapter(mainViewPageAdapter);
+
         tabLayout.setupWithViewPager(viewPager);
 
         float scale_factor = 0.7f;
