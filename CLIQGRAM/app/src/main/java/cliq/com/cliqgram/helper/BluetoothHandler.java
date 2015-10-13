@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import cliq.com.cliqgram.callbacks.IdReceivedCallback;
 import cliq.com.cliqgram.callbacks.SocketSetupCallback;
 import cliq.com.cliqgram.exceptions.BluetoothNotSupportedException;
@@ -24,6 +25,7 @@ import java.util.UUID;
  * Created by Benjamin on 15/10/10.
  */
 public class BluetoothHandler {
+    private static final String tag = "Bluetooth";
     public static final UUID MY_UUID = UUID.fromString("5753723d-fa31-4b00-8206-2d5a318f6382");
     public static final String NAME = "CLIQGRAM";
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -35,7 +37,7 @@ public class BluetoothHandler {
     private IdReceivedCallback mIdReceivedCallback;
     private SocketSetupCallback serverSetupCallback = new SocketSetupCallback() {
         @Override
-        public void onSocketSetup(BluetoothSocket socket) {
+        public synchronized void onSocketSetup(BluetoothSocket socket) {
             Thread serverThread = new ConnectedThread(socket, mIdReceivedCallback);
             serverThread.start();
         }
@@ -57,7 +59,9 @@ public class BluetoothHandler {
                 SocketSetupCallback clientSetupCallback = new SocketSetupCallback() {
                     @Override
                     public void onSocketSetup(BluetoothSocket socket) {
-                        ConnectedThread clientThread = new ConnectedThread(socket, null);
+//                        Log.d(tag, "Client Callback Reached");
+                        ConnectedThread clientThread = new ConnectedThread(socket, mIdReceivedCallback);
+                        clientThread.start();
                         clientThread.write(message.getBytes());
                     }
                 };
@@ -132,6 +136,7 @@ public class BluetoothHandler {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
+                e.printStackTrace();
             }
 
             mmInStream = tmpIn;
@@ -139,22 +144,31 @@ public class BluetoothHandler {
         }
 
         public void run() {
+            Log.d(tag, "Connected Thread Begin.");
             byte[] buffer = new byte[1024];  // buffer store for the stream
-            int bytes; // bytes returned from read()
+            int bytes = 0 ; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs
-            try {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                while ((bytes = mmInStream.read(buffer)) != -1) {
+                Log.d(tag, "Prepare to receive.");
+                while (bytes != -1) {
+                    try {
+                        bytes = mmInStream.read(buffer);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     // Send the obtained bytes to the UI activity
+                    Log.d(tag, "Receiving");
                     byteArrayOutputStream.write(buffer, 0, bytes);
                 }
                 mIdReceivedCallback.onIdReceived(new String(byteArrayOutputStream.toByteArray()).trim());
+            try {
                 byteArrayOutputStream.close();
-                cancel();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            cancel();
+
         }
 
         /* Call this from the main activity to send data to the remote device */
@@ -196,6 +210,7 @@ public class BluetoothHandler {
         }
 
         public void run() {
+            Log.d(tag, "Accept Thread Begin.");
             BluetoothSocket socket;
             // Keep listening until exception occurs or a socket is returned
             while (true) {
@@ -251,6 +266,7 @@ public class BluetoothHandler {
         }
 
         public void run() {
+            Log.d(tag, "Connect Thread Begin");
             // Cancel discovery because it will slow down the connection
             mBluetoothAdapter.cancelDiscovery();
 
@@ -258,16 +274,20 @@ public class BluetoothHandler {
                 // Connect the device through the socket. This will block
                 // until it succeeds or throws an exception
                 mmSocket.connect();
+//                Log.d(tag, "Connected");
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and get out
+//                connectException.printStackTrace();
                 try {
                     mmSocket.close();
+                    Log.d(tag, "Connect socket closed");
                 } catch (IOException closeException) {
                 }
                 return;
             }
 
             // Do work to manage the connection (in a separate thread)
+
             mSocketSetupCallback.onSocketSetup(mmSocket);
         }
 
