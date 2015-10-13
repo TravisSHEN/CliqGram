@@ -218,9 +218,11 @@ public class ProfileFragment extends Fragment {
 
         switch (view.getId()){
             case R.id.profile_btn_follow:
-                if(userId.equals(UserService.getCurrentUser().getObjectId())){
+                if (profile_follow_button.getText().equals("following") ||
+                        userId.equals(UserService.getCurrentUser().getObjectId())) {
                     return;
                 }
+
                 UserService.getUserById(userId, new GetCallback<ParseUser>() {
                     @Override
                     public void done(ParseUser object, ParseException e) {
