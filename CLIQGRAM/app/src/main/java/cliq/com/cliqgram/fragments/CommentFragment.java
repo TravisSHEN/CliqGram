@@ -55,7 +55,7 @@ public class CommentFragment extends android.support.v4.app.Fragment {
 
     private CommentAdapter commentAdapter;
 
-    private List<Comment> commentList;
+    private List<Comment> commentList = new ArrayList<>();
 //    private OnFragmentInteractionListener mListener;
 
     /**
