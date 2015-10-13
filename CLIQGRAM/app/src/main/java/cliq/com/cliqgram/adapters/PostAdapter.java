@@ -52,9 +52,11 @@ public class PostAdapter extends RecyclerView
 
     private Context    context;
     private List<Post> postList;
-
+    
     @Bind(R.id.feed_btn_more)
     ImageButton moreButton;
+
+    private BluetoothHelper mBluetoothHelper;
 
     public PostAdapter(Context context, List<Post> postList) {
 
@@ -178,8 +180,8 @@ public class PostAdapter extends RecyclerView
         FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
         Post post = postList.get(feedViewHolder.getAdapterPosition());
 
-        if(LikeService.isAlreadyLiked(UserService.getCurrentUser(), post.getLikeList
-                ())){
+        if (LikeService.isAlreadyLiked(UserService.getCurrentUser(), post.getLikeList
+                ())) {
             post.unlike();
             setHeartButtonUnLiked(feedViewHolder);
         } else {
@@ -191,7 +193,7 @@ public class PostAdapter extends RecyclerView
     }
 
 
-    private void setHeartButtonLiked(FeedViewHolder feedViewHolder){
+    private void setHeartButtonLiked(FeedViewHolder feedViewHolder) {
 
         Bitmap bm_btn_like = ImageUtil.decodeResource(context,
                 R.drawable.ic_heart_red);
@@ -200,7 +202,7 @@ public class PostAdapter extends RecyclerView
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
 
-    private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder){
+    private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder) {
 
         Bitmap bm_btn_like = ImageUtil.decodeResource(context,
                 R.drawable.ic_heart_outline_grey);
@@ -311,6 +313,8 @@ public class PostAdapter extends RecyclerView
         public void onSwipeRight(View v) {
             Post post = (Post) v.getTag();
             Log.e("Swipe Touch", post.getObjectId());
+            // send post id to another phone
+            getmBluetoothHelper().sendMessage(post.getObjectId());
             Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
         }
 
@@ -355,6 +359,11 @@ public class PostAdapter extends RecyclerView
         }
     }
 
+    public void addToFeedList(Post post) {
+        this.postList.add(0, post);
+
+        this.notifyDataSetChanged();
+    }
 
     public void updateFeedList(List<Post> feedList) {
         this.postList = feedList;
@@ -362,5 +371,13 @@ public class PostAdapter extends RecyclerView
         Collections.sort(feedList);
 
         this.notifyDataSetChanged();
+    }
+
+    public BluetoothHelper getmBluetoothHelper() {
+        return mBluetoothHelper;
+    }
+
+    public void setmBluetoothHelper(BluetoothHelper mBluetoothHelper) {
+        this.mBluetoothHelper = mBluetoothHelper;
     }
 }
