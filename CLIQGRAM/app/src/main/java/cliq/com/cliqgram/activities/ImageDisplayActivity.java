@@ -16,7 +16,7 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.GPUImageFilterTools;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
@@ -130,7 +130,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
                 // using this way to make a post after editing
                 // PS: passing a byte[] into this function
-                // PS: there is convert function in utils.Util
+                // PS: there is convert function in utils.ImageUtil
                 // PS: Geo location is taken care in Post model when post create
                 /**
                  * @param imageDate byte[]
@@ -146,7 +146,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
                 User owner = UserService.getCurrentUser();
                 Post.createPost(owner,
-                        Util.convertBitmapToByte(editedBitmap),
+                        ImageUtil.convertBitmapToByte(editedBitmap),
                         "This is a great photo now!");
                 finish();
                 break;
@@ -209,7 +209,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 .into(imageView);
         */
 
-        return Util.decodeStream(this, imageName);
+        return ImageUtil.decodeStream(this, imageName);
     }
 
     // scale any bitmap to correct size

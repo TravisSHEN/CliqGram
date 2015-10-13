@@ -35,7 +35,7 @@ public class Activity extends ParseObject implements Comparable<Activity>{
     public static List<Activity> pullFollowersActivity(User user){
 
         List<User> followings = UserRelationsService.getRelation(user.getUsername(), "followings");
-        List<Activity> wholeActivityList = (List<Activity>)ActivityService.pullActivity(followings);
+        List<Activity> wholeActivityList = (List<Activity>)ActivityService.pullFollowingActivity(followings);
         Comparator<Activity> comparator = new ActivityDateComparer();
         Collections.sort(wholeActivityList, comparator);
         return wholeActivityList;

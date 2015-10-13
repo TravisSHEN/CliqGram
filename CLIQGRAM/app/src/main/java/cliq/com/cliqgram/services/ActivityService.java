@@ -42,8 +42,8 @@ public class ActivityService {
         });
 
     }
-
-    public static void pullActivity(List<User> userList, FindCallback<Activity> callback){
+//TODO set size for the activity list @ilkan
+    public static void pullFollowingActivity(List<User> userList, FindCallback<Activity> callback){
         List<Activity> wholeActivityList = new ArrayList<Activity>();
         ParseQuery<Activity> query = ParseQuery.getQuery(Activity.class);
         query.whereContainedIn("user", userList);
@@ -57,6 +57,14 @@ public class ActivityService {
         }
 
         return wholeActivityList;*/
+    }
+    //TODO set size for the you activity list @ilkan
+    public static void pullActivityRegardingToYou(User user, List<User> userList, FindCallback<Activity> callback){
+        //List<Activity> wholeActivityList = new ArrayList<Activity>();
+        ParseQuery<Activity> query = ParseQuery.getQuery(Activity.class);
+        query.whereContainedIn("user", userList);
+        query.whereEqualTo("targetUser", user);
+        query.findInBackground(callback);
     }
 
 }

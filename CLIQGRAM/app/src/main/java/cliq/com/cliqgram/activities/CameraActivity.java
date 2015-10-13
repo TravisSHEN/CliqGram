@@ -57,7 +57,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.callbacks.ImageSavedCallback;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -390,14 +390,14 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonGrid.setOnClickListener(this);
         buttonGallery.setOnClickListener(this);
 
-        Util.loadResToView(this, R.drawable.icon_flash_on,
-                            buttonFlash, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                buttonFlash, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_grid_off,
-                            buttonGrid, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                buttonGrid, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_gallery,
-                            buttonGallery, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_gallery,
+                buttonGallery, 0.3f);
 
     }
 
@@ -583,13 +583,13 @@ public class CameraActivity extends Activity implements OnClickListener {
                 if (flashOn) {
                     flashOn = false;
 //                    buttonFlash.setText(R.string.button_flash_off);
-                    Util.loadResToView(this, R.drawable.icon_flash_off,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_off,
+                            buttonFlash, 0.7f);
                 } else {
                     flashOn = true;
 //                    buttonFlash.setText(R.string.button_flash_on);
-                    Util.loadResToView(this, R.drawable.icon_flash_on,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.7f);
                 }
                 break;
             case R.id.button_grid:
@@ -598,14 +598,14 @@ public class CameraActivity extends Activity implements OnClickListener {
                     gridOn = false;
                     myGridView.setVisibility(View.INVISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_off);
-                    Util.loadResToView(this, R.drawable.icon_grid_off,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.7f);
                 } else {
                     gridOn = true;
                     myGridView.setVisibility(View.VISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_on);
-                    Util.loadResToView(this, R.drawable.icon_grid_on,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_on,
+                            buttonGrid, 0.7f);
                 }
                 break;
             case R.id.button_gallery:
@@ -690,9 +690,9 @@ public class CameraActivity extends Activity implements OnClickListener {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] photoBytes = new byte[buffer.remaining()];
             buffer.get(photoBytes);
-            String fileName = String.valueOf(Util.getCurrentDate().getTime());
+            String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
             Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-            byte[] imageData = Util.convertBitmapToByte(bitmap);
+            byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
             try {
 
@@ -757,8 +757,8 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private String savePhoto(Bitmap bitmap) {
-        String fileName = String.valueOf(Util.getCurrentDate().getTime());
-        byte[] imageData = Util.convertBitmapToByte(bitmap);
+        String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
+        byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
         try {
 

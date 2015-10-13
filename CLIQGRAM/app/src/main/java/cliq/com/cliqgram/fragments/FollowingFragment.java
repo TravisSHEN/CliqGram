@@ -11,21 +11,17 @@ import android.view.ViewGroup;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.FollowingActivityAdapter;
-import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.services.ActivityService;
-import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserRelationsService;
 
 /**
@@ -40,27 +36,16 @@ public class FollowingFragment extends Fragment {
     private static final String ARG_USERNAME = "userName";
     //List<Activity> activityList = new ArrayList<>();
 
-    String userName;
-
     @Bind(R.id.activity_following_recycler_view)
     RecyclerView recyclerView;
 
     FollowingActivityAdapter followingActivityAdapter;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Following.
-     */
     // TODO: Rename and change types and number of parameters
     public static FollowingFragment newInstance(String userName) {
         FollowingFragment fragment = new FollowingFragment();
         Bundle args = new Bundle();
         args.putString(ARG_USERNAME, userName);
-        userName = userName;
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,7 +68,7 @@ public class FollowingFragment extends Fragment {
 
         //List<User> relation = UserRelationsService.getParticularRelation()
 
-        /*ActivityService.pullActivity(newe Findijlk(){
+        /*ActivityService.pullFollowingActivity(newe Findijlk(){
             this.activityList = dataGet;
             followingActivityAdapter.updateData( this.activityList );
         })*/
@@ -102,7 +87,7 @@ public class FollowingFragment extends Fragment {
             @Override
             public void done(UserRelation object, ParseException e) {
                 List<User> followings = object.getFollowings();
-                ActivityService.pullActivity(followings, new FindCallback<Activity>() {
+                ActivityService.pullFollowingActivity(followings, new FindCallback<Activity>() {
                     @Override
                     public void done(List<Activity> objects, ParseException e) {
                         followingActivityAdapter.updateData(objects);

@@ -26,7 +26,7 @@ public class ActivityViewPageAdapter extends FragmentStatePagerAdapter{
 
         tabItems = new ArrayList<>();
         tabItems.add(new TabItem(FollowingFragment.newInstance(userName), "FOLLOWING"));
-        tabItems.add(new TabItem(YouFragment.newInstance(), "YOU"));
+        tabItems.add(new TabItem(YouFragment.newInstance(userName), "YOU"));
     }
 
     @Override

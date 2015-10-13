@@ -20,7 +20,7 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 
 /**
  * Created by ilkan on 27/09/2015.
@@ -59,7 +59,7 @@ public class PostActivity extends AppCompatActivity {
             Uri selectedImage = data.getData();
             //String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Date now = new Date();
-            Date date = Util.getCurrentDate();
+            Date date = ImageUtil.getCurrentDate();
 
             byte[] imageData = convertImageToByte(selectedImage);
             User user = UserService.getCurrentUser();
