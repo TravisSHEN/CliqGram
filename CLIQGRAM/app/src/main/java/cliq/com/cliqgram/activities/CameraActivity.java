@@ -57,7 +57,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.callbacks.ImageSavedCallback;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -89,6 +89,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     Button buttonGrid;
     @Bind(R.id.button_gallery)
     Button buttonGallery;
+    private boolean imageSaved = false;
     private boolean flashOn = true;
     private boolean gridOn = false;
     private State mState = State.PREVIEW;
@@ -102,7 +103,9 @@ public class CameraActivity extends Activity implements OnClickListener {
         @Override
         public void onImageAvailable(ImageReader reader) {
             // TODO
-            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mImageSavedCallback));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mImageSavedCallback));
+            }
 //            mBackgroundHandler.post(new ImageInserter(reader.acquireNextImage()), mImageSavedCallback);
 
 //            startDisplayActivity(reader.acquireNextImage());
@@ -120,12 +123,12 @@ public class CameraActivity extends Activity implements OnClickListener {
 //        startActivity(intent);
 //    }
 
+    private String imageFileName;
     private ImageSavedCallback mImageSavedCallback = new ImageSavedCallback() {
         @Override
         public void onImageSaved(String fileName) {
-            Intent intent = new Intent(CameraActivity.this, ImageDisplayActivity.class);
-            intent.putExtra("image", fileName);
-            startActivity(intent);
+            imageSaved = true;
+            imageFileName = fileName;
         }
     };
     private Size mPreviewSize;
@@ -250,6 +253,10 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
     }
 
+    public boolean isImageSaved() {
+        return imageSaved;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void captureStillPicture() {
         try {
@@ -282,13 +289,25 @@ public class CameraActivity extends Activity implements OnClickListener {
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
 //                    if (filePath != null) {
 //                        Log.e(TAG, filePath);
-//                        showToast("Image saved to " + filePath);
+//                        showToast("Image imageSaved to " + filePath);
 //                    }
                     unlockFocus();
-                    if (photoBytes != null) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-                        startImageDisplayActivity(bitmap);
+                    while (true) {
+                        if (isImageSaved()) {
+                            imageSaved = false;
+                            startActivity();
+                            break;
+                        }
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+//                    if (photoBytes != null) {
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+//                        startImageDisplayActivity(bitmap);
+//                    }
                 }
             };
 
@@ -313,17 +332,20 @@ public class CameraActivity extends Activity implements OnClickListener {
         try {
             // Reset the auto-focus trigger
             if (mPreviewRequestBuilder != null && mCaptureSession != null && mState != null) {
-                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                        CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON);
-                System.out.println();
-                mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                        mBackgroundHandler);
-                // After this, the camera will go back to the normal state of preview.
-                mState = State.PREVIEW;
-                mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
-                        mBackgroundHandler);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                            CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                            CaptureRequest.CONTROL_AE_MODE_ON);
+                    System.out.println();
+                    mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
+                            mBackgroundHandler);
+                    // After this, the camera will go back to the normal state of preview.
+                    mState = State.PREVIEW;
+                    mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
+                            mBackgroundHandler);
+                }
+
             }
 
         } catch (CameraAccessException e) {
@@ -389,13 +411,13 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonGrid.setOnClickListener(this);
         buttonGallery.setOnClickListener(this);
 
-        ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+        Util.loadResToView(this, R.drawable.icon_flash_on,
                 buttonFlash, 0.3f);
 
-        ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+        Util.loadResToView(this, R.drawable.icon_grid_off,
                 buttonGrid, 0.3f);
 
-        ImageUtil.loadResToView(this, R.drawable.icon_gallery,
+        Util.loadResToView(this, R.drawable.icon_gallery,
                 buttonGallery, 0.3f);
 
     }
@@ -582,12 +604,12 @@ public class CameraActivity extends Activity implements OnClickListener {
                 if (flashOn) {
                     flashOn = false;
 //                    buttonFlash.setText(R.string.button_flash_off);
-                    ImageUtil.loadResToView(this, R.drawable.icon_flash_off,
+                    Util.loadResToView(this, R.drawable.icon_flash_off,
                             buttonFlash, 0.7f);
                 } else {
                     flashOn = true;
 //                    buttonFlash.setText(R.string.button_flash_on);
-                    ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                    Util.loadResToView(this, R.drawable.icon_flash_on,
                             buttonFlash, 0.7f);
                 }
                 break;
@@ -597,13 +619,13 @@ public class CameraActivity extends Activity implements OnClickListener {
                     gridOn = false;
                     myGridView.setVisibility(View.INVISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_off);
-                    ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                    Util.loadResToView(this, R.drawable.icon_grid_off,
                             buttonGrid, 0.7f);
                 } else {
                     gridOn = true;
                     myGridView.setVisibility(View.VISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_on);
-                    ImageUtil.loadResToView(this, R.drawable.icon_grid_on,
+                    Util.loadResToView(this, R.drawable.icon_grid_on,
                             buttonGrid, 0.7f);
                 }
                 break;
@@ -650,29 +672,29 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
     }
 
-    private class ImageInserter implements Runnable {
-
-        private Image mImage;
-        private String fileName;
-
-        public ImageInserter(Image mImage) {
-            this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
-            this.mImage = mImage;
-        }
-
-        @Override
-        public void run() {
-            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
-                    null);
-
-            // start ImageDisplayActivity
-            startImageDisplayActivity(bitmap);
-        }
-    }
+//    private class ImageInserter implements Runnable {
+//
+//        private Image mImage;
+//        private String fileName;
+//
+//        public ImageInserter(Image mImage) {
+//            this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
+//            this.mImage = mImage;
+//        }
+//
+//        @Override
+//        public void run() {
+//            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
+//            byte[] bytes = new byte[buffer.remaining()];
+//            buffer.get(bytes);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
+//                    null);
+//
+//            // start ImageDisplayActivity
+//            startImageDisplayActivity(bitmap);
+//        }
+//    }
 
     private class ImageSaver implements Runnable {
 
@@ -689,9 +711,9 @@ public class CameraActivity extends Activity implements OnClickListener {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] photoBytes = new byte[buffer.remaining()];
             buffer.get(photoBytes);
-            String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
+            String fileName = String.valueOf(Util.getCurrentDate().getTime());
             Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-            byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
+            byte[] imageData = Util.convertBitmapToByte(bitmap);
 
             try {
 
@@ -732,8 +754,7 @@ public class CameraActivity extends Activity implements OnClickListener {
              * So, check the database (table "Post") on Parse to see if post is
              * created successfully.
              * If post is created successfully, it will be shown on home page.
-             */
-            Uri uri = data.getData();
+             */Uri uri = data.getData();
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap
@@ -765,14 +786,20 @@ public class CameraActivity extends Activity implements OnClickListener {
             return;
         }
 
+        imageFileName = fileName;
+        startActivity();
+
+    }
+
+    private void startActivity() {
         Intent intent = new Intent(CameraActivity.this, ImageDisplayActivity.class);
-        intent.putExtra("image", fileName);
+        intent.putExtra("image", imageFileName);
         startActivity(intent);
     }
 
     private String savePhoto(Bitmap bitmap) {
-        String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
-        byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
+        String fileName = String.valueOf(Util.getCurrentDate().getTime());
+        byte[] imageData = Util.convertBitmapToByte(bitmap);
 
         try {
 

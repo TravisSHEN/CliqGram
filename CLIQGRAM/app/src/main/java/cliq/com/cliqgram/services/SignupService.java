@@ -12,7 +12,7 @@ import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Util;
 
 /**
  * Created by litaoshen on 2/09/2015.
@@ -25,11 +25,11 @@ public class SignupService {
                               final String email) {
 
         // set default avatar
-        byte[] avatarData = ImageUtil.convertBitmapToByte(ImageUtil.resizeDrawable(context, R.drawable
+        byte[] avatarData = Util.convertBitmapToByte(Util.resizeDrawable(context, R.drawable
                 .icon_user, 0.7f).getBitmap());
 
         String avatarLabel = "img_" +
-                String.valueOf(ImageUtil.getCurrentDate().getTime()) + "" +
+                String.valueOf(Util.getCurrentDate().getTime()) + "" +
                 ".jpg";
 
         // after avatar file stored successfully, then signup new user.

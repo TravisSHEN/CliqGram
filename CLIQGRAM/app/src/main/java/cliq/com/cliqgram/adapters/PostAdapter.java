@@ -26,7 +26,7 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.UserService;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.viewHolders.FeedViewHolder;
 
 /**
@@ -180,18 +180,18 @@ public class PostAdapter extends RecyclerView
 
     private void setHeartButtonLiked(FeedViewHolder feedViewHolder){
 
-        Bitmap bm_btn_like = ImageUtil.decodeResource(context,
+        Bitmap bm_btn_like = Util.decodeResource(context,
                 R.drawable.ic_heart_red);
-        Bitmap resized_like = ImageUtil.resizeBitmap(bm_btn_like,
+        Bitmap resized_like = Util.resizeBitmap(bm_btn_like,
                 FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }
 
     private void setHeartButtonUnLiked(FeedViewHolder feedViewHolder){
 
-        Bitmap bm_btn_like = ImageUtil.decodeResource(context,
+        Bitmap bm_btn_like = Util.decodeResource(context,
                 R.drawable.ic_heart_outline_grey);
-        Bitmap resized_like = ImageUtil.resizeBitmap(bm_btn_like,
+        Bitmap resized_like = Util.resizeBitmap(bm_btn_like,
                 FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feedViewHolder.feed_btn_like.setImageBitmap(resized_like);
     }

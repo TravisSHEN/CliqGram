@@ -23,7 +23,7 @@ import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Util;
 
 /**
  * Created by ilkan on 27/09/2015.
@@ -114,7 +114,7 @@ public class Post extends ParseObject implements Comparable<Post> {
      * @return
      */
     private BitmapDrawable getPhotoInBitmapDrawable(Context context, byte[] photoData) {
-        return ImageUtil.convertByteToBitmapDrawable(context, photoData);
+        return Util.convertByteToBitmapDrawable(context, photoData);
     }
 
     public Bitmap getPhotoInBitmap(Context context, byte[] photoData) {
@@ -169,7 +169,7 @@ public class Post extends ParseObject implements Comparable<Post> {
     }
 
     public void setPhotoData(byte[] photoData) {
-        String photoLabel = "img_" + String.valueOf(ImageUtil.getCurrentDate()
+        String photoLabel = "img_" + String.valueOf(Util.getCurrentDate()
                 .getTime()) +
                 ".jpg";
         ParseFile photo = new ParseFile(photoLabel, photoData);

@@ -20,7 +20,7 @@ import java.util.Date;
 /**
  * Created by litaoshen on 28/09/2015.
  */
-public class ImageUtil {
+public class Util {
 
     /**
      * resize bitmap
@@ -68,7 +68,7 @@ public class ImageUtil {
         int sizeX = Math.round(bm.getWidth() * scaleFactor);
         int sizeY = Math.round(bm.getHeight() * scaleFactor);
 
-        Bitmap resized_bm = ImageUtil.resizeBitmap(bm, sizeX, sizeY);
+        Bitmap resized_bm = Util.resizeBitmap(bm, sizeX, sizeY);
 
         return new BitmapDrawable(context.getResources(), resized_bm);
     }
@@ -107,11 +107,11 @@ public class ImageUtil {
     public static BitmapDrawable resizeDrawable(Context context, @DrawableRes
     int res, float scaleFactor) {
 
-        Bitmap bm = ImageUtil.decodeResource(context, res);
+        Bitmap bm = Util.decodeResource(context, res);
         int sizeX = Math.round(bm.getWidth() * scaleFactor);
         int sizeY = Math.round(bm.getHeight() * scaleFactor);
 
-        Bitmap resized_bm = ImageUtil.resizeBitmap(bm, sizeX, sizeY);
+        Bitmap resized_bm = Util.resizeBitmap(bm, sizeX, sizeY);
 
         return new BitmapDrawable(context.getResources(), resized_bm);
     }
@@ -159,6 +159,12 @@ public class ImageUtil {
         return data;
     }
 
+    // convert Uri to Bitmap
+    public static Bitmap convertUriToBitmap(Uri uri, ContentResolver cr) {
+        byte[] bytes = convertImageToByte(uri, cr);
+        return convertByteToBitmap(bytes);
+    }
+
     /**
      * conver bitmap to byte[]
      *
@@ -200,7 +206,7 @@ public class ImageUtil {
     public static BitmapDrawable convertByteToBitmapDrawable(Context context, byte[]
             imgData) {
 
-        Bitmap bitmap = ImageUtil.convertByteToBitmap(imgData);
+        Bitmap bitmap = Util.convertByteToBitmap(imgData);
         BitmapDrawable bitmapDrawable = null;
         if( bitmap != null ) {
 
@@ -219,8 +225,7 @@ public class ImageUtil {
         return date;
     }
 
-    public static Uri getImageUri(Context context, Bitmap inImage, String
-            imageName) {
+    public static Uri getImageUri(Context context, Bitmap inImage, String imageName) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(context
@@ -238,7 +243,7 @@ public class ImageUtil {
     public static void loadResToView( Context context, @DrawableRes int resid,
                                       View view, float scaleRate){
 
-        BitmapDrawable bitmapDrawable = ImageUtil.resizeDrawable(context, resid,
+        BitmapDrawable bitmapDrawable = Util.resizeDrawable(context, resid,
                 scaleRate);
 
         view.setBackground( bitmapDrawable );

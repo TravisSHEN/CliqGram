@@ -13,7 +13,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -60,21 +60,21 @@ public class FeedViewHolder extends RecyclerView.ViewHolder {
 
     void initializeButtons() {
 
-        Bitmap bm_btn_like = ImageUtil.decodeResource(context, R.drawable
+        Bitmap bm_btn_like = Util.decodeResource(context, R.drawable
                 .ic_heart_outline_grey);
-        Bitmap resized_like = ImageUtil.resizeBitmap(bm_btn_like, FeedViewHolder
+        Bitmap resized_like = Util.resizeBitmap(bm_btn_like, FeedViewHolder
                 .BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_btn_like.setImageBitmap(resized_like);
-        Bitmap bm_btn_comments = ImageUtil.decodeResource(context, R.drawable.ic_comment_outline_grey);
-        Bitmap resized_comments = ImageUtil.resizeBitmap(bm_btn_comments, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        Bitmap bm_btn_comments = Util.decodeResource(context, R.drawable.ic_comment_outline_grey);
+        Bitmap resized_comments = Util.resizeBitmap(bm_btn_comments, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_btn_comments.setImageBitmap(resized_comments);
-        Bitmap bm_btn_more = ImageUtil.decodeResource(context, R.drawable.ic_more_grey);
-        Bitmap resized_more = ImageUtil.resizeBitmap(bm_btn_more, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        Bitmap bm_btn_more = Util.decodeResource(context, R.drawable.ic_more_grey);
+        Bitmap resized_more = Util.resizeBitmap(bm_btn_more, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_btn_more.setImageBitmap(resized_more);
 
-        Bitmap bm_ic_likes = ImageUtil.decodeResource(context, R.drawable
+        Bitmap bm_ic_likes = Util.decodeResource(context, R.drawable
                 .ic_heart_small_blue);
-        Bitmap resized_ic_likes = ImageUtil.resizeBitmap(bm_ic_likes, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
+        Bitmap resized_ic_likes = Util.resizeBitmap(bm_ic_likes, FeedViewHolder.BUTTON_WIDTH, FeedViewHolder.BUTTON_HEIGHT);
         feed_ic_likes_count.setImageBitmap(resized_ic_likes);
     }
 

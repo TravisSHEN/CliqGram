@@ -24,7 +24,7 @@ import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.helper.ToolbarModel;
 import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.UserService;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Util;
 import de.greenrobot.event.Subscribe;
 
 public class MainActivity extends AppCompatActivity {
@@ -154,15 +154,15 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         float scale_factor = 0.7f;
-        tabLayout.getTabAt(TAB_FEED).setIcon(ImageUtil.resizeDrawable(this,
+        tabLayout.getTabAt(TAB_FEED).setIcon(Util.resizeDrawable(this,
                 R.drawable.icon_home, scale_factor));
-        tabLayout.getTabAt(TAB_SEARCH).setIcon(ImageUtil.resizeDrawable(this, R
+        tabLayout.getTabAt(TAB_SEARCH).setIcon(Util.resizeDrawable(this, R
                 .drawable.icon_search, scale_factor));
 //        tabLayout.getTabAt(TAB_CAMERA).setIcon(R.drawable.icon_camera);
         tabLayout.getTabAt(TAB_CAMERA).setCustomView(float_button);
-        tabLayout.getTabAt(TAB_ACTIVITY).setIcon(ImageUtil.resizeDrawable(this, R
+        tabLayout.getTabAt(TAB_ACTIVITY).setIcon(Util.resizeDrawable(this, R
                 .drawable.icon_star, scale_factor));
-        tabLayout.getTabAt(TAB_PROFILE).setIcon(ImageUtil.resizeDrawable(this, R
+        tabLayout.getTabAt(TAB_PROFILE).setIcon(Util.resizeDrawable(this, R
                 .drawable.icon_user, scale_factor));
     }
 
