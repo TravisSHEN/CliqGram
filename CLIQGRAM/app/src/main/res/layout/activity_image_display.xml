@@ -30,7 +30,8 @@
             android:text="Brightness"
             android:id="@+id/brightnessView"
             android:minWidth="100dp"
-            android:gravity="left"/>
+            android:gravity="left"
+            android:paddingLeft="8dp"/>
 
         <SeekBar
             android:layout_width="fill_parent"
@@ -57,7 +58,8 @@
             android:text="Contrast"
             android:id="@+id/contrastView"
             android:minWidth="100dp"
-            android:gravity="left"/>
+            android:gravity="left"
+            android:paddingLeft="8dp"/>
 
         <SeekBar
             android:layout_width="fill_parent"
