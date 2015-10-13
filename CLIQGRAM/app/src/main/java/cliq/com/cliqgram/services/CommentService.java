@@ -49,37 +49,6 @@ public class CommentService {
             }
         });
         Log.e("---- Comment ----", post.getObjectId());
-//
-//        query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
-//            @Override
-//            public void done(Post postObject, ParseException e) {
-//                if (e == null) {
-//
-//                    List<Comment> relation = (ArrayList) postObject.get
-//                            ("comments");
-//                    if (relation == null) {
-//                        relation = new ArrayList<>();
-//                    }
-//                    relation.add(comment);
-//                    postObject.put("comments", relation);
-//                    postObject.saveInBackground(new SaveCallback() {
-//                        @Override
-//                        public void done(ParseException e) {
-//                            if (e == null) {
-//                                AppStarter.eventBus.post(new
-//                                        CommentSuccessEvent(comment));
-//                            } else {
-//                                AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
-//                                        e.getMessage()));
-//                            }
-//                        }
-//                    });
-//                } else {
-//                    AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
-//                            e.getMessage()));
-//                }
-//            }
-//        });
     }
 
 }
