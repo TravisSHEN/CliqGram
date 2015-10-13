@@ -253,6 +253,9 @@ public class PostAdapter extends RecyclerView
                         }
                     });
 
+                    // show the popup menu
+                    popup.show();
+
                     break;
 
                 default:
