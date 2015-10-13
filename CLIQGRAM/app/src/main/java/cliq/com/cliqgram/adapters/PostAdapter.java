@@ -245,7 +245,7 @@ public class PostAdapter extends RecyclerView
 
                             switch (popupSelectId) {
                                 case R.id.share_bluetooth:
-//                                    BluetoothHelper.getInstance().sendMessage(currentPost.getObjectId());
+                                    BluetoothHelper.getInstance().sendMessage(currentPost.getObjectId());
                                     break;
                                 case R.id.download:
                                     break;
