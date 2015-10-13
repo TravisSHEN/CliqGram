@@ -35,7 +35,7 @@ public class MainViewPageAdapter extends FragmentStatePagerAdapter {
         tabItemList.add(new TabItem(SearchFragment.newInstance(), "Search"));
         // TODO: change this to CameraFragment
         tabItemList.add(new TabItem(PostFragment.newInstance(), "Camera"));
-        tabItemList.add(new TabItem(ActivityFragment.newInstance(), "Activity"));
+        tabItemList.add(new TabItem(ActivityFragment.newInstance(ParseUser.getCurrentUser().getUsername()), "Activity"));
         tabItemList.add(new TabItem(ProfileFragment.newInstance(ParseUser
                 .getCurrentUser().getObjectId()),
                 "Profile"));

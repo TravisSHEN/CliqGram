@@ -2,6 +2,8 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -97,6 +99,13 @@ public class ProfileFragment extends Fragment {
         }
 
         postList = new ArrayList<>();
+
+        ActionBar actionBar = ((AppCompatActivity) getActivity())
+                .getSupportActionBar();
+
+        if( actionBar != null ){
+            actionBar.setTitle("Profile");
+        }
     }
 
     @Override
@@ -174,8 +183,10 @@ public class ProfileFragment extends Fragment {
 
         user.loadAvatarToView(getActivity(), profile_avatar);
 
-        profile_posts_number.setText(
-                String.valueOf(user.getPostList().size()));
+        if( user.getPostList() != null ) {
+            profile_posts_number.setText(
+                    String.valueOf(user.getPostList().size()));
+        }
         profile_username.setText(user.getUsername());
 
         this.postList = user.getPostList();
@@ -223,7 +234,7 @@ public class ProfileFragment extends Fragment {
 
                         if (e == null) {
 
-                            UserRelationsService.follow(object.getUsername());
+                            UserRelationsService.follow(UserService.getCurrentUser(),object.getUsername());
                             profile_follow_button.setText(R.string.profile_following);
                         } else {
                             Toast.makeText(getActivity(), e.getMessage(),

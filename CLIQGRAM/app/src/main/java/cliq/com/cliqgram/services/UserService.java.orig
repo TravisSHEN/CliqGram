@@ -94,8 +94,13 @@ public class UserService {
      * @param username
      * @param callback
      */
+<<<<<<< HEAD
+    public static void getUserByUsername(String username,
+                                         GetCallback<ParseUser> callback
+=======
     public static void getUserByUsername( String username,
                                          GetCallback<User> callback
+>>>>>>> 6da3b9ba078f4530203fc5a88f6987bf2b689f12
     ) {
 
         ParseQuery<User> query = ParseQuery.getQuery(User.class);
@@ -124,6 +129,13 @@ public class UserService {
             return (User) parseUser;
         }
     }
+/*
+    public static void searchUser(String userName, GetCallback<User> callback){
+        List<User> userList = new ArrayList<User>();
+        ParseQuery<User> query = User.getQuery();
+        query.whereContains("userName", userName);
+        query.findInBackground(callback);
+    }*/
 
     public static void getSuggestUsers() {
 
@@ -133,18 +145,62 @@ public class UserService {
             @Override
             public void done(UserRelation relation, ParseException e) {
 
+<<<<<<< HEAD
                 if (relation == null) {
+=======
+
+                if( relation == null ){
+>>>>>>> 6da3b9ba078f4530203fc5a88f6987bf2b689f12
                     return;
                 }
 
                 List<User> followings = relation.getFollowings();
 
+<<<<<<< HEAD
                 getSuggestUsers(followings);
+=======
+                getSuggestUsers( followings );
+
+               /* if( relation == null ){
+
+
+                    getSuggestUsers( null );
+                }else{
+                    List<User> followings = relation.getFollowings();
+
+                    getSuggestUsers( followings );
+                }*/
+
+
+>>>>>>> 6da3b9ba078f4530203fc5a88f6987bf2b689f12
             }
         });
     }
+/*
+    private static void getSuggestedUserList(List<User> relationList){
+        List<User> sugUserList = new ArrayList<User>();
+        if(relationList == null){
+            //find most popular users - 100
+            //find most popular users nearby - 100
+            //find people nearby -
+        }else{
+            //find followings followings
+            //find most popular users
+            //find people nearby
+        }
+    }
 
+<<<<<<< HEAD
     private static void getSuggestUsers(List<User> userList) {
+=======
+    private static void getMostPopularUsers(){
+        List<User> sugUserList = new ArrayList<User>();
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
+        query.orderByDescending("followers");
+    }
+*/
+     private static void getSuggestUsers(List<User> userList) {
+>>>>>>> 6da3b9ba078f4530203fc5a88f6987bf2b689f12
 
         List<String> usernameList = new ArrayList<>();
 

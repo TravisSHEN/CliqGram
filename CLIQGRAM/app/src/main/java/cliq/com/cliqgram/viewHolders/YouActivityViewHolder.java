@@ -19,16 +19,16 @@ public class YouActivityViewHolder extends RecyclerView.ViewHolder {
     Context context;
 
     @Bind(R.id.youactivity_user_avatar)
-    CircleImageView user_avatar;
+    public CircleImageView user_avatar;
 
     @Bind(R.id.youactivity_user_name)
-    TextView user_name;
+    public TextView user_name;
 
     @Bind(R.id.youactivity_text)
-    TextView text;
+    public TextView text;
 
     @Bind(R.id.youactivity_iamge)
-    ImageView image;
+    public ImageView image;
 
     public YouActivityViewHolder(Context context, View itemView) {
         super(itemView);

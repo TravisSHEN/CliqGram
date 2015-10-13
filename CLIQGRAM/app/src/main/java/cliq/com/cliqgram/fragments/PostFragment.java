@@ -2,6 +2,8 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -91,6 +93,13 @@ public class PostFragment extends Fragment {
 
         postList = new ArrayList<>();
         this.initializeData();
+
+        ActionBar actionBar = ((AppCompatActivity) getActivity())
+                .getSupportActionBar();
+
+        if( actionBar != null ){
+            actionBar.setTitle("Post");
+        }
 
         mBluetoothHelper = new BluetoothHelper(getActivity(),
                 mIdReceivedCallback);
