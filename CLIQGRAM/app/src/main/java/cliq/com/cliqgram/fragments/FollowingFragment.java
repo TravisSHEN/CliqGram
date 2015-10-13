@@ -1,8 +1,8 @@
 package cliq.com.cliqgram.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -40,6 +40,9 @@ public class FollowingFragment extends Fragment {
 
     @Bind(R.id.activity_following_recycler_view)
     RecyclerView recyclerView;
+
+    @Bind(R.id.following_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     FollowingActivityAdapter followingActivityAdapter;
 
@@ -87,24 +90,24 @@ public class FollowingFragment extends Fragment {
         // TODO: find post by id via post service
         UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(),
                 "followings", new GetCallback<UserRelation>() {
-            @Override
-            public void done(UserRelation object, ParseException e) {
-                if(object == null ){
-                    Toast.makeText(getActivity(), e.getMessage(), Toast
-                            .LENGTH_SHORT).show();
-                    return;
-                }
-                List<User> followings = object.getFollowings();
-                ActivityService.pullFollowingActivity(followings, new FindCallback<Activity>() {
                     @Override
-                    public void done(List<Activity> objects, ParseException e) {
-                        if (e == null && objects != null && objects.size() > 0) {
-                            followingActivityAdapter.updateData(objects);
+                    public void done(UserRelation object, ParseException e) {
+                        if (object == null) {
+                            Toast.makeText(getActivity(), e.getMessage(), Toast
+                                    .LENGTH_SHORT).show();
+                            return;
                         }
+                        List<User> followings = object.getFollowings();
+                        ActivityService.pullFollowingActivity(followings, new FindCallback<Activity>() {
+                            @Override
+                            public void done(List<Activity> objects, ParseException e) {
+                                if (e == null && objects != null && objects.size() > 0) {
+                                    followingActivityAdapter.updateData(objects);
+                                }
+                            }
+                        });
                     }
                 });
-            }
-        });
         //PostService.getPost(userName);
 //        PostService.getPost("X8f2UlSJIc");
         //ProgressSpinner.getInstance().showSpinner(this.getActivity(), "Loading...");
@@ -123,6 +126,12 @@ public class FollowingFragment extends Fragment {
 
         this.initializeRecyclerView();
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeData();
+            }
+        });
         return root_view;
     }
 

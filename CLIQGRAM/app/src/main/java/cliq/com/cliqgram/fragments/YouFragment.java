@@ -2,6 +2,7 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -48,6 +49,9 @@ public class YouFragment extends Fragment {
 
     @Bind(R.id.activity_you_recycler_view)
     RecyclerView recyclerView;
+
+    @Bind(R.id.you_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     YouActivityAdapter youActivityAdapter;
 
@@ -127,6 +131,13 @@ public class YouFragment extends Fragment {
         ButterKnife.bind(this, root_view);
 
         this.initializeRecyclerView();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeData();
+            }
+        });
 
         return root_view;
     }

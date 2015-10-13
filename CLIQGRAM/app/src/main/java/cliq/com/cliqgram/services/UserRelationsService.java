@@ -163,32 +163,32 @@ public class UserRelationsService {
      * @param relation
      * @return
      */
-    public static List<User> getRelation(String userName, String relation) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
-        query.whereEqualTo("username", userName);
-        query.include("posts");
-        List<User> userRelations = new ArrayList<>();
-        try {
-            List<ParseObject> parseObjects = query.find();
-            if (parseObjects != null && parseObjects.size() == 1) {
-                userRelations = parseObjects.get(0).getList(relation);
-            }
-        } catch (ParseException e) {
-            //TODO exception
-        } finally {
-            List<User> users = new ArrayList<>();
-            if (!userRelations.isEmpty()) {
-                for (Iterator iterator = userRelations.listIterator(); iterator
-                        .hasNext(); ) {
-                    User user = (User) iterator.next();
-                    users.add(user);
-                }
-            }
-
-            return users;
-        }
-
-    }
+//    public static List<User> getRelation(String userName, String relation) {
+//        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
+//        query.whereEqualTo("username", userName);
+//        query.include("posts");
+//        List<User> userRelations = new ArrayList<>();
+//        try {
+//            List<ParseObject> parseObjects = query.find();
+//            if (parseObjects != null && parseObjects.size() == 1) {
+//                userRelations = parseObjects.get(0).getList(relation);
+//            }
+//        } catch (ParseException e) {
+//            //TODO exception
+//        } finally {
+//            List<User> users = new ArrayList<>();
+//            if (!userRelations.isEmpty()) {
+//                for (Iterator iterator = userRelations.listIterator(); iterator
+//                        .hasNext(); ) {
+//                    User user = (User) iterator.next();
+//                    users.add(user);
+//                }
+//            }
+//
+//            return users;
+//        }
+//
+//    }
 
     public static boolean isInList(List<ParseUser> parseUsers, ParseUser
             parseUser) {

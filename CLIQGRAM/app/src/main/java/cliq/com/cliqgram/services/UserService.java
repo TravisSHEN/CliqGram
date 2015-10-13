@@ -97,7 +97,7 @@ public class UserService {
      * @param username
      * @param callback
      */
-    public static void getUserByUsername( String username,
+    public static void getUserByUsername(String username,
                                          GetCallback<User> callback
     ) {
 
@@ -128,26 +128,25 @@ public class UserService {
         }
     }
 
-    public static User findUserByName(String userName){
+    public static User findUserByName(String userName) {
         ParseQuery<ParseUser> query = User.getQuery();
         ParseUser parseUser = null;
         query.whereEqualTo("username", userName);
         query.include("posts");
         try {
             List<ParseUser> userList = query.find();
-            if (userList != null && userList.size() == 1){
+            if (userList != null && userList.size() == 1) {
                 parseUser = userList.get(0);
             }
 
-        }catch (ParseException e){
+        } catch (ParseException e) {
             //TODO exception
-        }
-        finally {
+        } finally {
             return (User) parseUser;
         }
     }
 
-    public static void getSuggestUsers(){
+    public static void getSuggestUsers() {
         User currentUser = UserService.getCurrentUser();
 
         UserRelationsService.getRelation(currentUser.getUsername(), new GetCallback<UserRelation>() {
@@ -288,7 +287,7 @@ public class UserService {
         return userList;
     }
 
-    public static void getSuggestedUserList(){
+    public static void getSuggestedUserList() {
 
         Location currentLocation = AppStarter.gpsTracker.getLocation();
         getPeopleNearBy(currentLocation, new FindCallback<User>() {
@@ -318,15 +317,50 @@ public class UserService {
                                 }
 
                             }
-                            List<User> followings = UserRelationsService.getRelation(User.getCurrentUser().getUsername(), "followings");
-                            followings = getFollowingsFollowings(followings);
-                            sugList.addAll(followings);
-                            Set<User> hs = new HashSet<>();
-                            hs.addAll(sugList);
-                            sugList.clear();
-                            sugList.addAll(hs);
-                            sugList.removeAll(followings);
-                            AppStarter.eventBus.post(new UserSuggestionRetrieved(sugList));
+
+                            User currentUser = UserService.getCurrentUser();
+
+                            if (currentUser == null) {
+                                return;
+                            }
+
+                            UserRelationsService.getRelation(currentUser
+                                    .getUsername(), new GetCallback<UserRelation>() {
+                                @Override
+                                public void done(UserRelation userRelation,
+                                                 ParseException e) {
+
+                                    List<User> followings = userRelation.getFollowings();
+//                                    followings = getFollowingsFollowings(followings);
+                                    getFollowingsFollowings(followings, new
+                                            GetCallback<UserRelation>() {
+                                                @Override
+                                                public void done(UserRelation
+                                                                         relation, ParseException e) {
+                                                    if (e == null && relation
+                                                            .getFollowings()
+                                                            != null) {
+                                                        List<User> sugUserList = new ArrayList<>();
+                                                        List<User> followings2 = relation.getFollowings();
+                                                        sugUserList.addAll(followings2);
+
+                                                        sugList.addAll(sugUserList);
+                                                        Set<User> hs = new HashSet<>();
+                                                        hs.addAll(sugList);
+                                                        sugList.clear();
+                                                        sugList.addAll(hs);
+                                                        sugList.removeAll(sugUserList);
+                                                        AppStarter.eventBus.post(new UserSuggestionRetrieved(sugList));
+                                                    } else {
+
+                                                    }
+
+                                                }
+                                            });
+
+                                }
+                            });
+
                         }
                     }
                 });
@@ -334,27 +368,45 @@ public class UserService {
         });
 
 
-
     }
 
 
-    public static List<User> getFollowingsFollowings(List<User> followings){
-        List<User> sugUserList = new ArrayList<User>();
-        for (User following : followings)
-        {
-            List<User> followings2 = UserRelationsService.getRelation(following.getUsername(),"followings");
-            sugUserList.addAll(followings2);
+    public static void getFollowingsFollowings(List<User> followings,
+                                               GetCallback<UserRelation> callback) {
+        if (followings == null) {
+            return;
         }
-        return sugUserList;
+        for (int i = 0; i < followings.size(); i++) {
+            User following = followings.get(i);
+
+            UserRelationsService.getRelation(following.getUsername(), callback);
+        }
+//
+//            UserRelationsService.getRelation(following.getUsername(), new GetCallback<UserRelation>() {
+//                @Override
+//                public void done(UserRelation relation, ParseException e) {
+//
+//                    if (e == null) {
+//
+//                        List<User> sugUserList = new ArrayList<User>();
+//                        List<User> followings2 = relation.getFollowings();
+//                        sugUserList.addAll(followings2);
+//
+//                    } else {
+//
+//                    }
+//
+//                }
+//            });
     }
 
-    public static void getMostPopularPeople(FindCallback<UserRelation> callback){
+    public static void getMostPopularPeople(FindCallback<UserRelation> callback) {
 
         ParseQuery<UserRelation> query = ParseQuery.getQuery(UserRelation.class);
         query.findInBackground(callback);
     }
 
-    public static void getPeopleNearBy(Location currentLocation, FindCallback<User> callback){
+    public static void getPeopleNearBy(Location currentLocation, FindCallback<User> callback) {
         ParseQuery<Post> innerQuery = ParseQuery.getQuery(Post.class);
         ParseGeoPoint geoPoint = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
         innerQuery.whereWithinMiles("location", geoPoint, 100);
