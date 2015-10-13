@@ -26,6 +26,9 @@ import cliq.com.cliqgram.exceptions.BluetoothOffException;
 public class BluetoothHelper {
     public static final UUID MY_UUID = UUID.fromString("1246fb14-0d3c-442c-b4eb-3d44b9f49733");
     private final static int REQUEST_ENABLE_BT = 1;
+
+    private static BluetoothHelper bluetoothHelper;
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -41,6 +44,20 @@ public class BluetoothHelper {
     private BluetoothAdapter mBluetoothAdapter;
     private ServerThread myServer;
     private boolean isServer = true;
+
+    public static BluetoothHelper getInstance(){
+        return bluetoothHelper;
+    }
+
+    public static BluetoothHelper newInstance( Context mContext,
+                                               IdReceivedCallback
+                                                       idReceivedCallback){
+        if( bluetoothHelper == null ){
+            bluetoothHelper = new BluetoothHelper(mContext, idReceivedCallback);
+        }
+
+        return bluetoothHelper;
+    }
 
     public BluetoothHelper(Context mContext, IdReceivedCallback mIdReceivedCallback) {
         this.mContext = mContext;
