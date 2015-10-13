@@ -143,10 +143,12 @@ public class BluetoothHelper {
                     outStream = connectSocket.getOutputStream();
                     int i = 0;
 
+                    idBuilder = new StringBuilder();
                     while (i != -1) {
                         i = inStream.read();
                         idBuilder.append((char)i);
                     }
+
                 } catch (IOException e) {
                     Log.e("Bluetooth", idBuilder.toString());
                     mIdReceivedCallback.onIdReceived(idBuilder.toString());
