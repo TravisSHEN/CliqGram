@@ -2,6 +2,7 @@ package cliq.com.cliqgram.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -240,14 +241,16 @@ public class ImageDisplayActivity extends AppCompatActivity {
     // value between -1.0 < v < 1.0
     // seekbar is between 0 and 100
     private float calculateBrightnessValue(int b) {
-        return (b / (float) 50) - 1.0f;
+        //return (b / (float) 50) - 1.0f;
+        float divisor = 100.0f / 1.5f;
+        return (b / divisor) - 0.75f;
     }
 
     // convert contrastBar value to contrast value
     // value between 0.0 < v < 4.0 (1 is average, set progress to 25)
     // seekbar is between 0 and 100
     private float calculateContrastValue(int c) {
-        return c / (float) 25;
+        return (c / (float) 40) + 0.5f;
     }
 
     // apply all filters
@@ -290,23 +293,26 @@ public class ImageDisplayActivity extends AppCompatActivity {
             case "No Filter":
                 filter = null; // does nothing
                 break;
-            case "Sepia":
-                filter = new GPUImageSepiaFilter();
+            case "Emboss":
+                filter = new GPUImageEmbossFilter();
                 break;
             case "Gaussian Blur":
                 filter = new GPUImageGaussianBlurFilter();
                 break;
+            case "Glass Sphere":
+                filter = new GPUImageGlassSphereFilter(new PointF(0.5f, 0.5f), 0.5f, 0.71f);
+                break;
             case "Grayscale":
                 filter = new GPUImageGrayscaleFilter();
                 break;
-            case "Emboss":
-                filter = new GPUImageEmbossFilter();
+            case "Monochrome":
+                filter = new GPUImageMonochromeFilter();
                 break;
-            case "Gamma":
-                filter = new GPUImageGammaFilter();
+            case "Sepia":
+                filter = new GPUImageSepiaFilter();
                 break;
-            case "Glass Sphere":
-                filter = new GPUImageGlassSphereFilter();
+            case "Sketch":
+                filter = new GPUImageSketchFilter();
                 break;
             default: // apply no filter
                 filter = null;
