@@ -12,7 +12,7 @@ import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 
 /**
  * Created by litaoshen on 2/09/2015.
@@ -24,21 +24,21 @@ public class SignupService {
                               final String password,
                               final String email) {
 
-        // set default avatar
-        byte[] avatarData = Util.convertBitmapToByte(Util.resizeDrawable(context, R.drawable
+//        // set default avatar
+        byte[] avatarData = ImageUtil.convertBitmapToByte(ImageUtil.resizeDrawable(context, R.drawable
                 .icon_user, 0.7f).getBitmap());
-
+//
         String avatarLabel = "img_" +
-                String.valueOf(Util.getCurrentDate().getTime()) + "" +
+                String.valueOf(ImageUtil.getCurrentDate().getTime()) + "" +
                 ".jpg";
-
-        // after avatar file stored successfully, then signup new user.
+//
+//        // after avatar file stored successfully, then signup new user.
         final ParseFile avatar = new ParseFile(avatarLabel, avatarData);
         avatar.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
 
-                if( e == null ) {
+                if (e == null) {
 
                     User user = new User();
                     user.setUsername(username);
@@ -49,6 +49,7 @@ public class SignupService {
                 }
             }
         });
+
     }
 
     private static void doSignup(final User user,

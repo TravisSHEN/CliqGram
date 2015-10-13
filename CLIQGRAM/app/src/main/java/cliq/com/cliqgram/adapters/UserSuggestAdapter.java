@@ -75,8 +75,7 @@ public class UserSuggestAdapter extends RecyclerView.Adapter<UserSuggestViewHold
                     post2.loadPhotoToView(context, holder.image2);
                 }
             }
-        }catch(ArrayIndexOutOfBoundsException e){
-
+        } catch(ArrayIndexOutOfBoundsException e){
         }
 
     }

@@ -7,13 +7,25 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.adapters.FollowingActivityAdapter;
 import cliq.com.cliqgram.adapters.YouActivityAdapter;
-import cliq.com.cliqgram.viewHolders.YouActivityViewHolder;
+import cliq.com.cliqgram.model.Activity;
+import cliq.com.cliqgram.model.User;
+import cliq.com.cliqgram.model.UserRelation;
+import cliq.com.cliqgram.services.ActivityService;
+import cliq.com.cliqgram.services.UserRelationsService;
+import cliq.com.cliqgram.services.UserService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,30 +38,25 @@ import cliq.com.cliqgram.viewHolders.YouActivityViewHolder;
 public class YouFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    //private static final String ARG_PARAM1 = "param1";
+    //private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_USERNAME = "userName";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //private String mParam1;
+    //private String mParam2;
 
     @Bind(R.id.activity_you_recycler_view)
     RecyclerView recyclerView;
 
     YouActivityAdapter youActivityAdapter;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment YouFragment.
-     */
+
     // TODO: Rename and change types and number of parameters
-    public static YouFragment newInstance() {
+    public static YouFragment newInstance(String userName) {
         YouFragment fragment = new YouFragment();
         Bundle args = new Bundle();
+        args.putString(ARG_USERNAME, userName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,10 +68,52 @@ public class YouFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        initializeData();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeData();
+    }
+
+    private void initializeData() {
+
+        // TODO: find post by id via post service
+        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(),
+                "followers", new GetCallback<UserRelation>() {
+            @Override
+            public void done(final UserRelation object, ParseException e) {
+
+                if( e == null ) {
+                    List<User> followers = object.getFollowers();
+                    ActivityService.pullActivityRegardingToYou(UserService.getCurrentUser(),
+                            followers, new FindCallback<Activity>() {
+                        @Override
+                        public void done(List<Activity> objects, ParseException e) {
+                            if( objects == null ){
+                                Toast.makeText(getActivity(), e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Collections.sort(objects);
+                            youActivityAdapter.updateData(objects);
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                            .LENGTH_SHORT).show();
+                }
+            }
+        });
+        //PostService.getPost(userName);
+//        PostService.getPost("X8f2UlSJIc");
+        //ProgressSpinner.getInstance().showSpinner(this.getActivity(), "Loading...");
     }
 
     @Override

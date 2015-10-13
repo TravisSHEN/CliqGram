@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 
 /**
  * Created by litaoshen on 2/09/2015.
@@ -37,11 +37,11 @@ public class User extends ParseUser {
      * @return
      */
     public BitmapDrawable getAvatarInBitmapDrawable(Context context) {
-        return Util.convertByteToBitmapDrawable(context, this.getAvatarData());
+        return ImageUtil.convertByteToBitmapDrawable(context, this.getAvatarData());
     }
 
     public Bitmap getAvatarBitmap() {
-        Bitmap bitmap = Util.convertByteToBitmap(this.getAvatarData());
+        Bitmap bitmap = ImageUtil.convertByteToBitmap(this.getAvatarData());
         return bitmap;
     }
 
@@ -92,6 +92,11 @@ public class User extends ParseUser {
     public void setAvatarData(ParseFile avatar) {
         this.put("avatar", avatar);
 //        this.put("avatar", avatarData);
+    }
+
+    public void setAvatarFromPost(Post post) {
+        this.put("avatar", post.getPhotoDataAsParseFile());
+        this.saveInBackground();
     }
 
     public List<Post> getPostList() {

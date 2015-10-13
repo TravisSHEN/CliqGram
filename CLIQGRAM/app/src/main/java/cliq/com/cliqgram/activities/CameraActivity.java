@@ -5,21 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.Matrix;
-import android.graphics.RectF;
-import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.TotalCaptureResult;
+import android.graphics.*;
+import android.hardware.camera2.*;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -40,25 +27,20 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.callbacks.ImageSavedCallback;
 import cliq.com.cliqgram.utils.Util;
 import cliq.com.cliqgram.views.AutoFitTextureView;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CameraActivity extends Activity implements OnClickListener {
@@ -82,13 +64,14 @@ public class CameraActivity extends Activity implements OnClickListener {
     View myGridView;
     @Bind(R.id.button_capture)
     FloatingActionButton buttonCapture;
-//    Button buttonCapture;
+    //    Button buttonCapture;
     @Bind(R.id.button_flash)
     Button buttonFlash;
     @Bind(R.id.button_grid)
     Button buttonGrid;
     @Bind(R.id.button_gallery)
     Button buttonGallery;
+    private boolean imageSaved = false;
     private boolean flashOn = true;
     private boolean gridOn  = false;
     private State mState = State.PREVIEW;
@@ -121,12 +104,12 @@ public class CameraActivity extends Activity implements OnClickListener {
 //        startActivity(intent);
 //    }
 
+    private String imageFileName;
     private ImageSavedCallback mImageSavedCallback = new ImageSavedCallback() {
         @Override
         public void onImageSaved(String fileName) {
-            Intent intent = new Intent(CameraActivity.this, ImageDisplayActivity.class);
-            intent.putExtra("image", fileName);
-            startActivity(intent);
+            imageSaved = true;
+            imageFileName = fileName;
         }
     };
     private Size                   mPreviewSize;
@@ -136,7 +119,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     private CameraCaptureSession mCaptureSession;
     private ImageReader mImageReader;
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
-            = new TextureView.SurfaceTextureListener() {
+                                                                  = new TextureView.SurfaceTextureListener() {
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
@@ -251,6 +234,10 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
     }
 
+    public boolean isImageSaved() {
+        return imageSaved;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void captureStillPicture() {
         try {
@@ -283,13 +270,25 @@ public class CameraActivity extends Activity implements OnClickListener {
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
 //                    if (filePath != null) {
 //                        Log.e(TAG, filePath);
-//                        showToast("Image saved to " + filePath);
+//                        showToast("Image imageSaved to " + filePath);
 //                    }
                     unlockFocus();
-                    if (photoBytes != null) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-                        startImageDisplayActivity(bitmap);
+                    while (true) {
+                        if (isImageSaved()) {
+                            imageSaved = false;
+                            startActivity();
+                            break;
+                        }
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+//                    if (photoBytes != null) {
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+//                        startImageDisplayActivity(bitmap);
+//                    }
                 }
             };
 
@@ -391,13 +390,13 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonGallery.setOnClickListener(this);
 
         Util.loadResToView(this, R.drawable.icon_flash_on,
-                            buttonFlash, 0.3f );
+                buttonFlash, 0.3f );
 
         Util.loadResToView(this, R.drawable.icon_grid_off,
-                            buttonGrid, 0.3f );
+                buttonGrid, 0.3f );
 
         Util.loadResToView(this, R.drawable.icon_gallery,
-                            buttonGallery, 0.3f );
+                buttonGallery, 0.3f );
 
     }
 
@@ -651,29 +650,29 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
     }
 
-    private class ImageInserter implements Runnable {
-
-        private Image mImage;
-        private String fileName;
-
-        public ImageInserter(Image mImage) {
-            this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
-            this.mImage = mImage;
-        }
-
-        @Override
-        public void run() {
-            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
-                    null);
-
-            // start ImageDisplayActivity
-            startImageDisplayActivity(bitmap);
-        }
-    }
+//    private class ImageInserter implements Runnable {
+//
+//        private Image mImage;
+//        private String fileName;
+//
+//        public ImageInserter(Image mImage) {
+//            this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
+//            this.mImage = mImage;
+//        }
+//
+//        @Override
+//        public void run() {
+//            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
+//            byte[] bytes = new byte[buffer.remaining()];
+//            buffer.get(bytes);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
+//                    null);
+//
+//            // start ImageDisplayActivity
+//            startImageDisplayActivity(bitmap);
+//        }
+//    }
 
     private class ImageSaver implements Runnable {
 
@@ -719,7 +718,21 @@ public class CameraActivity extends Activity implements OnClickListener {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            Uri uri = data.getData();
+            // using this way to make a post after editing
+            // PS: passing a byte[] into this function
+            // PS: there is convert function in utils.Util
+            // PS: Geo location is taken care in Post model when post create
+            /**
+             * @param imageDate byte[]
+             * @param currentUser User
+             * @param description String
+             * @return post Post
+             * Note: Any data in post object may not be able to
+             * get before post.saveInBackground() in finished.
+             * So, check the database (table "Post") on Parse to see if post is
+             * created successfully.
+             * If post is created successfully, it will be shown on home page.
+             */    Uri uri = data.getData();
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap
@@ -751,8 +764,14 @@ public class CameraActivity extends Activity implements OnClickListener {
             return;
         }
 
+        imageFileName = fileName;
+        startActivity();
+
+    }
+
+    private void startActivity() {
         Intent intent = new Intent(CameraActivity.this, ImageDisplayActivity.class);
-        intent.putExtra("image", fileName);
+        intent.putExtra("image", imageFileName);
         startActivity(intent);
     }
 

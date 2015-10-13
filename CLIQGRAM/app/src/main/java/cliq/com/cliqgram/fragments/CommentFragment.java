@@ -40,23 +40,22 @@ import de.greenrobot.event.Subscribe;
 public class CommentFragment extends android.support.v4.app.Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POST = "post";
-
-    private String postId;
-
-    private Post post;
-
     @Bind(R.id.comment_recycler_view)
     RecyclerView commentView;
-
     @Bind(R.id.comment_edit)
     EditText commentEdit;
     @Bind(R.id.comment_send)
-    Button commentSend;
-
+    Button   commentSend;
+    private String postId;
+    private Post post;
     private CommentAdapter commentAdapter;
 
-    private List<Comment> commentList;
+    private List<Comment> commentList = new ArrayList<>();
 //    private OnFragmentInteractionListener mListener;
+
+    public CommentFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -68,15 +67,11 @@ public class CommentFragment extends android.support.v4.app.Fragment {
     // TODO: Rename and change types and number of parameters
     public static CommentFragment newInstance(String postId) {
         CommentFragment fragment = new CommentFragment();
-        Bundle args = new Bundle();
+        Bundle          args     = new Bundle();
         args.putString(ARG_POST, postId);
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public CommentFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -174,7 +169,9 @@ public class CommentFragment extends android.support.v4.app.Fragment {
                     .LENGTH_SHORT).show();
             return;
         }
-
+        if (commentList == null) {
+            commentList = new ArrayList<>();
+        }
         // if existing in commentList, then return;
         for (Comment c : commentList) {
             if (c.getObjectId().equals(comment.getObjectId())) {
@@ -187,7 +184,7 @@ public class CommentFragment extends android.support.v4.app.Fragment {
     }
 
     @Subscribe
-    public void onCommentFailedEvent( CommentFailEvent event ){
+    public void onCommentFailedEvent(CommentFailEvent event) {
         Toast.makeText(getActivity(), event.getMessage(), Toast.LENGTH_SHORT).show();
     }
 

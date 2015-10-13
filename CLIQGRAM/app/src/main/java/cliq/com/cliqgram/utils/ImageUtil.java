@@ -9,9 +9,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.DrawableRes;
 import android.view.View;
-import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -23,7 +20,7 @@ import java.util.Date;
 /**
  * Created by litaoshen on 28/09/2015.
  */
-public class Util {
+public class ImageUtil {
 
     /**
      * resize bitmap
@@ -71,7 +68,7 @@ public class Util {
         int sizeX = Math.round(bm.getWidth() * scaleFactor);
         int sizeY = Math.round(bm.getHeight() * scaleFactor);
 
-        Bitmap resized_bm = Util.resizeBitmap(bm, sizeX, sizeY);
+        Bitmap resized_bm = ImageUtil.resizeBitmap(bm, sizeX, sizeY);
 
         return new BitmapDrawable(context.getResources(), resized_bm);
     }
@@ -110,11 +107,11 @@ public class Util {
     public static BitmapDrawable resizeDrawable(Context context, @DrawableRes
     int res, float scaleFactor) {
 
-        Bitmap bm = Util.decodeResource(context, res);
+        Bitmap bm = ImageUtil.decodeResource(context, res);
         int sizeX = Math.round(bm.getWidth() * scaleFactor);
         int sizeY = Math.round(bm.getHeight() * scaleFactor);
 
-        Bitmap resized_bm = Util.resizeBitmap(bm, sizeX, sizeY);
+        Bitmap resized_bm = ImageUtil.resizeBitmap(bm, sizeX, sizeY);
 
         return new BitmapDrawable(context.getResources(), resized_bm);
     }
@@ -172,7 +169,7 @@ public class Util {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-//        Log.e("Util-Bitmap Size", String.valueOf(bitmap.getByteCount()));
+//        Log.e("ImageUtil-Bitmap Size", String.valueOf(bitmap.getByteCount()));
         byte[] bytes = stream.toByteArray();
 
         return bytes;
@@ -203,7 +200,7 @@ public class Util {
     public static BitmapDrawable convertByteToBitmapDrawable(Context context, byte[]
             imgData) {
 
-        Bitmap bitmap = Util.convertByteToBitmap(imgData);
+        Bitmap bitmap = ImageUtil.convertByteToBitmap(imgData);
         BitmapDrawable bitmapDrawable = null;
         if( bitmap != null ) {
 
@@ -241,7 +238,7 @@ public class Util {
     public static void loadResToView( Context context, @DrawableRes int resid,
                                       View view, float scaleRate){
 
-        BitmapDrawable bitmapDrawable = Util.resizeDrawable(context, resid,
+        BitmapDrawable bitmapDrawable = ImageUtil.resizeDrawable(context, resid,
                 scaleRate);
 
         view.setBackground( bitmapDrawable );

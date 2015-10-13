@@ -10,16 +10,4 @@
           android:title="@string/action_crop"
           android:orderInCategory="2"
           app:showAsAction="never"/>
-    <item android:id="@+id/action_apply_filter"
-          android:title="@string/action_apply_filter"
-          android:orderInCategory="3"
-          app:showAsAction="never"/>
-    <item android:id="@+id/action_brightness_and_contrast"
-          android:title="@string/action_brightness_and_contrast"
-          android:orderInCategory="4"
-          app:showAsAction="never"/>
-    <item android:id="@+id/action_share"
-          android:title="@string/action_share"
-          android:orderInCategory="5"
-          app:showAsAction="never"/>
 </menu>

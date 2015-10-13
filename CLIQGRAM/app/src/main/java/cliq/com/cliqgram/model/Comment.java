@@ -11,15 +11,17 @@ import cliq.com.cliqgram.services.CommentService;
 @ParseClassName("Comment")
 public class Comment extends ParseObject implements Comparable<Comment> {
 
-    public static Comment createComment(User owner, Post post, String content) {
+    public static Comment createComment(User owner, final Post post, String content) {
 
-        Comment comment = new Comment();
+        final Comment comment = new Comment();
         comment.setPost(post);
         comment.setContent(content);
         comment.setOwner(owner);
 
         comment.saveInBackground();
         CommentService.comment(post, comment);
+        //owner is currentUser,  post.getOwner() is targetUser @ilkan
+        Activity.createActivity(owner, "comment", post.getObjectId(), post.getOwner());
         return comment;
     }
 

@@ -92,8 +92,15 @@ public class PostService {
 
         Location loc = AppStarter.gpsTracker.getLocation();
 
-        ParseGeoPoint currentLocation = new ParseGeoPoint(loc.getLatitude(),
-                loc.getLongitude());
+        ParseGeoPoint currentLocation;
+        try{
+
+            currentLocation = new ParseGeoPoint(loc.getLatitude(),
+                    loc.getLongitude());
+        }catch(Exception e){
+            //TODO write the error in log
+            currentLocation = null;
+        }
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.whereContainedIn("user", userList);

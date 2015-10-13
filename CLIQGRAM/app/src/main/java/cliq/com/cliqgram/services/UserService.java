@@ -24,17 +24,16 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 
 /**
  * Created by litaoshen on 30/09/2015.
  */
 public class UserService {
 
-    public  static final long TIME_THRESHOLD = 4 * 60 * 60000;
+    public static final long TIME_THRESHOLD = 4 * 60 * 60000;
 
     /**
-     *
      * @return
      */
     public static User getCurrentUser() {
@@ -44,16 +43,15 @@ public class UserService {
     /**
      *
      */
-    public static void logOut(){
+    public static void logOut() {
         ParseUser.logOut();
     }
 
     /**
-     *
      * @param callback
      */
     public static void getAllUsers(FindCallback<User>
-            callback){
+                                           callback) {
 
         ParseQuery<User> query = ParseQuery.getQuery(User.class);
         query.include("posts");
@@ -63,10 +61,9 @@ public class UserService {
     }
 
     /**
-     *
      * @param userId
      */
-    public static void getUserById(String userId){
+    public static void getUserById(String userId) {
 
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.include("posts");
@@ -86,7 +83,6 @@ public class UserService {
     }
 
     /**
-     *
      * @param userId
      * @param callback
      */
@@ -98,39 +94,36 @@ public class UserService {
     }
 
     /**
-     *
      * @param username
      * @param callback
      */
     public static void getUserByUsername( String username,
-                                         GetCallback<ParseUser> callback
+                                         GetCallback<User> callback
     ) {
 
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
         query.whereEqualTo("username", username);
 
         query.getFirstInBackground(callback);
     }
 
     /**
-     *
      * @param userName
      * @return
      */
-    public static User findParseUserByName(String userName){
+    public static User findParseUserByName(String userName) {
         ParseQuery<ParseUser> query = User.getQuery();
         ParseUser parseUser = null;
         query.whereEqualTo("username", userName);
         try {
             List<ParseUser> userList = query.find();
-            if (userList != null && userList.size() == 1){
+            if (userList != null && userList.size() == 1) {
                 parseUser = userList.get(0);
             }
 
-        }catch (ParseException e){
+        } catch (ParseException e) {
             //TODO exception
-        }
-        finally {
+        } finally {
             return (User) parseUser;
         }
     }
@@ -155,7 +148,6 @@ public class UserService {
     }
 
     public static void getSuggestUsers(){
-
         User currentUser = UserService.getCurrentUser();
 
         UserRelationsService.getRelation(currentUser.getUsername(), new GetCallback<UserRelation>() {
@@ -173,7 +165,7 @@ public class UserService {
         });
     }
 
-     private static void getSuggestUsers(List<User> userList) {
+    private static void getSuggestUsers(List<User> userList) {
 
         List<String> usernameList = new ArrayList<>();
 
@@ -197,6 +189,7 @@ public class UserService {
 
         // include Objects in following column
         query.include("followings");
+//        query.include("followers");
 
         query.findInBackground(new FindCallback<UserRelation>() {
             @Override
@@ -219,7 +212,7 @@ public class UserService {
                     allLatestPosts.add(post);
                 }
 
-                long currentTime = Util.getCurrentDate().getTime();
+                long currentTime = ImageUtil.getCurrentDate().getTime();
                 // sort according to creation time
                 Collections.sort(allLatestPosts);
 
@@ -269,25 +262,25 @@ public class UserService {
         });
     }
 
-    private static List<User> getFollowingUsers( List<UserRelation>
-                                                    userRelationList){
+    private static List<User> getFollowingUsers(List<UserRelation>
+                                                        userRelationList) {
 
         List<User> userList = new ArrayList<>();
 
-        if( userRelationList == null ){
+        if (userRelationList == null) {
             return userList;
         }
 
-        for( UserRelation userRelation: userRelationList ){
+        for (UserRelation userRelation : userRelationList) {
             List<User> followings = userRelation.getFollowings();
 
-            if( followings == null || followings.isEmpty()){
+            if (followings == null || followings.isEmpty()) {
                 break;
             }
 
-            for( User user: followings){
-                if( user != null && ! userList.contains( user )){
-                    userList.add( user );
+            for (User user : followings) {
+                if (user != null && !userList.contains(user)) {
+                    userList.add(user);
                 }
             }
         }

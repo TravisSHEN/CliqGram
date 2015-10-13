@@ -1,6 +1,7 @@
 package cliq.com.cliqgram.services;
 
-import com.parse.GetCallback;
+import android.util.Log;
+
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
@@ -20,43 +21,34 @@ import cliq.com.cliqgram.server.AppStarter;
 public class CommentService {
 
     /**
-     *
      * @param post
      * @param comment
      */
-    public static void comment(Post post, final Comment comment){
+    public static void comment(Post post, final Comment comment) {
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
-            @Override
-            public void done(Post postObject, ParseException e) {
-                if(e == null){
+        query.include("comments");
 
-                    List<Comment> relation = (ArrayList) postObject.get
-                            ("comments");
-                    if(relation == null){
-                        relation = new ArrayList<>();
-                    }
-                    relation.add(comment);
-                    postObject.put("comments", relation);
-                    postObject.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                AppStarter.eventBus.post(new
-                                        CommentSuccessEvent(comment));
-                            } else {
-                                AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
-                                        e.getMessage()));
-                            }
-                        }
-                    });
-                }else{
+        List<Comment> relation = (ArrayList) post.get
+                ("comments");
+        if (relation == null) {
+            relation = new ArrayList<>();
+        }
+        relation.add(comment);
+        post.put("comments", relation);
+        post.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    AppStarter.eventBus.post(new
+                            CommentSuccessEvent(comment));
+                } else {
                     AppStarter.eventBus.post(new CommentFailEvent("Comment failed - " +
                             e.getMessage()));
                 }
             }
         });
+        Log.e("---- Comment ----", post.getObjectId());
     }
 
 }

@@ -23,7 +23,7 @@ import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
-import cliq.com.cliqgram.utils.Util;
+import cliq.com.cliqgram.utils.ImageUtil;
 
 /**
  * Created by ilkan on 27/09/2015.
@@ -57,6 +57,8 @@ public class Post extends ParseObject implements Comparable<Post> {
 
         post.saveInBackground();
         PostService.post(post);
+        //owner is currentUser,  owner is targetUser
+        //Activity.createActivity(owner, "post", post.getObjectId(), owner);
         return post;
     }
 
@@ -114,7 +116,7 @@ public class Post extends ParseObject implements Comparable<Post> {
      * @return
      */
     private BitmapDrawable getPhotoInBitmapDrawable(Context context, byte[] photoData) {
-        return Util.convertByteToBitmapDrawable(context, photoData);
+        return ImageUtil.convertByteToBitmapDrawable(context, photoData);
     }
 
     public Bitmap getPhotoInBitmap(Context context, byte[] photoData) {
@@ -153,6 +155,10 @@ public class Post extends ParseObject implements Comparable<Post> {
         photo.getDataInBackground(callback);
     }
 
+    public ParseFile getPhotoDataAsParseFile() {
+        return this.getParseFile("photo");
+    }
+
     public Uri getPhotoUri(){
         ParseFile photoFile = this.getParseFile("photo");
         Uri imageUri = Uri.parse(photoFile.getUrl());
@@ -169,7 +175,7 @@ public class Post extends ParseObject implements Comparable<Post> {
     }
 
     public void setPhotoData(byte[] photoData) {
-        String photoLabel = "img_" + String.valueOf(Util.getCurrentDate()
+        String photoLabel = "img_" + String.valueOf(ImageUtil.getCurrentDate()
                 .getTime()) +
                 ".jpg";
         ParseFile photo = new ParseFile(photoLabel, photoData);

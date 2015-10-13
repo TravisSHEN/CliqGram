@@ -14,14 +14,14 @@
             android:layout_height="fill_parent"
             android:id="@+id/imageView"
             android:contentDescription="@string/new_photo"
-            android:minHeight="400dp"/>
+            android:minHeight="350dp"/>
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="30dp"
+        android:minHeight="25dp"
         android:gravity="center_vertical">
 
         <TextView
@@ -29,8 +29,9 @@
             android:layout_height="wrap_content"
             android:text="Brightness"
             android:id="@+id/brightnessView"
-            android:gravity="center"
-            android:minWidth="100dp"/>
+            android:minWidth="100dp"
+            android:gravity="left"
+            android:paddingLeft="8dp"/>
 
         <SeekBar
             android:layout_width="fill_parent"
@@ -47,16 +48,18 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:minHeight="30dp"
-        android:gravity="center_vertical">
+        android:minHeight="25dp"
+        android:gravity="center_vertical"
+        android:layout_gravity="left">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Contrast"
             android:id="@+id/contrastView"
-            android:gravity="center"
-            android:minWidth="100dp"/>
+            android:minWidth="100dp"
+            android:gravity="left"
+            android:paddingLeft="8dp"/>
 
         <SeekBar
             android:layout_width="fill_parent"
@@ -64,6 +67,38 @@
             android:id="@+id/contrastBar"
             android:max="100"
             android:progress="25"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/filter_spinner"
+            android:gravity="left"
+            android:spinnerMode="dropdown"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="50dp">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/postDescription"
+            android:gravity="center_vertical|center_horizontal"
+            android:hint="Tell us what&apos;s happening in this picture!"/>
     </LinearLayout>
 
 </LinearLayout>

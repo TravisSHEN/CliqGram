@@ -2,6 +2,7 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.PostAdapter;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
+import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
@@ -45,6 +47,9 @@ public class PostFragment extends Fragment {
 
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
+
+    @Bind(R.id.feed_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
 
     /**
@@ -94,6 +99,7 @@ public class PostFragment extends Fragment {
 
         this.initializeFeedView();
 
+
         return view;
     }
 
@@ -107,8 +113,17 @@ public class PostFragment extends Fragment {
         feedView.setLayoutManager(llm);
         feedView.setHasFixedSize(true);
 
+        // set refresh listener for SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeData();
+            }
+        });
+
 
         postAdapter = new PostAdapter(this.getActivity(), postList);
+        postAdapter.setmBluetoothHelper(BluetoothHelper.getInstance());
         feedView.setAdapter(postAdapter);
     }
 
@@ -150,13 +165,19 @@ public class PostFragment extends Fragment {
         } else if (event.getPost() != null) {
             Post post = event.getPost();
             if (post != null) {
+
+                Toast.makeText(getActivity(), "Received Post - " + post
+                        .getObjectId(), Toast.LENGTH_SHORT).show();
                 postList.add(post);
-                postAdapter.updateFeedList(postList);
+                postAdapter.addToFeedList(post);
             }
         } else {
             Toast.makeText(this.getActivity(), event.getMessage(), Toast
                     .LENGTH_LONG).show();
         }
+
+        // hide refresh progress
+        swipeRefreshLayout.setRefreshing(false);
 
     }
 

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class SearchFragment extends Fragment {
 
         // enable option menu
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -148,11 +150,9 @@ public class SearchFragment extends Fragment {
         search_recycler_view.setHasFixedSize(true);
 
         userSuggestAdapter = new UserSuggestAdapter(getActivity(), suggestList);
-        userSuggestAdapter.setFragmentManager( getFragmentManager() );
+        userSuggestAdapter.setFragmentManager(getFragmentManager());
         search_recycler_view.setAdapter(userSuggestAdapter);
     }
-
-
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -192,6 +192,15 @@ public class SearchFragment extends Fragment {
 
                     if (SearchFragment.this.isUserListReady()) {
                         doSearch(menu, query);
+
+//                        List<String> usernameList = getUsernameList(userList);
+
+                        // if not existing in current list, then search
+                        // online
+//                        if( ! usernameList.contains(query) ){
+                        Log.e("SearchParse", query);
+                        searchOnParse(query.trim());
+//                        }
                     }
                     return true;
                 }
@@ -232,13 +241,14 @@ public class SearchFragment extends Fragment {
             MatrixCursor cursor = new MatrixCursor(columns);
 
             int index = 0;
-            for (int i = 0; i < userList.size(); i++) {
 
+            for (int i = 0; i < userList.size(); i++) {
 
                 User user = userList.get(i);
 
                 Log.e("User Searchable", user.getUsername());
 
+                // if this is currentUser, don't add to search list
                 if (user == null ||
                         user.getObjectId()
                                 .equals(currentUser.getObjectId())) {
@@ -274,19 +284,51 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    public synchronized List<User> getUserList() {
+    public void searchOnParse(String query) {
+        UserService.getUserByUsername(query, new GetCallback<User>() {
+            @Override
+            public void done(User user, ParseException e) {
+
+                if (e == null) {
+                    Toast.makeText(getActivity(), user.getUsername() + " " +
+                            "found.", Toast
+                            .LENGTH_SHORT).show();
+                    userList.add(user);
+                } else {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                            .LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
+
+    public List<String> getUsernameList(List<User> userList) {
+        List<String> usernameList = new ArrayList<>();
+        for (int i = 0; i < userList.size(); i++) {
+            User user = userList.get(i);
+            if (user == null || user.getUsername() == null) {
+                break;
+            }
+            usernameList.add(user.getUsername());
+        }
+
+        return usernameList;
+    }
+
+    public List<User> getUserList() {
         return userList;
     }
 
-    public synchronized void setUserList(List<User> userList) {
+    public void setUserList(List<User> userList) {
         this.userList = userList;
     }
 
-    public synchronized boolean isUserListReady() {
+    public boolean isUserListReady() {
         return isUserListReady;
     }
 
-    public synchronized void setIsUserListReady(boolean isUserListReady) {
+    public void setIsUserListReady(boolean isUserListReady) {
         this.isUserListReady = isUserListReady;
     }
 }

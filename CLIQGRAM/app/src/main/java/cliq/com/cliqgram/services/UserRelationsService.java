@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cliq.com.cliqgram.events.RelationGetEvent;
+import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
 import cliq.com.cliqgram.server.AppStarter;
@@ -28,18 +29,32 @@ public class UserRelationsService {
     /**
      * @param userName
      */
-    public static void follow(final String userName) {
+    public static void follow(final User currentUser, final String userName) {
 
-        // set current
-        final User currentUser = UserService.getCurrentUser();
-        followGenericAction(userName, "followers", currentUser);
-
-        //
-        UserService.getUserByUsername(userName, new GetCallback<ParseUser>() {
+        followGenericAction(userName, "followers", currentUser, new SaveCallback() {
             @Override
-            public void done(ParseUser otherUser, ParseException e) {
-                followGenericAction(currentUser.getUsername(),
-                        "followings", otherUser);
+            public void done(ParseException e) {
+
+            }
+        });
+
+        UserService.getUserByUsername(userName, new GetCallback<User>() {
+            @Override
+            public void done(final User otherUser, ParseException e) {
+
+                followGenericAction(currentUser.getUsername(), "followings",
+                        otherUser, new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+
+                                    //currentUser is currentUser,  otherUser is targetUser
+                                    Activity.createActivity(currentUser,
+                                            "follow", "", otherUser);
+                                }
+                            }
+                        });
+
             }
         });
     }
@@ -49,7 +64,7 @@ public class UserRelationsService {
      * @param operationName
      * @param user
      */
-    private static void followGenericAction(final String userName, final String operationName, final ParseUser user) {
+    private static void followGenericAction(final String userName, final String operationName, final User user, final SaveCallback callback) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);
@@ -81,17 +96,9 @@ public class UserRelationsService {
                     }
                     relation.add(user);
 
+
                     userRelations.put(operationName, relation);
-                    userRelations.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                //TODO event
-                            } else {
-                                //TODO event
-                            }
-                        }
-                    });
+                    userRelations.saveInBackground(callback);
                 } else {
                     //TODO event
                 }
@@ -138,6 +145,17 @@ public class UserRelationsService {
 
     }
 
+    public static void getParticularRelation(String username, String relation,
+                                             GetCallback<UserRelation> callback) {
+        ParseQuery<UserRelation> query =
+                ParseQuery.getQuery(UserRelation.class);
+
+        query.whereEqualTo("username", username);
+        query.include(relation);
+
+        query.getFirstInBackground(callback);
+
+    }
 
 
     /**
