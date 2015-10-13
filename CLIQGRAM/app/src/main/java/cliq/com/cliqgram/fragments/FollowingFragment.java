@@ -92,6 +92,9 @@ public class FollowingFragment extends Fragment {
                 "followings", new GetCallback<UserRelation>() {
                     @Override
                     public void done(UserRelation object, ParseException e) {
+                        // hide refresh progress
+                        swipeRefreshLayout.setRefreshing(false);
+
                         if (object == null) {
                             Toast.makeText(getActivity(), e.getMessage(), Toast
                                     .LENGTH_SHORT).show();
