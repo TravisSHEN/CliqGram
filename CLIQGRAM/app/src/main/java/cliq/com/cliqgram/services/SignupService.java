@@ -24,21 +24,21 @@ public class SignupService {
                               final String password,
                               final String email) {
 
-        // set default avatar
+//        // set default avatar
         byte[] avatarData = ImageUtil.convertBitmapToByte(ImageUtil.resizeDrawable(context, R.drawable
                 .icon_user, 0.7f).getBitmap());
-
+//
         String avatarLabel = "img_" +
                 String.valueOf(ImageUtil.getCurrentDate().getTime()) + "" +
                 ".jpg";
-
-        // after avatar file stored successfully, then signup new user.
+//
+//        // after avatar file stored successfully, then signup new user.
         final ParseFile avatar = new ParseFile(avatarLabel, avatarData);
         avatar.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
 
-                if( e == null ) {
+                if (e == null) {
 
                     User user = new User();
                     user.setUsername(username);
@@ -49,6 +49,7 @@ public class SignupService {
                 }
             }
         });
+
     }
 
     private static void doSignup(final User user,

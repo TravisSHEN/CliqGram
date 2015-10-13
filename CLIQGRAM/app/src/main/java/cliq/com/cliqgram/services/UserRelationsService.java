@@ -31,33 +31,32 @@ public class UserRelationsService {
      */
     public static void follow(final User currentUser, final String userName) {
 
-        // set current
-        //final User currentUser = UserService.getCurrentUser();
         followGenericAction(userName, "followers", currentUser, new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if(e == null){
-                            UserService.getUserByUsername(userName, new GetCallback<User>() {
-                                @Override
-                                public void done(User object, ParseException e) {
-                                    final User otherUser = object;
-                                    followGenericAction(currentUser.getUsername(), "followings", otherUser, new SaveCallback() {
-                                        @Override
-                                        public void done(ParseException e) {
-                                            if (e == null) {
-                                                //currentUser is currentUser,  otherUser is targetUser
-                                                Activity.createActivity(currentUser, "follow", "", otherUser);
-                                            }
-                                        }
-                                    });
+            @Override
+            public void done(ParseException e) {
+
+            }
+        });
+
+        UserService.getUserByUsername(userName, new GetCallback<User>() {
+            @Override
+            public void done(final User otherUser, ParseException e) {
+
+                followGenericAction(currentUser.getUsername(), "followings",
+                        otherUser, new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+
+                                    //currentUser is currentUser,  otherUser is targetUser
+                                    Activity.createActivity(currentUser,
+                                            "follow", "", otherUser);
                                 }
-                            });
-                        }
+                            }
+                        });
 
-                    }
-                });
-
-
+            }
+        });
     }
 
     /**
@@ -96,6 +95,7 @@ public class UserRelationsService {
                         return;
                     }
                     relation.add(user);
+
 
                     userRelations.put(operationName, relation);
                     userRelations.saveInBackground(callback);
@@ -146,7 +146,7 @@ public class UserRelationsService {
     }
 
     public static void getParticularRelation(String username, String relation,
-                                   GetCallback<UserRelation> callback) {
+                                             GetCallback<UserRelation> callback) {
         ParseQuery<UserRelation> query =
                 ParseQuery.getQuery(UserRelation.class);
 
@@ -156,7 +156,6 @@ public class UserRelationsService {
         query.getFirstInBackground(callback);
 
     }
-
 
 
     /**

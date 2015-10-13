@@ -85,9 +85,15 @@ public class FollowingFragment extends Fragment {
     private void initializeData() {
 
         // TODO: find post by id via post service
-        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(), "followings", new GetCallback<UserRelation>() {
+        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(),
+                "followings", new GetCallback<UserRelation>() {
             @Override
             public void done(UserRelation object, ParseException e) {
+                if(object == null ){
+                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                            .LENGTH_SHORT).show();
+                    return;
+                }
                 List<User> followings = object.getFollowings();
                 ActivityService.pullFollowingActivity(followings, new FindCallback<Activity>() {
                     @Override

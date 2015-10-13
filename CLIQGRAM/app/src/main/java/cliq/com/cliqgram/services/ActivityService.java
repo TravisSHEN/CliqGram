@@ -63,6 +63,9 @@ public class ActivityService {
     }
     //TODO set size for the you activity list @ilkan
     public static void pullActivityRegardingToYou(User user, List<User> userList, FindCallback<Activity> callback){
+        if( userList == null ){
+            return;
+        }
         //List<Activity> wholeActivityList = new ArrayList<Activity>();
         ParseQuery<Activity> query = ParseQuery.getQuery(Activity.class);
         query.whereContainedIn("user", userList);

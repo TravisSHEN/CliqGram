@@ -84,6 +84,10 @@ public class BluetoothHelper {
 
     }
 
+    public void stopBluetooth(){
+        mContext.unregisterReceiver( mReceiver );
+    }
+
     public void sendMessage(String msg) {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 

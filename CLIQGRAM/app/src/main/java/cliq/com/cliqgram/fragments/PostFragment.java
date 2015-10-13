@@ -2,6 +2,7 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -46,6 +47,9 @@ public class PostFragment extends Fragment {
 
     @Bind(R.id.feed_recycler_view)
     RecyclerView feedView;
+
+    @Bind(R.id.feed_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
 
     /**
@@ -109,6 +113,14 @@ public class PostFragment extends Fragment {
         feedView.setLayoutManager(llm);
         feedView.setHasFixedSize(true);
 
+        // set refresh listener for SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeData();
+            }
+        });
+
 
         postAdapter = new PostAdapter(this.getActivity(), postList);
         postAdapter.setmBluetoothHelper(BluetoothHelper.getInstance());
@@ -163,6 +175,9 @@ public class PostFragment extends Fragment {
             Toast.makeText(this.getActivity(), event.getMessage(), Toast
                     .LENGTH_LONG).show();
         }
+
+        // hide refresh progress
+        swipeRefreshLayout.setRefreshing(false);
 
     }
 
