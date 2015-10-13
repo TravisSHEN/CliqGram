@@ -31,13 +31,13 @@ public class LikeService {
     public static void like(Post post, final Like like) {
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.include("likes");
         query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
             @Override
             public void done(Post postObject, ParseException e) {
                 if (e == null) {
 
-                    List<Like> relation = (ArrayList) postObject.get
-                            ("likes");
+                    List<Like> relation = (ArrayList) postObject.get("likes");
                     if (relation == null) {
                         relation = new ArrayList<>();
                     }
