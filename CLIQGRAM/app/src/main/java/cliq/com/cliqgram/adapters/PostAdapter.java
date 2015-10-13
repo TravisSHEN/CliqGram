@@ -52,7 +52,7 @@ public class PostAdapter extends RecyclerView
 
     private Context    context;
     private List<Post> postList;
-    
+
     @Bind(R.id.feed_btn_more)
     ImageButton moreButton;
 
@@ -92,9 +92,18 @@ public class PostAdapter extends RecyclerView
         sb.append("Likes: ");
 
         if (likeList != null && likeList.size() > 0) {
-            for (Like like : likeList) {
-                sb.append(like.getUser().getUsername() + ", ");
+            for (int i = likeList.size() - 1; i >= 0; i--) {
+                try {
+                    Like like = likeList.get(i);
+                    if( like.getUser() != null ) {
+                        sb.append(like.getUser().getUsername() + ", ");
+                    }
+                }catch (ClassCastException e){
+
+                }
             }
+
+
         }
 
         sb.append("\n\n" + post.getDescription() + "\n\n");
@@ -114,8 +123,8 @@ public class PostAdapter extends RecyclerView
 
         // add tag to btn
         feedViewHolder.feed_btn_like.setTag(feedViewHolder);
-        feedViewHolder.feed_btn_more.setTag(post);
-        feedViewHolder.feed_btn_comments.setTag(post);
+        feedViewHolder.feed_btn_more.setTag(feedViewHolder);
+        feedViewHolder.feed_btn_comments.setTag(feedViewHolder);
         feedViewHolder.feed_photo.setTag(post);
         feedViewHolder.cv.setTag(post);
 
@@ -217,8 +226,10 @@ public class PostAdapter extends RecyclerView
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View view) {
-            int        id          = view.getId();
-            final Post currentPost = (Post) view.getTag();
+            int id = view.getId();
+
+            FeedViewHolder feedViewHolder = (FeedViewHolder) view.getTag();
+            final Post     currentPost    = postList.get(feedViewHolder.getAdapterPosition());
 
             switch (id) {
                 case R.id.feed_btn_like:
@@ -331,7 +342,7 @@ public class PostAdapter extends RecyclerView
         feedViewHolder.feed_btn_more.setOnClickListener(onClickListener);
         feedViewHolder.feed_btn_comments.setOnClickListener(onClickListener);
 
-        feedViewHolder.feed_btn_comments.setTag(postList.get(feedViewHolder.getAdapterPosition()));
+//        feedViewHolder.feed_btn_comments.setTag(postList.get(feedViewHolder.getAdapterPosition()));
 
         feedViewHolder.feed_photo.setOnTouchListener(onSwipeTouchListener);
 
