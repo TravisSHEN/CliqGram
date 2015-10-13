@@ -46,7 +46,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileViewHolder>{
 
     @Override
     public int getItemCount() {
-        return this.postList.size();
+        int size = 0;
+        if( this.postList != null ){
+            size = postList.size();
+        }
+        return size;
     }
 
     public void updatePostList(List<Post> postList){
