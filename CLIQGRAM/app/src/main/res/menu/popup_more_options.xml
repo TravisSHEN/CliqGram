@@ -6,7 +6,11 @@
         android:title="Share via Bluetooth"/>
 
     <item
-        android:id="@+id/Download"
-        android:title="download"/>
+        android:id="@+id/download"
+        android:title="Download"/>
+
+    <item
+        android:id="@+id/set_as_profile"
+        android:title="Set as Profile Picture"/>
 
 </menu>
