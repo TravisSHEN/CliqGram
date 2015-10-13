@@ -3,6 +3,7 @@ package cliq.com.cliqgram.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -27,6 +28,7 @@ import java.util.List;
 import butterknife.Bind;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.OpenCommentEvent;
+import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.listeners.OnSwipeTouchListener;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
@@ -227,7 +229,8 @@ public class PostAdapter extends RecyclerView
 
                 case R.id.feed_btn_more:
                     // create instance of popup menu
-                    PopupMenu popup = new PopupMenu(context, moreButton);
+                    View menuItemView = ((AppCompatActivity) context).findViewById(R.id.feed_btn_more);
+                    PopupMenu popup = new PopupMenu(context, menuItemView);
 
                     // inflate the popup menu
                     popup.getMenuInflater().inflate(R.menu.popup_more_options, popup.getMenu());
@@ -240,6 +243,7 @@ public class PostAdapter extends RecyclerView
 
                             switch (popupSelectId) {
                                 case R.id.share_bluetooth:
+//                                    BluetoothHelper.getInstance().sendMessage(currentPost.getObjectId());
                                     break;
                                 case R.id.download:
                                     break;
