@@ -71,10 +71,11 @@
     <string-array name="filters_array">
         <item>No Filter</item>
         <item>Emboss</item>
-        <item>Gamma</item>
         <item>Gaussian Blur</item>
         <item>Glass Sphere</item>
         <item>Grayscale</item>
+        <item>Monochrome</item>
         <item>Sepia</item>
+        <item>Sketch</item>
     </string-array>
 </resources>
