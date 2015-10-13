@@ -1,17 +1,24 @@
 package cliq.com.cliqgram.helper;
 
-import android.bluetooth.*;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
-import cliq.com.cliqgram.callbacks.IdReceivedCallback;
-import cliq.com.cliqgram.exceptions.BluetoothOffException;
+import android.widget.Toast;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
+
+import cliq.com.cliqgram.callbacks.IdReceivedCallback;
+import cliq.com.cliqgram.exceptions.BluetoothOffException;
 
 /**
  * Created by Benjamin on 15/10/13.
@@ -62,6 +69,13 @@ public class BluetoothHelper {
 
     public void sendMessage(String msg) {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        if( pairedDevices == null ){
+            Toast.makeText(mContext,
+                    "Please pair with at least one another phone", Toast
+                            .LENGTH_SHORT).show();
+        }
+
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 isServer = false;

@@ -19,6 +19,7 @@ import java.util.List;
 
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.OpenCommentEvent;
+import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.listeners.OnSwipeTouchListener;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
@@ -42,6 +43,7 @@ public class PostAdapter extends RecyclerView
     private Context context;
     private List<Post> postList;
 
+    private BluetoothHelper mBluetoothHelper;
 
     public PostAdapter(Context context, List<Post> postList) {
 
@@ -266,6 +268,8 @@ public class PostAdapter extends RecyclerView
         public void onSwipeRight(View v) {
             Post post = (Post) v.getTag();
             Log.e("Swipe Touch", post.getObjectId());
+            // send post id to another phone
+            getmBluetoothHelper().sendMessage( post.getObjectId() );
             Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
         }
 
@@ -317,5 +321,13 @@ public class PostAdapter extends RecyclerView
         Collections.sort(feedList);
 
         this.notifyDataSetChanged();
+    }
+
+    public BluetoothHelper getmBluetoothHelper() {
+        return mBluetoothHelper;
+    }
+
+    public void setmBluetoothHelper(BluetoothHelper mBluetoothHelper) {
+        this.mBluetoothHelper = mBluetoothHelper;
     }
 }

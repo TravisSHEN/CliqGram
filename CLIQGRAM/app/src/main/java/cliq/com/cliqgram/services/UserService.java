@@ -168,7 +168,7 @@ public class UserService {
 
         // include Objects in following column
         query.include("followings");
-        query.include("followers");
+//        query.include("followers");
 
         query.findInBackground(new FindCallback<UserRelation>() {
             @Override
