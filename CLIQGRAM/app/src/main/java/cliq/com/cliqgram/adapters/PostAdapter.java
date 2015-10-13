@@ -254,8 +254,6 @@ public class PostAdapter extends RecyclerView
                                 case R.id.share_bluetooth:
                                     BluetoothHelper.getInstance().sendMessage(currentPost.getObjectId());
                                     break;
-                                case R.id.download:
-                                    break;
                                 case R.id.set_as_profile:
                                     User currentUser = UserService.getCurrentUser();
                                     currentUser.setAvatarFromPost(currentPost);
