@@ -47,7 +47,9 @@ public class UserSuggestAdapter extends RecyclerView.Adapter<UserSuggestViewHold
 
         final User user = userSuggestList.get(position);
 
-        user.loadAvatarToView(context, holder.avatar);
+        if(holder.avatar != null) {
+            user.loadAvatarToView(context, holder.avatar);
+        }
         holder.username.setText(user.getUsername());
 
         holder.suggest_user.setTag(user);
@@ -61,19 +63,21 @@ public class UserSuggestAdapter extends RecyclerView.Adapter<UserSuggestViewHold
         // TODO: show most recent post photo
 //        holder.image.setImageBitmap(photo);
         List<Post> postList = user.getPostList();
-        int size = postList.size();
-        Post post1 = postList.get(size - 1);
-        if (post1 != null) {
-            post1.loadPhotoToView(context, holder.image1);
+        try {
+            if (postList != null) {
+                int size = postList.size();
+                Post post1 = postList.get(size - 1);
+                if (post1 != null) {
+                    post1.loadPhotoToView(context, holder.image1);
+                }
+                Post post2 = postList.get(size - 2);
+                if (post2 != null) {
+                    post2.loadPhotoToView(context, holder.image2);
+                }
+            }
+        }catch(ArrayIndexOutOfBoundsException e){
+
         }
-        Post post2 = postList.get(size - 2);
-        if (post2 != null) {
-            post2.loadPhotoToView(context, holder.image2);
-        }
-//        Post post3 = postList.get(size - 3);
-//        if (post3 != null) {
-//            post3.loadPhotoToView(context, holder.image3);
-//        }
 
     }
 

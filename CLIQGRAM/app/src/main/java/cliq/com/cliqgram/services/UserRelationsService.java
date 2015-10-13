@@ -148,6 +148,7 @@ public class UserRelationsService {
     public static List<User> getRelation(String userName, String relation) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);
+        query.include("posts");
         List<User> userRelations = new ArrayList<>();
         try {
             List<ParseObject> parseObjects = query.find();

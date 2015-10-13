@@ -13,10 +13,13 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cliq.com.cliqgram.events.UserGetEvent;
 import cliq.com.cliqgram.events.UserSuggestionRetrieved;
+import cliq.com.cliqgram.helper.FollowerCounter;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
@@ -132,6 +135,25 @@ public class UserService {
         }
     }
 
+    public static User findUserByName(String userName){
+        ParseQuery<ParseUser> query = User.getQuery();
+        ParseUser parseUser = null;
+        query.whereEqualTo("username", userName);
+        query.include("posts");
+        try {
+            List<ParseUser> userList = query.find();
+            if (userList != null && userList.size() == 1){
+                parseUser = userList.get(0);
+            }
+
+        }catch (ParseException e){
+            //TODO exception
+        }
+        finally {
+            return (User) parseUser;
+        }
+    }
+
     public static void getSuggestUsers(){
 
         User currentUser = UserService.getCurrentUser();
@@ -140,13 +162,13 @@ public class UserService {
             @Override
             public void done(UserRelation relation, ParseException e) {
 
-                if( relation == null ){
+                if (relation == null) {
                     return;
                 }
 
                 List<User> followings = relation.getFollowings();
 
-                getSuggestUsers( followings );
+                getSuggestUsers(followings);
             }
         });
     }
@@ -273,5 +295,80 @@ public class UserService {
         return userList;
     }
 
+    public static void getSuggestedUserList(){
 
+        Location currentLocation = AppStarter.gpsTracker.getLocation();
+        getPeopleNearBy(currentLocation, new FindCallback<User>() {
+            @Override
+            public void done(final List<User> sugList, ParseException e) {
+                getMostPopularPeople(new FindCallback<UserRelation>() {
+                    @Override
+                    public void done(List<UserRelation> objects, ParseException e) {
+                        if (e == null) {
+                            List<FollowerCounter> fCounterList = new ArrayList<FollowerCounter>();
+                            for (UserRelation relation : objects) {
+                                int size = 0;
+                                if (relation.getFollowers() != null) {
+                                    size = relation.getFollowers().size();
+                                }
+                                FollowerCounter fc = new FollowerCounter(findUserByName(relation.getUsername()), size);
+                                fCounterList.add(fc);
+                            }
+
+                            for (int i = 0; i <= 100 && i < fCounterList.size(); i++) {
+                                if (fCounterList.get(i) != null) {
+                                    FollowerCounter fc = fCounterList.get(i);
+                                    User user = fc.getUser();
+                                    sugList.add(user);
+                                } else {
+                                    break;
+                                }
+
+                            }
+                            List<User> followings = UserRelationsService.getRelation(User.getCurrentUser().getUsername(), "followings");
+                            followings = getFollowingsFollowings(followings);
+                            sugList.addAll(followings);
+                            Set<User> hs = new HashSet<>();
+                            hs.addAll(sugList);
+                            sugList.clear();
+                            sugList.addAll(hs);
+                            sugList.removeAll(followings);
+                            AppStarter.eventBus.post(new UserSuggestionRetrieved(sugList));
+                        }
+                    }
+                });
+            }
+        });
+
+
+
+    }
+
+
+    public static List<User> getFollowingsFollowings(List<User> followings){
+        List<User> sugUserList = new ArrayList<User>();
+        for (User following : followings)
+        {
+            List<User> followings2 = UserRelationsService.getRelation(following.getUsername(),"followings");
+            sugUserList.addAll(followings2);
+        }
+        return sugUserList;
+    }
+
+    public static void getMostPopularPeople(FindCallback<UserRelation> callback){
+
+        ParseQuery<UserRelation> query = ParseQuery.getQuery(UserRelation.class);
+        query.findInBackground(callback);
+    }
+
+    public static void getPeopleNearBy(Location currentLocation, FindCallback<User> callback){
+        ParseQuery<Post> innerQuery = ParseQuery.getQuery(Post.class);
+        ParseGeoPoint geoPoint = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
+        innerQuery.whereWithinMiles("location", geoPoint, 100);
+        ParseQuery<User> query = ParseQuery.getQuery(User.class);
+        query.whereMatchesQuery("posts", innerQuery);
+        query.include("posts");
+        query.findInBackground(callback);
+
+    }
 }

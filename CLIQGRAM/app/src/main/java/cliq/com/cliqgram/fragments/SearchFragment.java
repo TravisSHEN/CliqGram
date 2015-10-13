@@ -95,6 +95,7 @@ public class SearchFragment extends Fragment {
         UserService.getAllUsers(new FindCallback<User>() {
             @Override
             public void done(List<User> userList, ParseException e) {
+                Log.e("userList:", userList.toString());
                 if (e == null) {
 
                     SearchFragment.this.setUserList(userList);
@@ -109,8 +110,14 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // retrieve all suggested users
-        UserService.getSuggestUsers();
+        UserService.getSuggestedUserList();
+    }
+
+    @Subscribe
+    public void onUserSuggestionRetrieved(UserSuggestionRetrieved event) {
+        List<User> sugList = event.getUserSuggestionList();
+        this.suggestList = sugList;
+        userSuggestAdapter.updateSuggestList(this.suggestList);
     }
 
     @Override
@@ -145,19 +152,7 @@ public class SearchFragment extends Fragment {
         search_recycler_view.setAdapter(userSuggestAdapter);
     }
 
-    @Subscribe
-    public void userSuggestionRetrieved( UserSuggestionRetrieved event){
 
-        this.suggestList = event.getUserSuggestionList();
-        if(this.suggestList == null ){
-            return;
-        }
-
-        for( User user : suggestList ){
-           Log.e("SearchFragment-Suggest", user.getUsername());
-        }
-        userSuggestAdapter.updateSuggestList( this.suggestList );
-    }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -247,7 +242,7 @@ public class SearchFragment extends Fragment {
                 if (user == null ||
                         user.getObjectId()
                                 .equals(currentUser.getObjectId())) {
-                    break;
+                    continue;
                 }
 
                 String normalizedUsername = user.getUsername()
