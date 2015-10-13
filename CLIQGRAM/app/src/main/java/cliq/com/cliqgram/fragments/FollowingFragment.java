@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -90,7 +92,9 @@ public class FollowingFragment extends Fragment {
                 ActivityService.pullFollowingActivity(followings, new FindCallback<Activity>() {
                     @Override
                     public void done(List<Activity> objects, ParseException e) {
-                        followingActivityAdapter.updateData(objects);
+                        if (e == null && objects != null && objects.size() > 0) {
+                            followingActivityAdapter.updateData(objects);
+                        }
                     }
                 });
             }
