@@ -9,9 +9,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.DrawableRes;
 import android.view.View;
-import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;

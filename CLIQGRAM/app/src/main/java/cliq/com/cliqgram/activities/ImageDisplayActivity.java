@@ -23,7 +23,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.model.Post;
-import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.GPUImageFilterTools;
 import cliq.com.cliqgram.utils.Util;
