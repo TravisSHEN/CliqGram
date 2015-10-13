@@ -40,7 +40,7 @@ public class Utils {
 
     /*just used to get any date to test.*/
     public static long getTime(String date) {
-        DateFormat format = DateFormat.getDateTimeInstance();
+        DateFormat format = Utils.dateFormat;
         try {
             return format.parse(date).getTime();
         } catch (ParseException e) {

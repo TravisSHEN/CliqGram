@@ -7,6 +7,7 @@ import com.parse.ParseACL;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
@@ -26,7 +27,7 @@ public class ParseConnector {
         ParseObject.registerSubclass(Post.class);
         ParseObject.registerSubclass(Like.class);
         ParseObject.registerSubclass(UserRelation.class);
-
+        ParseObject.registerSubclass(Activity.class);
         // Add your initialization code here
         Parse.initialize(context, Keys.applicationId, Keys.clientKey);
         ParseUser.enableRevocableSessionInBackground();

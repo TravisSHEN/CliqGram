@@ -3,8 +3,6 @@ package cliq.com.cliqgram.model;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
-import java.util.Date;
-
 import cliq.com.cliqgram.services.ActivityService;
 
 /**
@@ -80,9 +78,9 @@ public class Activity extends ParseObject implements Comparable<Activity>{
         this.put("activityType", activityType);
     }
 
-    public Date getCreatedAt() {
+    /*public Date getCreatedAt() {
         return (Date)this.get("createdAt");
-    }
+    }*/
 
     //createdAt is assigned by Parse
     /*public void setCreatedAt(Date createdAt) {

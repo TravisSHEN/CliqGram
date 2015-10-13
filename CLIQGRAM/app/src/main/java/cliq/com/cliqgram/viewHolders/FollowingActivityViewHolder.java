@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -30,5 +31,6 @@ public class FollowingActivityViewHolder extends RecyclerView.ViewHolder {
     public FollowingActivityViewHolder(Context context, View itemView) {
         super(itemView);
         this.context = context;
+        ButterKnife.bind(this, itemView);
     }
 }

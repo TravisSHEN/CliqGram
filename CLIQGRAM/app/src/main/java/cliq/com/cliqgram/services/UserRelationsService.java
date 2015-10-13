@@ -29,21 +29,34 @@ public class UserRelationsService {
     /**
      * @param userName
      */
-    public static void follow(final String userName) {
+    public static void follow(final User currentUser, final String userName) {
 
         // set current
-        final User currentUser = UserService.getCurrentUser();
-        followGenericAction(userName, "followers", currentUser);
+        //final User currentUser = UserService.getCurrentUser();
+        followGenericAction(userName, "followers", currentUser, new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e == null){
+                            UserService.getUserByUsername(userName, new GetCallback<User>() {
+                                @Override
+                                public void done(User object, ParseException e) {
+                                    final User otherUser = object;
+                                    followGenericAction(currentUser.getUsername(), "followings", otherUser, new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                            if (e == null) {
+                                                //currentUser is currentUser,  otherUser is targetUser
+                                                Activity.createActivity(currentUser, "follow", "", otherUser);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
 
-        UserService.getUserByUsername(userName, new GetCallback<User>() {
-            @Override
-            public void done(User otherUser, ParseException e) {
-                followGenericAction(currentUser.getUsername(),
-                        "followings", otherUser);
-                //currentUser is currentUser,  otherUser is targetUser
-                Activity.createActivity(currentUser, "follow", null, otherUser);
-            }
-        });
+                    }
+                });
+
 
     }
 
@@ -52,7 +65,7 @@ public class UserRelationsService {
      * @param operationName
      * @param user
      */
-    private static void followGenericAction(final String userName, final String operationName, final User user) {
+    private static void followGenericAction(final String userName, final String operationName, final User user, final SaveCallback callback) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_NAME);
         query.whereEqualTo("username", userName);
@@ -85,16 +98,7 @@ public class UserRelationsService {
                     relation.add(user);
 
                     userRelations.put(operationName, relation);
-                    userRelations.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                //TODO event
-                            } else {
-                                //TODO event
-                            }
-                        }
-                    });
+                    userRelations.saveInBackground(callback);
                 } else {
                     //TODO event
                 }

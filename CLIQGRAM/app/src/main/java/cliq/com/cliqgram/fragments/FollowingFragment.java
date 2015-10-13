@@ -89,6 +89,12 @@ public class FollowingFragment extends Fragment {
         })*/
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeData();
+    }
+
     private void initializeData() {
 
         // TODO: find post by id via post service

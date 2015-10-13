@@ -145,7 +145,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                  */
 
                 User owner = UserService.getCurrentUser();
-                Post.createPost(UserService.getCurrentUser(),
+                Post.createPost(owner,
                         Util.convertBitmapToByte(editedBitmap),
                         "This is a great photo now!");
                 finish();
