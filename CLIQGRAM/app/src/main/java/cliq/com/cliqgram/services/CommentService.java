@@ -1,5 +1,7 @@
 package cliq.com.cliqgram.services;
 
+import android.util.Log;
+
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -27,6 +29,8 @@ public class CommentService {
     public static void comment(Post post, final Comment comment){
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+
+        Log.e("---- Comment ----", post.getObjectId());
         query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
             @Override
             public void done(Post postObject, ParseException e) {

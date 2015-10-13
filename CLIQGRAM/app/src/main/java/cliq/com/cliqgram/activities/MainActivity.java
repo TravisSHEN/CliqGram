@@ -96,8 +96,16 @@ public class MainActivity extends AppCompatActivity {
         // initialize tab bar layout
         initializeTabLayout();
 
-        // start bluetooth
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Register this activity to EventBus
+        AppStarter.eventBus.register(this);
+
+        // start bluetooth
         try {
             mBluetoothHelper.startBluetooth();
         } catch (BluetoothOffException e) {
@@ -107,14 +115,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        // Register this activity to EventBus
-        AppStarter.eventBus.register(this);
-    }
-
-    @Override
     protected void onStop() {
+
+        mBluetoothHelper.stopBluetooth();
 
         AppStarter.eventBus.unregister(this);
         super.onStop();
