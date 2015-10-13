@@ -6,7 +6,6 @@ import android.database.MatrixCursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -83,7 +82,7 @@ public class SearchFragment extends Fragment {
 
         // enable option menu
         setHasOptionsMenu(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Search");
+
     }
 
     @Override
@@ -145,7 +144,7 @@ public class SearchFragment extends Fragment {
         search_recycler_view.setHasFixedSize(true);
 
         userSuggestAdapter = new UserSuggestAdapter(getActivity(), suggestList);
-        userSuggestAdapter.setFragmentManager( getFragmentManager() );
+        userSuggestAdapter.setFragmentManager(getFragmentManager());
         search_recycler_view.setAdapter(userSuggestAdapter);
     }
 

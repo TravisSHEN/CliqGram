@@ -1,17 +1,24 @@
 package cliq.com.cliqgram.helper;
 
-import android.bluetooth.*;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
-import cliq.com.cliqgram.callbacks.IdReceivedCallback;
-import cliq.com.cliqgram.exceptions.BluetoothOffException;
+import android.widget.Toast;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
+
+import cliq.com.cliqgram.callbacks.IdReceivedCallback;
+import cliq.com.cliqgram.exceptions.BluetoothOffException;
 
 /**
  * Created by Benjamin on 15/10/13.
@@ -19,6 +26,9 @@ import java.util.UUID;
 public class BluetoothHelper {
     public static final UUID MY_UUID = UUID.fromString("1246fb14-0d3c-442c-b4eb-3d44b9f49733");
     private final static int REQUEST_ENABLE_BT = 1;
+
+    private static BluetoothHelper bluetoothHelper;
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -34,6 +44,20 @@ public class BluetoothHelper {
     private BluetoothAdapter mBluetoothAdapter;
     private ServerThread myServer;
     private boolean isServer = true;
+
+    public static BluetoothHelper getInstance(){
+        return bluetoothHelper;
+    }
+
+    public static BluetoothHelper newInstance( Context mContext,
+                                               IdReceivedCallback
+                                                       idReceivedCallback){
+        if( bluetoothHelper == null ){
+            bluetoothHelper = new BluetoothHelper(mContext, idReceivedCallback);
+        }
+
+        return bluetoothHelper;
+    }
 
     public BluetoothHelper(Context mContext, IdReceivedCallback mIdReceivedCallback) {
         this.mContext = mContext;
@@ -62,6 +86,13 @@ public class BluetoothHelper {
 
     public void sendMessage(String msg) {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        if( pairedDevices == null ){
+            Toast.makeText(mContext,
+                    "Please pair with at least one another phone", Toast
+                            .LENGTH_SHORT).show();
+        }
+
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 isServer = false;
@@ -126,7 +157,7 @@ public class BluetoothHelper {
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
-                    break;
+//                    break;
                 }
 
             }

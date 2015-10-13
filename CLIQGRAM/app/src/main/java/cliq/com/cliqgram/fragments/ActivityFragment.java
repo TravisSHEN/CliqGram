@@ -69,7 +69,6 @@ public class ActivityFragment extends Fragment {
 
         fm = getFragmentManager();
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Activity");
     }
 
     @Override
