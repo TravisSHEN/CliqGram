@@ -56,9 +56,9 @@
         <activity
             android:name=".activities.CameraActivity"
             android:label="@string/title_activity_camera"
-            android:noHistory="true"
             android:screenOrientation="landscape" >
         </activity>
+        <!--android:noHistory="true"-->
         <activity
             android:name=".activities.CommentActivity"
             android:label="@string/title_activity_comment" >

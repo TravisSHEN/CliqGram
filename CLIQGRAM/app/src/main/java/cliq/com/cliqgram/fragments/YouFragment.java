@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -84,17 +85,30 @@ public class YouFragment extends Fragment {
     private void initializeData() {
 
         // TODO: find post by id via post service
-        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(), "followers", new GetCallback<UserRelation>() {
+        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(),
+                "followers", new GetCallback<UserRelation>() {
             @Override
-            public void done(UserRelation object, ParseException e) {
-                List<User> followers = object.getFollowers();
-                ActivityService.pullActivityRegardingToYou(UserService.getCurrentUser(),followers, new FindCallback<Activity>() {
-                    @Override
-                    public void done(List<Activity> objects, ParseException e) {
-                        Collections.sort(objects);
-                        youActivityAdapter.updateData(objects);
-                    }
-                });
+            public void done(final UserRelation object, ParseException e) {
+
+                if( e == null ) {
+                    List<User> followers = object.getFollowers();
+                    ActivityService.pullActivityRegardingToYou(UserService.getCurrentUser(),
+                            followers, new FindCallback<Activity>() {
+                        @Override
+                        public void done(List<Activity> objects, ParseException e) {
+                            if( objects == null ){
+                                Toast.makeText(getActivity(), e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Collections.sort(objects);
+                            youActivityAdapter.updateData(objects);
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast
+                            .LENGTH_SHORT).show();
+                }
             }
         });
         //PostService.getPost(userName);
