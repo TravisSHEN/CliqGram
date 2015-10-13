@@ -96,6 +96,7 @@ public class User extends ParseUser {
 
     public void setAvatarFromPost(Post post) {
         this.put("avatar", post.getPhotoDataAsParseFile());
+        this.saveInBackground();
     }
 
     public List<Post> getPostList() {
