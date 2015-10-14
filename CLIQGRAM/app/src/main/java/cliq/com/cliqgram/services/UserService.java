@@ -318,7 +318,7 @@ public class UserService {
 
                             }
 
-                            User currentUser = UserService.getCurrentUser();
+                            final User currentUser = UserService.getCurrentUser();
 
                             if (currentUser == null) {
                                 return;
@@ -329,6 +329,9 @@ public class UserService {
                                 @Override
                                 public void done(UserRelation userRelation,
                                                  ParseException e) {
+                                    if( userRelation == null || userRelation.getFollowings() == null ){
+                                        return;
+                                    }
 
                                     List<User> followings = userRelation.getFollowings();
 //                                    followings = getFollowingsFollowings(followings);
@@ -349,6 +352,7 @@ public class UserService {
                                                         hs.addAll(sugList);
                                                         sugList.clear();
                                                         sugList.addAll(hs);
+                                                        sugUserList.add(currentUser);
                                                         sugList.removeAll(sugUserList);
                                                         AppStarter.eventBus.post(new UserSuggestionRetrieved(sugList));
                                                     } else {
