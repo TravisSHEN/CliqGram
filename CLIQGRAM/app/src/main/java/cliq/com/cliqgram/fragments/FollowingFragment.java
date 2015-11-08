@@ -117,9 +117,10 @@ public class FollowingFragment extends Fragment {
                                 if (e == null && objects != null && objects.size() > 0) {
                                     followingActivityAdapter.updateData(objects);
 
-                                    // hide refresh progress
-                                    swipeRefreshLayout.setRefreshing(false);
                                 }
+
+                                // hide refresh progress
+                                swipeRefreshLayout.setRefreshing(false);
                             }
                         });
                     }

@@ -106,15 +106,17 @@ public class YouFragment extends Fragment {
                                             Collections.sort(objects);
                                             youActivityAdapter.updateData(objects);
 
-                                            // hide refresh progress
-                                            swipeRefreshLayout.setRefreshing(false);
-
                                         }
                                     });
                         } else {
                             Toast.makeText(getActivity(), e.getMessage(), Toast
                                     .LENGTH_SHORT).show();
                         }
+
+
+                        // hide refresh progress
+                        swipeRefreshLayout.setRefreshing(false);
+
                     }
                 });
         //PostService.getPost(userName);
