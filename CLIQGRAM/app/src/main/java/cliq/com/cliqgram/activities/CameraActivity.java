@@ -91,7 +91,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     Button buttonGallery;
     private boolean imageSaved = false;
     private boolean flashOn = true;
-    private boolean gridOn  = false;
+    private boolean gridOn = false;
     private State mState = State.PREVIEW;
     private String mCameraId;
     private HandlerThread mBackgroundThread;
@@ -130,14 +130,14 @@ public class CameraActivity extends Activity implements OnClickListener {
             imageFileName = fileName;
         }
     };
-    private Size                   mPreviewSize;
+    private Size mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
     private CaptureRequest mPreviewRequest;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mCaptureSession;
     private ImageReader mImageReader;
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
-                                                                  = new TextureView.SurfaceTextureListener() {
+            = new TextureView.SurfaceTextureListener() {
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
@@ -237,7 +237,6 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
     };
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void runPrecaptureSequence() {
         try {
             // This is how to tell the camera to trigger.
@@ -256,7 +255,6 @@ public class CameraActivity extends Activity implements OnClickListener {
         return imageSaved;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void captureStillPicture() {
         try {
             if (null == mCameraDevice) {
@@ -668,29 +666,6 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
     }
 
-//    private class ImageInserter implements Runnable {
-//
-//        private Image mImage;
-//        private String fileName;
-//
-//        public ImageInserter(Image mImage) {
-//            this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
-//            this.mImage = mImage;
-//        }
-//
-//        @Override
-//        public void run() {
-//            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-//            byte[] bytes = new byte[buffer.remaining()];
-//            buffer.get(bytes);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
-//                    null);
-//
-//            // start ImageDisplayActivity
-//            startImageDisplayActivity(bitmap);
-//        }
-//    }
 
     private class ImageSaver implements Runnable {
 
@@ -750,7 +725,7 @@ public class CameraActivity extends Activity implements OnClickListener {
              * So, check the database (table "Post") on Parse to see if post is
              * created successfully.
              * If post is created successfully, it will be shown on home page.
-             */    Uri uri = data.getData();
+             */Uri uri = data.getData();
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap

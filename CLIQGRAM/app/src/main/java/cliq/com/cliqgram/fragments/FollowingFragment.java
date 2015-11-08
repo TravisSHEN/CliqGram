@@ -1,8 +1,8 @@
 package cliq.com.cliqgram.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -28,9 +28,6 @@ import cliq.com.cliqgram.services.UserRelationsService;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FollowingFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link FollowingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -40,6 +37,9 @@ public class FollowingFragment extends Fragment {
 
     @Bind(R.id.activity_following_recycler_view)
     RecyclerView recyclerView;
+
+    @Bind(R.id.following_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     FollowingActivityAdapter followingActivityAdapter;
 
@@ -60,6 +60,22 @@ public class FollowingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View root_view = inflater.inflate(R.layout.fragment_following,
+                container,
+                false);
+
+        // Bind view with ButterKnive
+        ButterKnife.bind(this, root_view);
+
+        this.initializeRecyclerView();
+
+        return root_view;
     }
 
     @Override
@@ -87,43 +103,27 @@ public class FollowingFragment extends Fragment {
         // TODO: find post by id via post service
         UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(),
                 "followings", new GetCallback<UserRelation>() {
-            @Override
-            public void done(UserRelation object, ParseException e) {
-                if(object == null ){
-                    Toast.makeText(getActivity(), e.getMessage(), Toast
-                            .LENGTH_SHORT).show();
-                    return;
-                }
-                List<User> followings = object.getFollowings();
-                ActivityService.pullFollowingActivity(followings, new FindCallback<Activity>() {
                     @Override
-                    public void done(List<Activity> objects, ParseException e) {
-                        if (e == null && objects != null && objects.size() > 0) {
-                            followingActivityAdapter.updateData(objects);
+                    public void done(UserRelation object, ParseException e) {
+                        if (object == null) {
+                            Toast.makeText(getActivity(), e.getMessage(), Toast
+                                    .LENGTH_SHORT).show();
+                            return;
                         }
+                        List<User> followings = object.getFollowings();
+                        ActivityService.pullFollowingActivity(followings, new FindCallback<Activity>() {
+                            @Override
+                            public void done(List<Activity> objects, ParseException e) {
+                                if (e == null && objects != null && objects.size() > 0) {
+                                    followingActivityAdapter.updateData(objects);
+                                }
+                            }
+                        });
                     }
                 });
-            }
-        });
         //PostService.getPost(userName);
 //        PostService.getPost("X8f2UlSJIc");
         //ProgressSpinner.getInstance().showSpinner(this.getActivity(), "Loading...");
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View root_view = inflater.inflate(R.layout.fragment_following,
-                container,
-                false);
-
-        // Bind view with ButterKnive
-        ButterKnife.bind(this, root_view);
-
-        this.initializeRecyclerView();
-
-        return root_view;
     }
 
     /**
@@ -140,6 +140,15 @@ public class FollowingFragment extends Fragment {
         followingActivityAdapter = new FollowingActivityAdapter(this
                 .getActivity());
         recyclerView.setAdapter(followingActivityAdapter);
+
+
+        // set refresh listener for SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeData();
+            }
+        });
     }
 
 }
