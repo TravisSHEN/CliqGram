@@ -105,6 +105,10 @@ public class YouFragment extends Fragment {
                                             }
                                             Collections.sort(objects);
                                             youActivityAdapter.updateData(objects);
+
+                                            // hide refresh progress
+                                            swipeRefreshLayout.setRefreshing(false);
+
                                         }
                                     });
                         } else {
