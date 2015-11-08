@@ -27,7 +27,7 @@ import cliq.com.cliqgram.helper.KeyboardManager;
 import cliq.com.cliqgram.helper.ProgressSpinner;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import de.greenrobot.event.Subscribe;

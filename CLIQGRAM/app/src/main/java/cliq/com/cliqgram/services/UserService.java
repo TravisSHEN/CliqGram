@@ -15,12 +15,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.events.UserGetEvent;
 import cliq.com.cliqgram.events.UserSuggestionRetrieved;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
-import cliq.com.cliqgram.server.AppStarter;
 import cliq.com.cliqgram.utils.ImageUtil;
 
 /**
@@ -94,7 +94,7 @@ public class UserService {
      * @param username
      * @param callback
      */
-    public static void getUserByUsername( String username,
+    public static void getUserByUsername(String username,
                                          GetCallback<User> callback
     ) {
 
@@ -158,6 +158,10 @@ public class UserService {
         }
 
         Location loc = AppStarter.gpsTracker.getLocation();
+
+        if( loc == null ){
+            return;
+        }
 
         final ParseGeoPoint currentLocation = new ParseGeoPoint(loc.getLatitude(),
                 loc.getLongitude());

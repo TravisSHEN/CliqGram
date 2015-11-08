@@ -12,7 +12,7 @@ import cliq.com.cliqgram.events.ActivityFailEvent;
 import cliq.com.cliqgram.events.ActivitySuccessEvent;
 import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by ilkan on 11/10/2015.

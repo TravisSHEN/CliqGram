@@ -66,7 +66,7 @@ public class BluetoothHelper {
 
     public void startBluetooth() throws BluetoothOffException {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!mBluetoothAdapter.isEnabled()) {
+        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             throw new BluetoothOffException("Bluetooth Off");
         }
 
@@ -85,10 +85,22 @@ public class BluetoothHelper {
     }
 
     public void stopBluetooth(){
-        mContext.unregisterReceiver( mReceiver );
+        try {
+            if (mReceiver != null) {
+                mContext.unregisterReceiver(mReceiver);
+            }
+        } catch (IllegalArgumentException e){
+            Toast.makeText(mContext, "No bluetooth available", Toast
+                    .LENGTH_LONG).show();
+        }
     }
 
     public void sendMessage(String msg) {
+
+        if(mBluetoothAdapter == null ){
+            return;
+        }
+
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
         if( pairedDevices == null ){

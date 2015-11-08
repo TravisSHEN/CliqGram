@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;

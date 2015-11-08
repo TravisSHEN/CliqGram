@@ -5,8 +5,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.*;
-import android.hardware.camera2.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -27,20 +40,25 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.callbacks.ImageSavedCallback;
-import cliq.com.cliqgram.utils.Util;
-import cliq.com.cliqgram.views.AutoFitTextureView;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.callbacks.ImageSavedCallback;
+import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.views.AutoFitTextureView;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CameraActivity extends Activity implements OnClickListener {
@@ -389,14 +407,14 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonGrid.setOnClickListener(this);
         buttonGallery.setOnClickListener(this);
 
-        Util.loadResToView(this, R.drawable.icon_flash_on,
-                buttonFlash, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                buttonFlash, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_grid_off,
-                buttonGrid, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                buttonGrid, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_gallery,
-                buttonGallery, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_gallery,
+                buttonGallery, 0.3f);
 
     }
 
@@ -582,13 +600,13 @@ public class CameraActivity extends Activity implements OnClickListener {
                 if (flashOn) {
                     flashOn = false;
 //                    buttonFlash.setText(R.string.button_flash_off);
-                    Util.loadResToView(this, R.drawable.icon_flash_off,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_off,
+                            buttonFlash, 0.7f);
                 } else {
                     flashOn = true;
 //                    buttonFlash.setText(R.string.button_flash_on);
-                    Util.loadResToView(this, R.drawable.icon_flash_on,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.7f);
                 }
                 break;
             case R.id.button_grid:
@@ -597,14 +615,14 @@ public class CameraActivity extends Activity implements OnClickListener {
                     gridOn = false;
                     myGridView.setVisibility(View.INVISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_off);
-                    Util.loadResToView(this, R.drawable.icon_grid_off,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.7f);
                 } else {
                     gridOn = true;
                     myGridView.setVisibility(View.VISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_on);
-                    Util.loadResToView(this, R.drawable.icon_grid_on,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_on,
+                            buttonGrid, 0.7f);
                 }
                 break;
             case R.id.button_gallery:
@@ -689,9 +707,9 @@ public class CameraActivity extends Activity implements OnClickListener {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] photoBytes = new byte[buffer.remaining()];
             buffer.get(photoBytes);
-            String fileName = String.valueOf(Util.getCurrentDate().getTime());
+            String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
             Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-            byte[] imageData = Util.convertBitmapToByte(bitmap);
+            byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
             try {
 
@@ -776,8 +794,8 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private String savePhoto(Bitmap bitmap) {
-        String fileName = String.valueOf(Util.getCurrentDate().getTime());
-        byte[] imageData = Util.convertBitmapToByte(bitmap);
+        String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
+        byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
         try {
 

@@ -30,7 +30,7 @@ import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.ImageUtil;

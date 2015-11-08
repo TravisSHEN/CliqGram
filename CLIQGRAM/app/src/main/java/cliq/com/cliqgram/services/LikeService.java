@@ -17,7 +17,7 @@ import cliq.com.cliqgram.events.LikeSuccessEvent;
 import cliq.com.cliqgram.model.Like;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by litaoshen on 4/10/2015.

@@ -241,8 +241,19 @@ public class ImageUtil {
         BitmapDrawable bitmapDrawable = ImageUtil.resizeDrawable(context, resid,
                 scaleRate);
 
-        view.setBackground( bitmapDrawable );
+        view.setBackground(bitmapDrawable);
 
     }
 
+    /**
+     *
+     * @param output
+     * @param contentResolver
+     * @return
+     */
+    public static Bitmap convertUriToBitmap(Uri output, ContentResolver contentResolver) {
+
+        byte[] picByte = ImageUtil.convertImageToByte(output, contentResolver);
+        return ImageUtil.convertByteToBitmap( picByte );
+    }
 }

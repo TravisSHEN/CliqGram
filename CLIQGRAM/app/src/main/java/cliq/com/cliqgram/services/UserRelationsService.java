@@ -10,14 +10,13 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import cliq.com.cliqgram.events.RelationGetEvent;
 import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by ilkan on 2/10/2015.

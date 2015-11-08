@@ -31,7 +31,7 @@ import cliq.com.cliqgram.adapters.SearchAdapter;
 import cliq.com.cliqgram.adapters.UserSuggestAdapter;
 import cliq.com.cliqgram.events.UserSuggestionRetrieved;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.UserService;
 import de.greenrobot.event.Subscribe;
 

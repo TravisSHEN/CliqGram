@@ -11,7 +11,7 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.events.SignupFailEvent;
 import cliq.com.cliqgram.events.SignupSuccessEvent;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.utils.ImageUtil;
 
 /**

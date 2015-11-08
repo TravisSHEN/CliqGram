@@ -26,7 +26,7 @@ import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserRelationsService;
 import cliq.com.cliqgram.services.UserService;

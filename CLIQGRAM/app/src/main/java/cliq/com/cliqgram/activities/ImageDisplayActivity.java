@@ -10,12 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundcloud.android.crop.Crop;
@@ -28,8 +27,18 @@ import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.GPUImageFilterTools;
-import cliq.com.cliqgram.utils.Util;
-import jp.co.cyberagent.android.gpuimage.*;
+import cliq.com.cliqgram.utils.ImageUtil;
+import jp.co.cyberagent.android.gpuimage.GPUImage;
+import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageEmbossFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageGaussianBlurFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageGlassSphereFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageGrayscaleFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageMonochromeFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageSepiaFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageSketchFilter;
 
 public class ImageDisplayActivity extends AppCompatActivity {
     Bitmap originalBitmap;
@@ -179,7 +188,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 }
 
                 Post.createPost(UserService.getCurrentUser(),
-                        Util.convertBitmapToByte(editedBitmap),
+                        ImageUtil.convertBitmapToByte(editedBitmap),
                         description);
                 finish();
                 break;
@@ -188,7 +197,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
                 String imageName = "image";
 
                 // crop the image
-                Uri original = Util.getImageUri(this.getBaseContext(), originalBitmap, imageName);
+                Uri original = ImageUtil.getImageUri(this.getBaseContext(), originalBitmap, imageName);
                 beginCrop(original);
                 break;
         }
@@ -217,7 +226,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
-            croppedBitmap = Util.convertUriToBitmap(Crop.getOutput(result),
+            croppedBitmap = ImageUtil.convertUriToBitmap(Crop.getOutput(result),
                     this.getContentResolver());
         } else {
             Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
@@ -235,7 +244,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         String imageName = intent.getStringExtra("image");
 
-        return Util.decodeStream(this, imageName);
+        return ImageUtil.decodeStream(this, imageName);
     }
 
     // scale any bitmap to correct size

@@ -1,4 +1,4 @@
-package cliq.com.cliqgram.server;
+package cliq.com.cliqgram.app;
 
 /**
  * Created by ilkan on 25/09/2015.

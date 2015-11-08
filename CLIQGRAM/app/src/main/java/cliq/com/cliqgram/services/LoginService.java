@@ -6,7 +6,7 @@ import com.parse.ParseUser;
 
 import cliq.com.cliqgram.events.LoginFailEvent;
 import cliq.com.cliqgram.events.LoginSuccessEvent;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by litaoshen on 2/09/2015.

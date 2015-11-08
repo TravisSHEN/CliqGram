@@ -19,7 +19,7 @@ import cliq.com.cliqgram.events.PostFailEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by ilkan on 26/09/2015.
