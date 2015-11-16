@@ -106,8 +106,10 @@ public class PostService {
         query.whereContainedIn("user", userList);
         // order by createdAt
         query.orderByDescending("createdAt");
-        // order by location
-        query.whereNear("location", currentLocation);
+        if( currentLocation != null ) {
+            // order by location
+            query.whereNear("location", currentLocation);
+        }
         query.include("user");
         query.include("comments");
         query.include("likes");

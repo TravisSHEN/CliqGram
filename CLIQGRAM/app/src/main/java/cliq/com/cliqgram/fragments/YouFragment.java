@@ -36,13 +36,7 @@ import cliq.com.cliqgram.services.UserService;
 public class YouFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    //private static final String ARG_PARAM1 = "param1";
-    //private static final String ARG_PARAM2 = "param2";
     private static final String ARG_USERNAME = "userName";
-
-    // TODO: Rename and change types of parameters
-    //private String mParam1;
-    //private String mParam2;
 
     @Bind(R.id.activity_you_recycler_view)
     RecyclerView recyclerView;
@@ -86,8 +80,14 @@ public class YouFragment extends Fragment {
 
     private void initializeData() {
 
+        String username = this.getArguments().getString(ARG_USERNAME);
+
+        if(username == null ){
+            return;
+        }
+
         // TODO: find post by id via post service
-        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(),
+        UserRelationsService.getParticularRelation(username,
                 "followers", new GetCallback<UserRelation>() {
                     @Override
                     public void done(final UserRelation object, ParseException e) {
@@ -119,9 +119,6 @@ public class YouFragment extends Fragment {
 
                     }
                 });
-        //PostService.getPost(userName);
-//        PostService.getPost("X8f2UlSJIc");
-        //ProgressSpinner.getInstance().showSpinner(this.getActivity(), "Loading...");
     }
 
     @Override

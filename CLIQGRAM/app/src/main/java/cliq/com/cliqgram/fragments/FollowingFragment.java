@@ -84,12 +84,6 @@ public class FollowingFragment extends Fragment {
 
         initializeData();
 
-        //List<User> relation = UserRelationsService.getParticularRelation()
-
-        /*ActivityService.pullFollowingActivity(newe Findijlk(){
-            this.activityList = dataGet;
-            followingActivityAdapter.updateData( this.activityList );
-        })*/
     }
 
     @Override
@@ -125,9 +119,6 @@ public class FollowingFragment extends Fragment {
                         });
                     }
                 });
-        //PostService.getPost(userName);
-//        PostService.getPost("X8f2UlSJIc");
-        //ProgressSpinner.getInstance().showSpinner(this.getActivity(), "Loading...");
     }
 
     /**
