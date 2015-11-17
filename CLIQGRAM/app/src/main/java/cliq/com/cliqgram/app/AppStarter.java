@@ -1,4 +1,4 @@
-package cliq.com.cliqgram.server;
+package cliq.com.cliqgram.app;
 
 import android.app.Application;
 

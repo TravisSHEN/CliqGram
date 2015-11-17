@@ -26,7 +26,7 @@ import cliq.com.cliqgram.events.OpenCommentEvent;
 import cliq.com.cliqgram.exceptions.BluetoothOffException;
 import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.helper.ToolbarModel;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.ImageUtil;

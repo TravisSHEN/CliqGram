@@ -2,6 +2,7 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,25 +30,19 @@ import cliq.com.cliqgram.services.UserService;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link YouFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link YouFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class YouFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    //private static final String ARG_PARAM1 = "param1";
-    //private static final String ARG_PARAM2 = "param2";
     private static final String ARG_USERNAME = "userName";
-
-    // TODO: Rename and change types of parameters
-    //private String mParam1;
-    //private String mParam2;
 
     @Bind(R.id.activity_you_recycler_view)
     RecyclerView recyclerView;
+
+    @Bind(R.id.you_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     YouActivityAdapter youActivityAdapter;
 
@@ -69,6 +64,7 @@ public class YouFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -84,36 +80,45 @@ public class YouFragment extends Fragment {
 
     private void initializeData() {
 
-        // TODO: find post by id via post service
-        UserRelationsService.getParticularRelation(this.getArguments().get(ARG_USERNAME).toString(),
-                "followers", new GetCallback<UserRelation>() {
-            @Override
-            public void done(final UserRelation object, ParseException e) {
+        String username = this.getArguments().getString(ARG_USERNAME);
 
-                if( e == null ) {
-                    List<User> followers = object.getFollowers();
-                    ActivityService.pullActivityRegardingToYou(UserService.getCurrentUser(),
-                            followers, new FindCallback<Activity>() {
-                        @Override
-                        public void done(List<Activity> objects, ParseException e) {
-                            if( objects == null ){
-                                Toast.makeText(getActivity(), e.getMessage(),
-                                        Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            Collections.sort(objects);
-                            youActivityAdapter.updateData(objects);
+        if(username == null ){
+            return;
+        }
+
+        // TODO: find post by id via post service
+        UserRelationsService.getParticularRelation(username,
+                "followers", new GetCallback<UserRelation>() {
+                    @Override
+                    public void done(final UserRelation object, ParseException e) {
+
+                        if (e == null) {
+                            List<User> followers = object.getFollowers();
+                            ActivityService.pullActivityRegardingToYou(UserService.getCurrentUser(),
+                                    followers, new FindCallback<Activity>() {
+                                        @Override
+                                        public void done(List<Activity> objects, ParseException e) {
+                                            if (objects == null) {
+                                                Toast.makeText(getActivity(), e.getMessage(),
+                                                        Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+                                            Collections.sort(objects);
+                                            youActivityAdapter.updateData(objects);
+
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(getActivity(), e.getMessage(), Toast
+                                    .LENGTH_SHORT).show();
                         }
-                    });
-                } else {
-                    Toast.makeText(getActivity(), e.getMessage(), Toast
-                            .LENGTH_SHORT).show();
-                }
-            }
-        });
-        //PostService.getPost(userName);
-//        PostService.getPost("X8f2UlSJIc");
-        //ProgressSpinner.getInstance().showSpinner(this.getActivity(), "Loading...");
+
+
+                        // hide refresh progress
+                        swipeRefreshLayout.setRefreshing(false);
+
+                    }
+                });
     }
 
     @Override
@@ -143,11 +148,19 @@ public class YouFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
 
-         youActivityAdapter = new YouActivityAdapter(this
+        youActivityAdapter = new YouActivityAdapter(this
                 .getActivity());
         recyclerView.setAdapter(youActivityAdapter);
-    }
 
+
+        // set refresh listener for SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeData();
+            }
+        });
+    }
 
 
 }

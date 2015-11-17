@@ -26,7 +26,7 @@ import cliq.com.cliqgram.helper.BluetoothHelper;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserRelationsService;
 import cliq.com.cliqgram.services.UserService;
@@ -93,7 +93,7 @@ public class PostFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_feed, container, false);
+        View view = inflater.inflate(R.layout.fragment_post, container, false);
 
         ButterKnife.bind(this, view);
 

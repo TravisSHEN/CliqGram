@@ -1,12 +1,27 @@
 package cliq.com.cliqgram.activities;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.*;
-import android.hardware.camera2.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -17,6 +32,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -27,26 +44,36 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.callbacks.ImageSavedCallback;
-import cliq.com.cliqgram.utils.Util;
-import cliq.com.cliqgram.views.AutoFitTextureView;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class CameraActivity extends Activity implements OnClickListener {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.callbacks.ImageSavedCallback;
+import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.PermissionUtil;
+import cliq.com.cliqgram.views.AutoFitTextureView;
+
+@TargetApi(Build.VERSION_CODES.M)
+public class CameraActivity extends AppCompatActivity implements OnClickListener {
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final String TAG = "CameraActivity";
+    private static final String FRAGMENT_DIALOG = "dialog";
+
+
+    private static final int REQUEST_CAMERA_PERMISSION = 1;
 
     private int PICK_IMAGE_REQUEST = 1;
 
@@ -73,7 +100,7 @@ public class CameraActivity extends Activity implements OnClickListener {
     Button buttonGallery;
     private boolean imageSaved = false;
     private boolean flashOn = true;
-    private boolean gridOn  = false;
+    private boolean gridOn = false;
     private State mState = State.PREVIEW;
     private String mCameraId;
     private HandlerThread mBackgroundThread;
@@ -112,14 +139,14 @@ public class CameraActivity extends Activity implements OnClickListener {
             imageFileName = fileName;
         }
     };
-    private Size                   mPreviewSize;
+    private Size mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
     private CaptureRequest mPreviewRequest;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mCaptureSession;
     private ImageReader mImageReader;
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
-                                                                  = new TextureView.SurfaceTextureListener() {
+            = new TextureView.SurfaceTextureListener() {
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
@@ -213,13 +240,11 @@ public class CameraActivity extends Activity implements OnClickListener {
             if (mCameraDevice != null) {
                 mCameraDevice.close();
                 mCameraDevice = null;
-
             }
             finish();
         }
     };
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void runPrecaptureSequence() {
         try {
             // This is how to tell the camera to trigger.
@@ -238,7 +263,6 @@ public class CameraActivity extends Activity implements OnClickListener {
         return imageSaved;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void captureStillPicture() {
         try {
             if (null == mCameraDevice) {
@@ -332,12 +356,13 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private void createCameraPreviewSession() {
-        SurfaceTexture texture = mTextureView.getSurfaceTexture();
-        texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-
-        Surface surface = new Surface(texture);
 
         try {
+            SurfaceTexture texture = mTextureView.getSurfaceTexture();
+            texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+
+            Surface surface = new Surface(texture);
+
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
 
@@ -389,14 +414,14 @@ public class CameraActivity extends Activity implements OnClickListener {
         buttonGrid.setOnClickListener(this);
         buttonGallery.setOnClickListener(this);
 
-        Util.loadResToView(this, R.drawable.icon_flash_on,
-                buttonFlash, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                buttonFlash, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_grid_off,
-                buttonGrid, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                buttonGrid, 0.3f);
 
-        Util.loadResToView(this, R.drawable.icon_gallery,
-                buttonGallery, 0.3f );
+        ImageUtil.loadResToView(this, R.drawable.icon_gallery,
+                buttonGallery, 0.3f);
 
     }
 
@@ -467,6 +492,13 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private void openCamera(int width, int height) {
+        if (CameraActivity.this.checkSelfPermission(Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            PermissionUtil.requestCameraPermission(this, Manifest.permission
+                    .CAMERA, "The application requires camera permission.");
+            return;
+        }
+
         setUpCameraOutput(width, height);
         configTextureViewOutput(width, height);
 
@@ -474,6 +506,10 @@ public class CameraActivity extends Activity implements OnClickListener {
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting for Camera.");
+            }
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                return;
             }
             manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
         } catch (InterruptedException e) {
@@ -582,13 +618,13 @@ public class CameraActivity extends Activity implements OnClickListener {
                 if (flashOn) {
                     flashOn = false;
 //                    buttonFlash.setText(R.string.button_flash_off);
-                    Util.loadResToView(this, R.drawable.icon_flash_off,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_off,
+                            buttonFlash, 0.7f);
                 } else {
                     flashOn = true;
 //                    buttonFlash.setText(R.string.button_flash_on);
-                    Util.loadResToView(this, R.drawable.icon_flash_on,
-                            buttonFlash, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_flash_on,
+                            buttonFlash, 0.7f);
                 }
                 break;
             case R.id.button_grid:
@@ -597,14 +633,14 @@ public class CameraActivity extends Activity implements OnClickListener {
                     gridOn = false;
                     myGridView.setVisibility(View.INVISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_off);
-                    Util.loadResToView(this, R.drawable.icon_grid_off,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_off,
+                            buttonGrid, 0.7f);
                 } else {
                     gridOn = true;
                     myGridView.setVisibility(View.VISIBLE);
 //                    buttonGrid.setText(R.string.button_grid_on);
-                    Util.loadResToView(this, R.drawable.icon_grid_on,
-                            buttonGrid, 0.7f );
+                    ImageUtil.loadResToView(this, R.drawable.icon_grid_on,
+                            buttonGrid, 0.7f);
                 }
                 break;
             case R.id.button_gallery:
@@ -626,12 +662,15 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private void lockFocus() {
-        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
-        mState = State.WAITING_CLOCK;
 
         try {
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
+            mState = State.WAITING_CLOCK;
+
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -650,29 +689,6 @@ public class CameraActivity extends Activity implements OnClickListener {
         }
     }
 
-//    private class ImageInserter implements Runnable {
-//
-//        private Image mImage;
-//        private String fileName;
-//
-//        public ImageInserter(Image mImage) {
-//            this.fileName = "image_" + Long.toString(mImage.getTimestamp()) + ".jpg";
-//            this.mImage = mImage;
-//        }
-//
-//        @Override
-//        public void run() {
-//            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-//            byte[] bytes = new byte[buffer.remaining()];
-//            buffer.get(bytes);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//            MediaStore.Images.Media.insertImage(CameraActivity.this.getContentResolver(), bitmap, fileName,
-//                    null);
-//
-//            // start ImageDisplayActivity
-//            startImageDisplayActivity(bitmap);
-//        }
-//    }
 
     private class ImageSaver implements Runnable {
 
@@ -689,9 +705,9 @@ public class CameraActivity extends Activity implements OnClickListener {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] photoBytes = new byte[buffer.remaining()];
             buffer.get(photoBytes);
-            String fileName = String.valueOf(Util.getCurrentDate().getTime());
+            String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
             Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-            byte[] imageData = Util.convertBitmapToByte(bitmap);
+            byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
             try {
 
@@ -732,7 +748,7 @@ public class CameraActivity extends Activity implements OnClickListener {
              * So, check the database (table "Post") on Parse to see if post is
              * created successfully.
              * If post is created successfully, it will be shown on home page.
-             */    Uri uri = data.getData();
+             */Uri uri = data.getData();
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap
@@ -776,8 +792,8 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private String savePhoto(Bitmap bitmap) {
-        String fileName = String.valueOf(Util.getCurrentDate().getTime());
-        byte[] imageData = Util.convertBitmapToByte(bitmap);
+        String fileName = String.valueOf(ImageUtil.getCurrentDate().getTime());
+        byte[] imageData = ImageUtil.convertBitmapToByte(bitmap);
 
         try {
 
@@ -794,4 +810,5 @@ public class CameraActivity extends Activity implements OnClickListener {
 
         return fileName;
     }
+
 }

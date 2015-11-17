@@ -19,7 +19,7 @@ import cliq.com.cliqgram.events.PostFailEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by ilkan on 26/09/2015.
@@ -59,6 +59,7 @@ public class PostService {
 
 
     /**
+     * get post by id
      * @param id
      */
     public static void getPost(@NonNull final String id) {
@@ -73,8 +74,6 @@ public class PostService {
             public void done(Post post, ParseException e) {
                 if (e == null) {
 
-//                    Log.d("POST SERVICE", post.getPostId());
-
                     AppStarter.eventBus.post(new GetPostEvent(post));
                 } else {
                     Log.d("POST SERVICE", e.getMessage());
@@ -84,6 +83,10 @@ public class PostService {
         });
     }
 
+    /**
+     * get all posts of users
+     * @param userList
+     */
     public static void getPosts( List<User> userList) {
 
         if (userList == null || userList.size() <= 0) {
@@ -106,8 +109,10 @@ public class PostService {
         query.whereContainedIn("user", userList);
         // order by createdAt
         query.orderByDescending("createdAt");
-        // order by location
-        query.whereNear("location", currentLocation);
+        if( currentLocation != null ) {
+            // order by location
+            query.whereNear("location", currentLocation);
+        }
         query.include("user");
         query.include("comments");
         query.include("likes");

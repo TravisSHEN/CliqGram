@@ -13,7 +13,7 @@ import cliq.com.cliqgram.events.CommentFailEvent;
 import cliq.com.cliqgram.events.CommentSuccessEvent;
 import cliq.com.cliqgram.model.Comment;
 import cliq.com.cliqgram.model.Post;
-import cliq.com.cliqgram.server.AppStarter;
+import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by ilkan on 27/09/2015.
