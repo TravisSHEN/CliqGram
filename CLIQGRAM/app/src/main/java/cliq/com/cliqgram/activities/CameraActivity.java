@@ -33,6 +33,7 @@ import android.os.HandlerThread;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -61,13 +62,18 @@ import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.callbacks.ImageSavedCallback;
 import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.PermissionUtil;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class CameraActivity extends Activity implements OnClickListener {
+@TargetApi(Build.VERSION_CODES.M)
+public class CameraActivity extends AppCompatActivity implements OnClickListener {
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final String TAG = "CameraActivity";
+    private static final String FRAGMENT_DIALOG = "dialog";
+
+
+    private static final int REQUEST_CAMERA_PERMISSION = 1;
 
     private int PICK_IMAGE_REQUEST = 1;
 
@@ -234,7 +240,6 @@ public class CameraActivity extends Activity implements OnClickListener {
             if (mCameraDevice != null) {
                 mCameraDevice.close();
                 mCameraDevice = null;
-
             }
             finish();
         }
@@ -351,12 +356,13 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private void createCameraPreviewSession() {
-        SurfaceTexture texture = mTextureView.getSurfaceTexture();
-        texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-
-        Surface surface = new Surface(texture);
 
         try {
+            SurfaceTexture texture = mTextureView.getSurfaceTexture();
+            texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+
+            Surface surface = new Surface(texture);
+
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
 
@@ -486,6 +492,13 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
     private void openCamera(int width, int height) {
+        if (CameraActivity.this.checkSelfPermission(Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            PermissionUtil.requestCameraPermission(this, Manifest.permission
+                    .CAMERA, "The application requires camera permission.");
+            return;
+        }
+
         setUpCameraOutput(width, height);
         configTextureViewOutput(width, height);
 
@@ -494,14 +507,8 @@ public class CameraActivity extends Activity implements OnClickListener {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting for Camera.");
             }
+
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
             manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
@@ -803,4 +810,5 @@ public class CameraActivity extends Activity implements OnClickListener {
 
         return fileName;
     }
+
 }
