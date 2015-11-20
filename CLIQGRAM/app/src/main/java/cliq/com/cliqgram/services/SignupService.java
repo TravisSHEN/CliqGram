@@ -13,6 +13,7 @@ import cliq.com.cliqgram.events.SignupSuccessEvent;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Utils;
 
 /**
  * Created by litaoshen on 2/09/2015.
@@ -29,7 +30,7 @@ public class SignupService {
                 .icon_user, 0.7f).getBitmap());
 //
         String avatarLabel = "img_" +
-                String.valueOf(ImageUtil.getCurrentDate().getTime()) + "" +
+                String.valueOf(Utils.getCurrentDate().getTime()) + "" +
                 ".jpg";
 //
 //        // after avatar file stored successfully, then signup new user.

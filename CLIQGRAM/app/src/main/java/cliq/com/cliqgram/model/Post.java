@@ -24,6 +24,7 @@ import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Utils;
 
 /**
  * Created by ilkan on 27/09/2015.
@@ -175,7 +176,7 @@ public class Post extends ParseObject implements Comparable<Post> {
     }
 
     public void setPhotoData(byte[] photoData) {
-        String photoLabel = "img_" + String.valueOf(ImageUtil.getCurrentDate()
+        String photoLabel = "img_" + String.valueOf(Utils.getCurrentDate()
                 .getTime()) +
                 ".jpg";
         ParseFile photo = new ParseFile(photoLabel, photoData);

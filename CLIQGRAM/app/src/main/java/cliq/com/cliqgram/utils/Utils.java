@@ -5,6 +5,8 @@ import android.content.Context;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import cliq.com.cliqgram.model.Activity;
 import cliq.com.cliqgram.services.UserService;
@@ -76,10 +78,19 @@ public class Utils {
         }else{
             sb.append(". ");
         }
-        long initial = ImageUtil.getCurrentDate().getTime();
+        long initial = Utils.getCurrentDate().getTime();
         long finalTime = activity.getCreatedAt().getTime();
         String s = printElapsedTime(finalTime, initial);
         sb.append(s);
         return sb.toString();
+    }
+
+
+    public static Date getCurrentDate() {
+
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+
+        return date;
     }
 }

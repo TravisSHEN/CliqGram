@@ -21,7 +21,7 @@ import cliq.com.cliqgram.events.UserSuggestionRetrieved;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.Utils;
 
 /**
  * Created by litaoshen on 30/09/2015.
@@ -195,7 +195,7 @@ public class UserService {
                     allLatestPosts.add(post);
                 }
 
-                long currentTime = ImageUtil.getCurrentDate().getTime();
+                long currentTime = Utils.getCurrentDate().getTime();
                 // sort according to creation time
                 Collections.sort(allLatestPosts);
 

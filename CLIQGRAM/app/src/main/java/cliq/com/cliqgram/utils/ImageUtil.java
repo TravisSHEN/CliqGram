@@ -211,14 +211,14 @@ public class ImageUtil {
         return bitmapDrawable;
     }
 
-    public static Date getCurrentDate() {
 
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-
-        return date;
-    }
-
+    /**
+     *
+     * @param context
+     * @param inImage
+     * @param imageName
+     * @return
+     */
     public static Uri getImageUri(Context context, Bitmap inImage, String
             imageName) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();

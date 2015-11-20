@@ -67,6 +67,7 @@
     <string name="search_suggest">User Suggestions</string>
     <string name="title_activity_search_results">SearchResult</string>
     <string name="request_permission">The application needs permission to run.</string>
+    <string name="camera_error">This device doesn\\\'t support Camera2 API.</string>
 
     <!-- Filters -->
     <string-array name="filters_array">
