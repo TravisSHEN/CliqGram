@@ -25,8 +25,10 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -43,11 +45,14 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.util.Log;
 import android.util.Size;
@@ -57,6 +62,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
@@ -71,7 +77,11 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.activities.ImageDisplayActivity;
+import cliq.com.cliqgram.utils.ImageUtil;
 import cliq.com.cliqgram.utils.Utils;
 import cliq.com.cliqgram.views.AutoFitTextureView;
 
@@ -85,6 +95,8 @@ public class CameraFragment extends Fragment
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
+
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -159,7 +171,41 @@ public class CameraFragment extends Fragment
     /**
      * An {@link AutoFitTextureView} for camera preview.
      */
-    private AutoFitTextureView mTextureView;
+    @Bind(R.id.textureView_preview)
+    AutoFitTextureView mTextureView;
+
+    /**
+     * An {@link View} for grid view.
+     */
+    @Bind(R.id.view_grid)
+    View myGridView;
+
+    /**
+     *
+     */
+    @Bind(R.id.button_capture)
+    FloatingActionButton buttonCapture;
+
+    /**
+     *
+     */
+    @Bind(R.id.button_flash)
+    Button buttonFlash;
+
+    /**
+     *
+     */
+    @Bind(R.id.button_grid)
+    Button buttonGrid;
+
+    /**
+     *
+     */
+    @Bind(R.id.button_gallery)
+    Button buttonGallery;
+    //    private boolean imageSaved = false;
+    private boolean flashOn = true;
+    private boolean gridOn = false;
 
     /**
      * A {@link CameraCaptureSession } for camera preview.
@@ -344,7 +390,7 @@ public class CameraFragment extends Fragment
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, text, Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -394,9 +440,18 @@ public class CameraFragment extends Fragment
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        view.findViewById(R.id.picture).setOnClickListener(this);
-        view.findViewById(R.id.info).setOnClickListener(this);
-        mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+
+        // bind view to ButterKnife
+        ButterKnife.bind(this, view);
+
+        /**
+         * set click listener for buttons
+         */
+        buttonCapture.setOnClickListener(this);
+        buttonFlash.setOnClickListener(this);
+        buttonGallery.setOnClickListener(this);
+        buttonGrid.setOnClickListener(this);
+//        mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
     }
 
     @Override
@@ -747,6 +802,12 @@ public class CameraFragment extends Fragment
             captureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
 
+
+            // check to turn on/off flash mode
+            captureBuilder.set(CaptureRequest.FLASH_MODE, flashOn?
+                    CaptureResult.FLASH_MODE_SINGLE :
+                    CaptureResult.FLASH_MODE_OFF);
+
             // Orientation
             int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
@@ -759,7 +820,7 @@ public class CameraFragment extends Fragment
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
                     showToast("Saved: " + mFile);
-                    Log.d(TAG, mFile.toString());
+                    Log.d(TAG, "Saved file: " + mFile.toString());
                     unlockFocus();
                 }
             };
@@ -796,17 +857,56 @@ public class CameraFragment extends Fragment
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.picture: {
+//            case R.id.picture: {
+//                takePicture();
+//                break;
+//            }
+//            case R.id.info: {
+//                Activity activity = getActivity();
+//                if (null != activity) {
+//
+//                }
+//                break;
+//            }
+
+            case R.id.button_capture:
                 takePicture();
                 break;
-            }
-            case R.id.info: {
-                Activity activity = getActivity();
-                if (null != activity) {
-
+            case R.id.button_flash:
+                if (flashOn) {
+                    flashOn = false;
+                    ImageUtil.loadResToView(getActivity(), R.drawable.icon_flash_off,
+                            buttonFlash, 0.7f);
+                } else {
+                    flashOn = true;
+                    ImageUtil.loadResToView(getActivity(), R.drawable.icon_flash_on,
+                            buttonFlash, 0.7f);
                 }
                 break;
-            }
+            case R.id.button_grid:
+                // TODO
+                if (gridOn) {
+                    gridOn = false;
+                    myGridView.setVisibility(View.INVISIBLE);
+                    ImageUtil.loadResToView(getActivity(), R.drawable.icon_grid_off,
+                            buttonGrid, 0.7f);
+                } else {
+                    gridOn = true;
+                    myGridView.setVisibility(View.VISIBLE);
+                    ImageUtil.loadResToView(getActivity(), R.drawable.icon_grid_on,
+                            buttonGrid, 0.7f);
+                }
+                break;
+            case R.id.button_gallery:
+
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
+                break;
         }
     }
 
@@ -930,5 +1030,73 @@ public class CameraFragment extends Fragment
                     .create();
         }
     }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Activity activity = getActivity();
+
+        if (requestCode == PICK_IMAGE_REQUEST
+                && resultCode == Activity.RESULT_OK
+                && data != null
+                && data.getData() != null) {
+
+            /**
+             * @param imageDate byte[]
+             * @param currentUser User
+             * @param description String
+             * @return post Post
+             * Note: Any data in post object may not be able to
+             * get before post.saveInBackground() in finished.
+             * So, check the database (table "Post") on Parse to see if post is
+             * created successfully.
+             * If post is created successfully, it will be shown on home page.
+             */
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap
+                        (activity.getContentResolver(), uri);
+                // Log.d(TAG, String.valueOf(bitmap));
+
+                startImageDisplayActivity(bitmap);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            activity.finish();
+        }
+    }
+
+    /**
+     * open ImageDisplayActivity and pass recent taken/selected image to it
+     *
+     * @param bitmap
+     */
+    private void startImageDisplayActivity(Bitmap bitmap) {
+
+//        String fileName = savePhoto(bitmap);
+//        mFile = new File(getActivity().getExternalFilesDir(null),
+//                String.valueOf(Utils.getCurrentDate().getTime()) + ".jpg");
+//        mBackgroundHandler.post(new ImageSaver())
+
+//        if (fileName == null) {
+//            Toast.makeText(getActivity(), "Photo is not taken successfully.", Toast
+//                    .LENGTH_SHORT).show();
+//            return;
+//        }
+
+        startImageDisplayActivity();
+    }
+
+    private void startImageDisplayActivity() {
+        Intent intent = new Intent(getActivity(), ImageDisplayActivity.class);
+        intent.putExtra("image", mFile);
+        startActivity(intent);
+    }
+
 
 }

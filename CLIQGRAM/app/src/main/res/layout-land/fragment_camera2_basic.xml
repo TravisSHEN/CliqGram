@@ -14,16 +14,28 @@
  limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <cliq.com.cliqgram.views.AutoFitTextureView
-        android:id="@+id/texture"
+        android:id="@+id/textureView_preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"/>
+
+
+    <cliq.com.cliqgram.views.MyGridView
+        android:id="@+id/view_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textureView_preview"
+        android:layout_alignLeft="@+id/textureView_preview"
+        android:layout_alignRight="@+id/textureView_preview"
+        android:layout_alignTop="@+id/textureView_preview"
+        android:visibility="invisible"/>
 
     <FrameLayout
         android:id="@+id/control"
@@ -32,26 +44,76 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@id/texture"
+        android:layout_toRightOf="@id/textureView_preview"
         android:background="@color/black_overlay"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/picture"
+        <!--<Button-->
+            <!--android:id="@+id/picture"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:text="pic"/>-->
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/info"-->
+            <!--style="@android:style/Widget.Material.Light.Button.Borderless"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_horizontal|bottom"-->
+            <!--android:contentDescription="info"-->
+            <!--android:padding="20dp"-->
+            <!--android:src="@drawable/common_full_open_on_phone"/>-->
+
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="pic" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/info"
-            style="@android:style/Widget.Material.Light.Button.Borderless"
+            <Button
+                android:id="@+id/button_flash"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/icon_flash_on"/>
+
+            <Button
+                android:id="@+id/button_grid"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/icon_grid_off"/>
+        </LinearLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_capture"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_camera"/>
+
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            android:contentDescription="info"
-            android:padding="20dp"
-            android:src="@drawable/common_full_open_on_phone" />
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_gallery"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/icon_gallery"/>
+
+        </LinearLayout>
 
 
     </FrameLayout>
