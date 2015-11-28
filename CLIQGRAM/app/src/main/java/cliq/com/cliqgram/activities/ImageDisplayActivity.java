@@ -87,6 +87,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
         // bind this activity with ButterKnife
         ButterKnife.bind(this);
 
+        // only check permission granted for sdk over M
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
