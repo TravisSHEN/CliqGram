@@ -96,6 +96,14 @@ public class ImageUtil {
         return bitmap;
     }
 
+    public static Bitmap decodeFile( Context context, String imagePath ){
+        Bitmap bitmap = null;
+
+        bitmap = BitmapFactory.decodeFile( imagePath );
+
+        return bitmap;
+    }
+
     /**
      * resize drawable resource
      *

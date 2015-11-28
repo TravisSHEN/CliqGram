@@ -284,7 +284,9 @@ public class CameraFragment extends Fragment
 
         @Override
         public void onImageAvailable(ImageReader reader) {
-            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
+            mBackgroundHandler.post(new ImageSaver(getActivity(),
+                    reader.acquireNextImage()
+                    , mFile));
         }
 
     };
@@ -822,6 +824,9 @@ public class CameraFragment extends Fragment
                     showToast("Saved: " + mFile);
                     Log.d(TAG, "Saved file: " + mFile.toString());
                     unlockFocus();
+
+                    startImageDisplayActivity( mFile.getName() );
+
                 }
             };
 
@@ -857,18 +862,6 @@ public class CameraFragment extends Fragment
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-//            case R.id.picture: {
-//                takePicture();
-//                break;
-//            }
-//            case R.id.info: {
-//                Activity activity = getActivity();
-//                if (null != activity) {
-//
-//                }
-//                break;
-//            }
-
             case R.id.button_capture:
                 takePicture();
                 break;
@@ -924,7 +917,13 @@ public class CameraFragment extends Fragment
          */
         private final File mFile;
 
-        public ImageSaver(Image image, File file) {
+        /**
+         * The context for running ImageSaver
+         */
+        private final Context mContext;
+
+        public ImageSaver(Context context, Image image, File file) {
+            mContext = context;
             mImage = image;
             mFile = file;
         }
@@ -936,7 +935,9 @@ public class CameraFragment extends Fragment
             buffer.get(bytes);
             FileOutputStream output = null;
             try {
-                output = new FileOutputStream(mFile);
+                output = mContext.openFileOutput(mFile.getName(), Context
+                        .MODE_PRIVATE);
+//                output = new FileOutputStream(mFile);
                 output.write(bytes);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -1098,5 +1099,11 @@ public class CameraFragment extends Fragment
         startActivity(intent);
     }
 
+
+    private void startImageDisplayActivity(String filepath){
+        Intent intent = new Intent(getActivity(), ImageDisplayActivity.class);
+        intent.putExtra("image", filepath);
+        startActivity(intent);
+    }
 
 }
