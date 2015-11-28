@@ -43,7 +43,6 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
 import android.media.ImageReader;
 import android.net.Uri;
 import android.os.Build;
@@ -66,9 +65,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -81,6 +78,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.activities.ImageDisplayActivity;
+import cliq.com.cliqgram.callbacks.ImageSavedCallback;
+import cliq.com.cliqgram.utils.ImageSaver;
 import cliq.com.cliqgram.utils.ImageUtil;
 import cliq.com.cliqgram.utils.Utils;
 import cliq.com.cliqgram.views.AutoFitTextureView;
@@ -286,7 +285,7 @@ public class CameraFragment extends Fragment
         public void onImageAvailable(ImageReader reader) {
             mBackgroundHandler.post(new ImageSaver(getActivity(),
                     reader.acquireNextImage()
-                    , mFile));
+                    , mFile, null));
         }
 
     };
@@ -904,58 +903,6 @@ public class CameraFragment extends Fragment
     }
 
     /**
-     * Saves a JPEG {@link Image} into the specified {@link File}.
-     */
-    private static class ImageSaver implements Runnable {
-
-        /**
-         * The JPEG image
-         */
-        private final Image mImage;
-        /**
-         * The file we save the image into.
-         */
-        private final File mFile;
-
-        /**
-         * The context for running ImageSaver
-         */
-        private final Context mContext;
-
-        public ImageSaver(Context context, Image image, File file) {
-            mContext = context;
-            mImage = image;
-            mFile = file;
-        }
-
-        @Override
-        public void run() {
-            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            FileOutputStream output = null;
-            try {
-                output = mContext.openFileOutput(mFile.getName(), Context
-                        .MODE_PRIVATE);
-//                output = new FileOutputStream(mFile);
-                output.write(bytes);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                mImage.close();
-                if (null != output) {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-    }
-
-    /**
      * Compares two {@code Size}s based on their areas.
      */
     static class CompareSizesByArea implements Comparator<Size> {
@@ -1079,30 +1026,18 @@ public class CameraFragment extends Fragment
      */
     private void startImageDisplayActivity(Bitmap bitmap) {
 
-//        String fileName = savePhoto(bitmap);
-//        mFile = new File(getActivity().getExternalFilesDir(null),
-//                String.valueOf(Utils.getCurrentDate().getTime()) + ".jpg");
-//        mBackgroundHandler.post(new ImageSaver())
+        new ImageSaver(getActivity(), bitmap, mFile, new ImageSavedCallback() {
+            @Override
+            public void onImageSaved(String fileName) {
+                startImageDisplayActivity(mFile.getName());
+            }
+        }).run();
 
-//        if (fileName == null) {
-//            Toast.makeText(getActivity(), "Photo is not taken successfully.", Toast
-//                    .LENGTH_SHORT).show();
-//            return;
-//        }
-
-        startImageDisplayActivity();
     }
 
-    private void startImageDisplayActivity() {
+    private void startImageDisplayActivity(String fileName){
         Intent intent = new Intent(getActivity(), ImageDisplayActivity.class);
-        intent.putExtra("image", mFile);
-        startActivity(intent);
-    }
-
-
-    private void startImageDisplayActivity(String filepath){
-        Intent intent = new Intent(getActivity(), ImageDisplayActivity.class);
-        intent.putExtra("image", filepath);
+        intent.putExtra("image", fileName);
         startActivity(intent);
     }
 
