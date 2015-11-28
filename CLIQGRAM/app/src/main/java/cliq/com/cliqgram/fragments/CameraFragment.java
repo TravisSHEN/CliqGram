@@ -575,13 +575,15 @@ public class CameraFragment extends Fragment
     /**
      * Opens the camera specified by {@link CameraFragment#mCameraId}.
      */
-    @TargetApi(Build.VERSION_CODES.M)
     private void openCamera(int width, int height) {
-        if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestCameraPermission();
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestCameraPermission();
+                return;
+            }
         }
+
         setUpCameraOutputs(width, height);
         configureTransform(width, height);
         Activity activity = getActivity();
@@ -1039,6 +1041,8 @@ public class CameraFragment extends Fragment
         Intent intent = new Intent(getActivity(), ImageDisplayActivity.class);
         intent.putExtra("image", fileName);
         startActivity(intent);
+
+        getActivity().finish();
     }
 
 }

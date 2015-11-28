@@ -23,11 +23,11 @@ public class PermissionUtil {
      * request camera permission if neccessary
      * @param activity
      */
-    public static void requestCameraPermission(AppCompatActivity activity,
+    public static void requestPermission(AppCompatActivity activity,
                                                String permission_content,
                                                String permission) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest
-                .permission.CAMERA)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                permission)) {
 
             ConfirmationDialog.newInstance(permission_content, permission)
                     .show(activity.getSupportFragmentManager(), FRAGMENT_DIALOG);

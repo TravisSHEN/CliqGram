@@ -1,10 +1,16 @@
 package cliq.com.cliqgram.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +30,7 @@ import java.io.File;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
+import cliq.com.cliqgram.fragments.CameraFragment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.GPUImageFilterTools;
@@ -41,13 +48,17 @@ import jp.co.cyberagent.android.gpuimage.GPUImageSepiaFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageSketchFilter;
 
 public class ImageDisplayActivity extends AppCompatActivity {
+
+    private static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 1;
+    private static final String FRAGMENT_DIALOG = "dialog";
+
     Bitmap originalBitmap;
     Bitmap croppedBitmap;
     Bitmap editedBitmap;
 
     // For image processing
     GPUImage gpuImage;
-    private GPUImageFilter                     mFilter;
+    private GPUImageFilter mFilter;
     private GPUImageFilterTools.FilterAdjuster mFilterAdjuster;
 
     @Bind(R.id.brightnessBar)
@@ -65,7 +76,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     @Bind(R.id.postDescription)
     EditText postDescription;
 
-    private final int SCALED_WIDTH  = 600;
+    private final int SCALED_WIDTH = 600;
     private final int SCALED_HEIGHT = 600;
 
     @Override
@@ -75,6 +86,15 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
         // bind this activity with ButterKnife
         ButterKnife.bind(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestWriteExternalStoragePermisseon();
+
+                finish();
+            }
+        }
 
         // get image from intent when activity start and resize it
         originalBitmap = resizeBitmap(getImage());
@@ -143,7 +163,8 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         // image filtering
@@ -273,7 +294,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     private Bitmap applyAllFilters() {
         // get the contrast, brightness, and filter values
         float contrast = calculateContrastValue(contrastBar.getProgress());
-        float brightness           = calculateBrightnessValue(brightnessBar.getProgress());
+        float brightness = calculateBrightnessValue(brightnessBar.getProgress());
         GPUImageFilter imageFilter = parseFilterFromString(spinner.getSelectedItem().toString());
 
         // apply contrast
@@ -304,7 +325,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
         GPUImageFilter filter;
 
         // determine filter
-        switch(filterName){
+        switch (filterName) {
             case "No Filter":
                 filter = null; // does nothing
                 break;
@@ -335,5 +356,23 @@ public class ImageDisplayActivity extends AppCompatActivity {
         }
 
         return filter;
+    }
+
+    // TODO: add permission confirmation response
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void requestWriteExternalStoragePermisseon() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            new CameraFragment.ConfirmationDialog().show
+                    (this.getFragmentManager(), FRAGMENT_DIALOG);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_EXTERNAL_STORAGE_PERMISSION);
+        }
     }
 }
