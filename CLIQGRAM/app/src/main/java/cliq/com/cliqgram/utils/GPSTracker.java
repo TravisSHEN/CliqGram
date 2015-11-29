@@ -24,6 +24,9 @@ import android.util.Log;
 
 public class GPSTracker extends Service implements LocationListener {
 
+    private static final int REQUEST_FINE_LOCATION = 1;
+    private static final int REQUEST_COARSE_LOCATION = 2;
+
     private final Context mContext;
 
     // flag for GPS status
@@ -62,11 +65,13 @@ public class GPSTracker extends Service implements LocationListener {
                         != PackageManager.PERMISSION_GRANTED) {
                     PermissionUtil.requestPermission((AppCompatActivity) mContext,
                             "The app requires FINE LOCATION permission",
-                            Manifest.permission.ACCESS_FINE_LOCATION);
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            REQUEST_FINE_LOCATION);
 
                     PermissionUtil.requestPermission((AppCompatActivity) mContext,
                             "The app requires GPS permission",
-                            Manifest.permission.ACCESS_COARSE_LOCATION);
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            REQUEST_COARSE_LOCATION);
                     return null;
                 }
             }
@@ -137,18 +142,11 @@ public class GPSTracker extends Service implements LocationListener {
     public void stopUsingGPS() {
         if (locationManager != null) {
 
+            // check permission
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (mContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && mContext.checkSelfPermission(Manifest.permission
                         .ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                    PermissionUtil.requestPermission((AppCompatActivity) mContext,
-                            "Require Location permission",
-                            Manifest.permission.ACCESS_FINE_LOCATION);
-
-                    PermissionUtil.requestPermission((AppCompatActivity) mContext,
-                            "Require Location permission",
-                            Manifest.permission.ACCESS_COARSE_LOCATION);
 
                     return;
                 }

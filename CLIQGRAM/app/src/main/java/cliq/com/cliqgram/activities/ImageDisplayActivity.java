@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -30,11 +29,11 @@ import java.io.File;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cliq.com.cliqgram.R;
-import cliq.com.cliqgram.fragments.CameraFragment;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.GPUImageFilterTools;
 import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.PermissionUtil;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
@@ -92,10 +91,41 @@ public class ImageDisplayActivity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 requestWriteExternalStoragePermisseon();
-
-                finish();
             }
         }
+
+        // if permission is granted, set up view.
+        setUp();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE_PERMISSION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // setup everything after permission is granted.
+                    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                    setUp();
+
+                } else {
+
+                    // if permission is denied,
+                    // show error dialog
+                    PermissionUtil.ErrorDialog
+                        .newInstance
+                        (getString(R.string.request_permission))
+                        .show(getSupportFragmentManager(), FRAGMENT_DIALOG);
+                }
+                return;
+            }
+        }
+    }
+
+    private void setUp() {
 
         // get image from intent when activity start and resize it
         originalBitmap = resizeBitmap(getImage());
@@ -359,21 +389,15 @@ public class ImageDisplayActivity extends AppCompatActivity {
         return filter;
     }
 
-    // TODO: add permission confirmation response
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
 
+    /**
+     * request Write_External_Storage permission.
+     */
     private void requestWriteExternalStoragePermisseon() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            new CameraFragment.ConfirmationDialog().show
-                    (this.getFragmentManager(), FRAGMENT_DIALOG);
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_EXTERNAL_STORAGE_PERMISSION);
-        }
+
+        PermissionUtil.requestPermission(this,
+                "The app requires Write_External_Storage to continue.",
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                REQUEST_EXTERNAL_STORAGE_PERMISSION);
     }
 }
