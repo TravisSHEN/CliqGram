@@ -239,9 +239,9 @@ public class ImageDisplayActivity extends AppCompatActivity {
                     description = "I love Cliqgram!";
                 }
 
-                Post.createPost(UserService.getCurrentUser(),
-                        ImageUtil.convertBitmapToByte(editedBitmap),
-                        description);
+                Post.createPost(this,
+                        UserService.getCurrentUser(),
+                        ImageUtil.convertBitmapToByte(editedBitmap), description);
                 finish();
                 break;
 

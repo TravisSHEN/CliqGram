@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.services.LikeService;
 import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserService;
+import cliq.com.cliqgram.utils.GPSTracker;
 import cliq.com.cliqgram.utils.ImageUtil;
 import cliq.com.cliqgram.utils.Utils;
 
@@ -35,11 +35,13 @@ public class Post extends ParseObject implements Comparable<Post> {
 
     /**
      *
+     *
+     * @param mContext
      * @param photoData
      * @param description
      * @return
      */
-    public static Post createPost(User owner, byte[] photoData, String
+    public static Post createPost(Context mContext, User owner, byte[] photoData, String
             description) {
 
         Post post = new Post();
@@ -47,7 +49,8 @@ public class Post extends ParseObject implements Comparable<Post> {
         post.setPhotoData(photoData);
         post.setDescription(description);
 
-        Location current_location = AppStarter.gpsTracker.getLocation();
+        Location current_location = GPSTracker.getInstance(mContext)
+                .getLocation();
         if (current_location != null) {
             post.setLocation(new ParseGeoPoint(current_location.getLatitude(),
                     current_location.getLongitude()));

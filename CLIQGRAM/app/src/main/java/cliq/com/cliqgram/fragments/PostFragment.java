@@ -99,7 +99,6 @@ public class PostFragment extends Fragment {
 
         this.initializeFeedView();
 
-
         return view;
     }
 

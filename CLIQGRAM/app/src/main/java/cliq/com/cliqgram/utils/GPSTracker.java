@@ -27,6 +27,8 @@ public class GPSTracker extends Service implements LocationListener {
     private static final int REQUEST_FINE_LOCATION = 1;
     private static final int REQUEST_COARSE_LOCATION = 2;
 
+    private static GPSTracker gpsTracker;
+
     private final Context mContext;
 
     // flag for GPS status
@@ -51,10 +53,26 @@ public class GPSTracker extends Service implements LocationListener {
     // Declaring a Location Manager
     protected LocationManager locationManager;
 
+
+    /**
+     *
+     * @param context
+     * @return
+     */
+    public static GPSTracker getInstance(Context context){
+
+        if( gpsTracker == null ){
+            gpsTracker = new GPSTracker(context);
+        }
+
+        return gpsTracker;
+    }
+
     public GPSTracker(Context context) {
         this.mContext = context;
         getLocation();
     }
+
 
     public Location getLocation() {
         try {

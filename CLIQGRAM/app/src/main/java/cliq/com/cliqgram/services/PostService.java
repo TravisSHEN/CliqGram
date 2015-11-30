@@ -14,12 +14,12 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import cliq.com.cliqgram.app.AppStarter;
 import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.PostFailEvent;
 import cliq.com.cliqgram.events.PostSuccessEvent;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
-import cliq.com.cliqgram.app.AppStarter;
 
 /**
  * Created by ilkan on 26/09/2015.
@@ -32,7 +32,7 @@ public class PostService {
 
         User currentUser = UserService.getCurrentUser();
 
-        if (post.getOwner() != null && !post.getOwner().getUsername().equals(
+        if (post.getOwner() == null || !post.getOwner().getUsername().equals(
                 currentUser.getUsername())) {
             return;
         }
@@ -87,13 +87,14 @@ public class PostService {
      * get all posts of users
      * @param userList
      */
-    public static void getPosts( List<User> userList) {
+    public static void getPosts(List<User> userList) {
 
         if (userList == null || userList.size() <= 0) {
             return;
         }
 
-        Location loc = AppStarter.gpsTracker.getLocation();
+//        Location loc = GPSTracker.getInstance(mContext).getLocation();
+        Location loc = null;
 
         ParseGeoPoint currentLocation;
         try{
@@ -123,6 +124,34 @@ public class PostService {
                 if (e == null) {
                     List<Post> postList = objects;
 
+                    AppStarter.eventBus.post(new GetPostEvent(postList));
+                } else {
+
+                    AppStarter.eventBus.post(new GetPostEvent(null, false));
+                }
+            }
+        });
+    }
+
+    public static void getPosts(User user){
+
+        if( user == null){
+            return;
+        }
+
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.whereEqualTo("user", user);
+        // order by createdAt
+        query.orderByDescending("createdAt");
+
+        query.include("user");
+        query.include("comments");
+        query.include("likes");
+
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> postList, ParseException e) {
+                if (e == null) {
 
                     AppStarter.eventBus.post(new GetPostEvent(postList));
                 } else {
@@ -131,6 +160,5 @@ public class PostService {
                 }
             }
         });
-
     }
 }

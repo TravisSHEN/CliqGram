@@ -1,6 +1,7 @@
 <FrameLayout
     android:id="@+id/fragment_profile"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,8 +9,7 @@
     android:background="#ffffff"
     android:paddingBottom="@dimen/abc_action_bar_default_height_material"
     android:paddingTop="@dimen/abc_action_bar_default_height_material"
-    tools:context="cliq.com.cliqgram.fragments.ProfileFragment"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    tools:context="cliq.com.cliqgram.fragments.ProfileFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -35,11 +35,11 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profile_avatar"
-                    app:civ_border_color="@color/navigation_item_checked"
-                    app:civ_border_width="1dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    app:civ_border_color="@color/navigation_item_checked"
+                    app:civ_border_width="1dp"/>
 
                 <!--<View-->
                 <!--android:layout_width="match_parent"-->
@@ -104,8 +104,8 @@
                             android:id="@+id/profile_posts_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-                            android:text="@string/profile_posts"/>
+                            android:text="@string/profile_posts"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -126,8 +126,8 @@
                             android:id="@+id/profile_followers_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-                            android:text="@string/profile_followers"/>
+                            android:text="@string/profile_followers"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -148,8 +148,8 @@
                             android:id="@+id/profile_followings_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-                            android:text="@string/profile_followings"/>
+                            android:text="@string/profile_followings"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -158,20 +158,25 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_above="@+id/profile_recycler_view"
+            android:layout_above="@+id/profile_swipe_refresh_layout"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="5dp"
             android:background="#cccccc"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/profile_recycler_view"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/profile_swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
             android:layout_below="@+id/profile"
-            android:minHeight="200dp"
-            android:visibility="visible">
-        </android.support.v7.widget.RecyclerView>
+            android:layout_alignParentStart="true"
+            android:minHeight="200dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/profile_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+            </android.support.v7.widget.RecyclerView>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </RelativeLayout>
 </FrameLayout>

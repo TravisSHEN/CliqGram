@@ -1,6 +1,5 @@
 package cliq.com.cliqgram.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -31,9 +30,7 @@ public class PermissionUtil {
             ConfirmationDialog.newInstance(permission_info, permission, request_code)
                     .show(activity.getSupportFragmentManager(), FRAGMENT_DIALOG);
         } else {
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest
-                            .permission
-                            .CAMERA},
+            ActivityCompat.requestPermissions(activity, new String[]{permission},
                     request_code);
         }
     }
