@@ -1,5 +1,6 @@
 package cliq.com.cliqgram.services;
 
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -21,7 +22,8 @@ import cliq.com.cliqgram.events.UserSuggestionRetrieved;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
-import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.GPSTracker;
+import cliq.com.cliqgram.utils.Utils;
 
 /**
  * Created by litaoshen on 30/09/2015.
@@ -125,7 +127,7 @@ public class UserService {
         }
     }
 
-    public static void getSuggestUsers() {
+    public static void getSuggestUsers(final Context mContext) {
 
         User currentUser = UserService.getCurrentUser();
 
@@ -139,12 +141,12 @@ public class UserService {
 
                 List<User> followings = relation.getFollowings();
 
-                getSuggestUsers(followings);
+                getSuggestUsers(mContext, followings);
             }
         });
     }
 
-    private static void getSuggestUsers(List<User> userList) {
+    private static void getSuggestUsers(Context mContext, List<User> userList) {
 
         List<String> usernameList = new ArrayList<>();
 
@@ -157,7 +159,7 @@ public class UserService {
             usernameList.add(user.getUsername());
         }
 
-        Location loc = AppStarter.gpsTracker.getLocation();
+        Location loc = GPSTracker.getInstance(mContext).getLocation();
 
         if( loc == null ){
             return;
@@ -195,7 +197,7 @@ public class UserService {
                     allLatestPosts.add(post);
                 }
 
-                long currentTime = ImageUtil.getCurrentDate().getTime();
+                long currentTime = Utils.getCurrentDate().getTime();
                 // sort according to creation time
                 Collections.sort(allLatestPosts);
 

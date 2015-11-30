@@ -1,99 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+                <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/relativeLayout_camera"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content">-->
 
-        <cliq.com.cliqgram.views.AutoFitTextureView
-            android:id="@+id/textureView_preview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"/>
+        <!--<cliq.com.cliqgram.views.AutoFitTextureView-->
+            <!--android:id="@+id/textureView_preview"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_vertical"/>-->
 
-        <cliq.com.cliqgram.views.MyGridView
-            android:id="@+id/view_grid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/textureView_preview"
-            android:layout_alignLeft="@+id/textureView_preview"
-            android:layout_alignRight="@+id/textureView_preview"
-            android:layout_alignTop="@+id/textureView_preview"
-            android:visibility="invisible"/>
-    </RelativeLayout>
+        <!--<cliq.com.cliqgram.views.MyGridView-->
+            <!--android:id="@+id/view_grid"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/textureView_preview"-->
+            <!--android:layout_alignLeft="@+id/textureView_preview"-->
+            <!--android:layout_alignRight="@+id/textureView_preview"-->
+            <!--android:layout_alignTop="@+id/textureView_preview"-->
+            <!--android:visibility="invisible"/>-->
+    <!--</RelativeLayout>-->
 
-    <LinearLayout
-        android:id="@+id/linearLayout_button"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_toRightOf="@+id/relativeLayout_camera"
-        android:background="@color/primary_material_dark"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:layout_alignParentEnd="true">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/linearLayout_button"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:layout_toRightOf="@+id/relativeLayout_camera"-->
+        <!--android:background="@color/primary_material_dark"-->
+        <!--android:orientation="vertical"-->
+        <!--android:gravity="center_horizontal"-->
+        <!--android:layout_alignParentEnd="true">-->
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_weight="1"-->
+            <!--android:orientation="vertical"-->
+            <!--android:gravity="center">-->
 
-            <Button
-                android:id="@+id/button_flash"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/icon_flash_on"
-                />
+            <!--<Button-->
+                <!--android:id="@+id/button_flash"-->
+                <!--android:layout_width="32dp"-->
+                <!--android:layout_height="32dp"-->
+                <!--android:background="@drawable/icon_flash_on"-->
+                <!--/>-->
 
-            <Button
-                android:id="@+id/button_grid"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/icon_grid_off"
-                android:layout_marginTop="20dp"/>
-        </LinearLayout>
+            <!--<Button-->
+                <!--android:id="@+id/button_grid"-->
+                <!--android:layout_width="32dp"-->
+                <!--android:layout_height="32dp"-->
+                <!--android:background="@drawable/icon_grid_off"-->
+                <!--android:layout_marginTop="20dp"/>-->
+        <!--</LinearLayout>-->
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/button_capture"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_camera"
-            app:borderWidth="0dp"
-            app:elevation="6dp"
-            app:pressedTranslationZ="12dp"/>
-        <!--<Button-->
-        <!--android:id="@+id/button_capture"-->
-        <!--android:text="@string/button_capture"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="1"/>-->
+        <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/button_capture"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@drawable/icon_camera"-->
+            <!--app:borderWidth="0dp"-->
+            <!--app:elevation="6dp"-->
+            <!--app:pressedTranslationZ="12dp"/>-->
 
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_weight="1"-->
+            <!--android:orientation="vertical"-->
+            <!--android:gravity="center_vertical">-->
 
-            <Button
-                android:id="@+id/button_gallery"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/icon_gallery"
-                android:layout_gravity="center_vertical"/>
+            <!--<Button-->
+                <!--android:id="@+id/button_gallery"-->
+                <!--android:layout_width="48dp"-->
+                <!--android:layout_height="48dp"-->
+                <!--android:background="@drawable/icon_gallery"-->
+                <!--android:layout_gravity="center_vertical"/>-->
 
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
-</RelativeLayout>
+<!--</RelativeLayout>-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000"
+    tools:context="com.example.android.camera2basic.CameraActivity" />

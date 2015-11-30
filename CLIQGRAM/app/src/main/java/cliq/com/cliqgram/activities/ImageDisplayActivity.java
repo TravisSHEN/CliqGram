@@ -1,10 +1,15 @@
 package cliq.com.cliqgram.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +33,7 @@ import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.services.UserService;
 import cliq.com.cliqgram.utils.GPUImageFilterTools;
 import cliq.com.cliqgram.utils.ImageUtil;
+import cliq.com.cliqgram.utils.PermissionUtil;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
@@ -41,13 +47,17 @@ import jp.co.cyberagent.android.gpuimage.GPUImageSepiaFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageSketchFilter;
 
 public class ImageDisplayActivity extends AppCompatActivity {
+
+    private static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 1;
+    private static final String FRAGMENT_DIALOG = "dialog";
+
     Bitmap originalBitmap;
     Bitmap croppedBitmap;
     Bitmap editedBitmap;
 
     // For image processing
     GPUImage gpuImage;
-    private GPUImageFilter                     mFilter;
+    private GPUImageFilter mFilter;
     private GPUImageFilterTools.FilterAdjuster mFilterAdjuster;
 
     @Bind(R.id.brightnessBar)
@@ -65,7 +75,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     @Bind(R.id.postDescription)
     EditText postDescription;
 
-    private final int SCALED_WIDTH  = 600;
+    private final int SCALED_WIDTH = 600;
     private final int SCALED_HEIGHT = 600;
 
     @Override
@@ -75,6 +85,47 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
         // bind this activity with ButterKnife
         ButterKnife.bind(this);
+
+        // only check permission granted for sdk over M
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestWriteExternalStoragePermisseon();
+            }
+        }
+
+        // if permission is granted, set up view.
+        setUp();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE_PERMISSION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // setup everything after permission is granted.
+                    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                    setUp();
+
+                } else {
+
+                    // if permission is denied,
+                    // show error dialog
+                    PermissionUtil.ErrorDialog
+                        .newInstance
+                        (getString(R.string.request_permission))
+                        .show(getSupportFragmentManager(), FRAGMENT_DIALOG);
+                }
+                return;
+            }
+        }
+    }
+
+    private void setUp() {
 
         // get image from intent when activity start and resize it
         originalBitmap = resizeBitmap(getImage());
@@ -143,7 +194,8 @@ public class ImageDisplayActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         // image filtering
@@ -187,9 +239,9 @@ public class ImageDisplayActivity extends AppCompatActivity {
                     description = "I love Cliqgram!";
                 }
 
-                Post.createPost(UserService.getCurrentUser(),
-                        ImageUtil.convertBitmapToByte(editedBitmap),
-                        description);
+                Post.createPost(this,
+                        UserService.getCurrentUser(),
+                        ImageUtil.convertBitmapToByte(editedBitmap), description);
                 finish();
                 break;
 
@@ -273,7 +325,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
     private Bitmap applyAllFilters() {
         // get the contrast, brightness, and filter values
         float contrast = calculateContrastValue(contrastBar.getProgress());
-        float brightness           = calculateBrightnessValue(brightnessBar.getProgress());
+        float brightness = calculateBrightnessValue(brightnessBar.getProgress());
         GPUImageFilter imageFilter = parseFilterFromString(spinner.getSelectedItem().toString());
 
         // apply contrast
@@ -304,7 +356,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
         GPUImageFilter filter;
 
         // determine filter
-        switch(filterName){
+        switch (filterName) {
             case "No Filter":
                 filter = null; // does nothing
                 break;
@@ -335,5 +387,17 @@ public class ImageDisplayActivity extends AppCompatActivity {
         }
 
         return filter;
+    }
+
+
+    /**
+     * request Write_External_Storage permission.
+     */
+    private void requestWriteExternalStoragePermisseon() {
+
+        PermissionUtil.requestPermission(this,
+                "The app requires Write_External_Storage to continue.",
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                REQUEST_EXTERNAL_STORAGE_PERMISSION);
     }
 }

@@ -1,6 +1,5 @@
 package cliq.com.cliqgram.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -17,30 +16,27 @@ public class PermissionUtil {
 
     private static final String FRAGMENT_DIALOG = "dialog";
 
-    private static final int REQUEST_PERMISSION = 1;
-
     /**
      * request camera permission if neccessary
      * @param activity
      */
-    public static void requestCameraPermission(AppCompatActivity activity,
-                                               String permission_content,
-                                               String permission) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest
-                .permission.CAMERA)) {
+    public static void requestPermission(AppCompatActivity activity,
+                                               String permission_info,
+                                               String permission,
+                                         int request_code) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                permission)) {
 
-            ConfirmationDialog.newInstance(permission_content, permission)
+            ConfirmationDialog.newInstance(permission_info, permission, request_code)
                     .show(activity.getSupportFragmentManager(), FRAGMENT_DIALOG);
         } else {
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest
-                            .permission
-                            .CAMERA},
-                    REQUEST_PERMISSION);
+            ActivityCompat.requestPermissions(activity, new String[]{permission},
+                    request_code);
         }
     }
 
     /**
-     * Shows OK/Cancel confirmation dialog about camera permission.
+     * Shows OK/Cancel confirmation dialog about permission.
      */
     public static class ConfirmationDialog extends DialogFragment {
 
@@ -54,17 +50,24 @@ public class PermissionUtil {
         private static String ARG_PERMISSION = "permission";
 
         /**
+         * request code
+         */
+        private static String ARG_REQUEST_CODE = "request_code";
+
+        /**
          * generate instance of ConfirmationDialog
          * @param permission_content
          * @param permission
          * @return
          */
         public static ConfirmationDialog newInstance(String permission_content,
-                                                     String permission) {
+                                                     String permission,
+                                                     int request_code) {
 
             Bundle args = new Bundle();
             args.putString(ARG_PERMISSION_CONTENT, permission_content);
             args.putString(ARG_PERMISSION, permission);
+            args.putInt(ARG_REQUEST_CODE, request_code);
 
 
             ConfirmationDialog fragment = new ConfirmationDialog();
@@ -81,16 +84,17 @@ public class PermissionUtil {
                     (ARG_PERMISSION_CONTENT, "The application requires " +
                             "permission to run.");
             final String permission = args.getString(ARG_PERMISSION, "");
+            final int request_code = args.getInt(ARG_REQUEST_CODE, 1);
 
             final Activity activity = getActivity();
-            return new AlertDialog.Builder(getActivity())
+            return new AlertDialog.Builder(activity)
                     .setMessage( permission_content )
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ActivityCompat.requestPermissions(activity,
                                     new String[]{permission},
-                                    REQUEST_PERMISSION);
+                                    request_code);
                         }
                     })
                     .setNegativeButton(android.R.string.cancel,
@@ -106,5 +110,34 @@ public class PermissionUtil {
                     .create();
         }
     }
+    /**
+     * Shows an error message dialog.
+     */
+    public static class ErrorDialog extends DialogFragment {
 
+        private static final String ARG_MESSAGE = "message";
+
+        public static ErrorDialog newInstance(String message) {
+            ErrorDialog dialog = new ErrorDialog();
+            Bundle args = new Bundle();
+            args.putString(ARG_MESSAGE, message);
+            dialog.setArguments(args);
+            return dialog;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Activity activity = getActivity();
+            return new AlertDialog.Builder(activity)
+                    .setMessage(getArguments().getString(ARG_MESSAGE))
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            activity.finish();
+                        }
+                    })
+                    .create();
+        }
+
+    }
 }

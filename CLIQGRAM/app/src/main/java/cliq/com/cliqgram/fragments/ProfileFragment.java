@@ -2,6 +2,7 @@ package cliq.com.cliqgram.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,12 +24,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cliq.com.cliqgram.R;
 import cliq.com.cliqgram.adapters.ProfileAdapter;
+import cliq.com.cliqgram.app.AppStarter;
+import cliq.com.cliqgram.events.GetPostEvent;
 import cliq.com.cliqgram.events.RelationGetEvent;
 import cliq.com.cliqgram.events.UserGetEvent;
 import cliq.com.cliqgram.model.Post;
 import cliq.com.cliqgram.model.User;
 import cliq.com.cliqgram.model.UserRelation;
-import cliq.com.cliqgram.app.AppStarter;
+import cliq.com.cliqgram.services.PostService;
 import cliq.com.cliqgram.services.UserRelationsService;
 import cliq.com.cliqgram.services.UserService;
 import de.greenrobot.event.Subscribe;
@@ -60,6 +63,9 @@ public class ProfileFragment extends Fragment {
 
     @Bind(R.id.profile_btn_follow)
     Button profile_follow_button;
+
+    @Bind(R.id.profile_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Bind(R.id.profile_recycler_view)
     RecyclerView profile_posts;
@@ -137,6 +143,14 @@ public class ProfileFragment extends Fragment {
         profile_posts.setLayoutManager(glm);
         profile_posts.setHasFixedSize(true);
 
+        // set refresh listener for SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeData(userId);
+            }
+        });
+
         profileAdapter = new ProfileAdapter(this.getActivity(), this.postList);
         profile_posts.setAdapter(profileAdapter);
 
@@ -151,39 +165,54 @@ public class ProfileFragment extends Fragment {
 
         // find such user and put its data onto profile
         UserService.getUserById(userId);
-        // find such user in order to find his/her relations
-        UserService.getUserById(userId, new GetCallback<ParseUser>() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-                if (e == null) {
-
-                    UserRelationsService.getRelation(user.getUsername());
-                } else {
-                    Toast.makeText(getActivity(), e.getMessage(), Toast
-                            .LENGTH_SHORT).show();
-                }
-            }
-        });
     }
+
 
     @Subscribe
     public void onUserGetEvent(UserGetEvent event) {
         final User user = event.getUser();
 
         if (user == null) {
+            Toast.makeText(getActivity(), "User not found.", Toast
+                    .LENGTH_SHORT).show();
             return;
         }
 
+        // load posts of such user
+        PostService.getPosts(user);
+
+        // get user's relations to count figures
+        UserRelationsService.getRelation(user.getUsername());
+
+        // load avatar of user to view
         user.loadAvatarToView(getActivity(), profile_avatar);
 
-        if( user.getPostList() != null ) {
-            profile_posts_number.setText(
-                    String.valueOf(user.getPostList().size()));
-        }
         profile_username.setText(user.getUsername());
 
-        this.postList = user.getPostList();
+        // hide refresh progress
+        swipeRefreshLayout.setRefreshing(false);
+
+    }
+
+    @Subscribe
+    public void onPostGetEvent(GetPostEvent event) {
+
+        List<Post> postList = event.getPostList();
+
+        if (postList == null) {
+            return;
+        }
+
+        this.renderPosts(postList);
+    }
+
+    public void renderPosts(List<Post> postList) {
+
+        this.profile_posts_number.setText(
+                String.valueOf(postList.size()));
+        this.postList = postList;
         this.profileAdapter.updatePostList(this.postList);
+
     }
 
     @Subscribe
@@ -191,6 +220,8 @@ public class ProfileFragment extends Fragment {
         UserRelation relation = event.getRelation();
 
         if (relation == null) {
+            Toast.makeText(getActivity(), "User's relations not found.", Toast
+                    .LENGTH_SHORT).show();
             return;
         }
 
@@ -216,7 +247,7 @@ public class ProfileFragment extends Fragment {
     @OnClick({R.id.profile_btn_follow})
     public void onClick(View view) {
 
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.profile_btn_follow:
                 if (profile_follow_button.getText().equals("following") ||
                         userId.equals(UserService.getCurrentUser().getObjectId())) {
@@ -229,7 +260,7 @@ public class ProfileFragment extends Fragment {
 
                         if (e == null) {
 
-                            UserRelationsService.follow(UserService.getCurrentUser(),object.getUsername());
+                            UserRelationsService.follow(UserService.getCurrentUser(), object.getUsername());
                             profile_follow_button.setText(R.string.profile_following);
                         } else {
                             Toast.makeText(getActivity(), e.getMessage(),

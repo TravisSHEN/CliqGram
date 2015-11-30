@@ -1,11 +1,14 @@
 package cliq.com.cliqgram.utils;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.DrawableRes;
 import android.view.View;
@@ -14,8 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by litaoshen on 28/09/2015.
@@ -93,6 +94,14 @@ public class ImageUtil {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        return bitmap;
+    }
+
+    public static Bitmap decodeFile( Context context, String imagePath ){
+        Bitmap bitmap = null;
+
+        bitmap = BitmapFactory.decodeFile( imagePath );
+
         return bitmap;
     }
 
@@ -211,18 +220,19 @@ public class ImageUtil {
         return bitmapDrawable;
     }
 
-    public static Date getCurrentDate() {
 
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-
-        return date;
-    }
-
+    /**
+     *
+     * @param context
+     * @param inImage
+     * @param imageName
+     * @return
+     */
     public static Uri getImageUri(Context context, Bitmap inImage, String
             imageName) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
         String path = MediaStore.Images.Media.insertImage(context
                 .getContentResolver(), inImage, imageName, null);
         return Uri.parse(path);

@@ -114,7 +114,7 @@ public class SearchFragment extends Fragment {
 
 
         // retrieve all suggested users
-        UserService.getSuggestUsers();
+        UserService.getSuggestUsers(getActivity());
     }
 
     @Override
