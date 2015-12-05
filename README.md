@@ -1,5 +1,9 @@
 # CLIQGram 
 
+[![ZenHub]
+(https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png)]
+(https://zenhub.io)
+
 CliqGram is an Instagram clone for the subject COMP90018 Mobile
 Computing Systems Programming.
 
