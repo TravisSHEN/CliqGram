@@ -1,9 +1,11 @@
 # CLIQGram 
 
-CliqGram is an inspiration of instagram for the subject COMP90018 Mobile
+CliqGram is an Instagram clone for the subject COMP90018 Mobile
 Computing Systems Programming.
 
-# Screenshots 
+# ScreenShots
+
+![demo](https://cloud.githubusercontent.com/assets/2654264/11607845/46f05fd6-9bab-11e5-83a0-f2db5c1a5123.gif)
 
 # Contributions
 
